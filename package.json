@@ -1,0 +1,33 @@
+{
+  "name": "postpilots-xyz",
+  "version": "0.1.0",
+  "description": "PostPilot — Social media auto-posting SaaS. Grow your network on autopilot.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve . --listen 3000",
+    "deploy:vercel": "npx vercel --prod",
+    "deploy:netlify": "npx netlify deploy --prod --dir ."
+  },
+  "keywords": [
+    "social-media",
+    "automation",
+    "saas",
+    "scheduling",
+    "ai",
+    "claude",
+    "linkedin",
+    "twitter",
+    "instagram"
+  ],
+  "author": "infomomtelo-sketch",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/infomomtelo-sketch/postpilots-xyz.git"
+  },
+  "homepage": "https://postpilot.xyz",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}
