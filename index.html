@@ -568,7 +568,7 @@
   <ul class="nav-links">
     <li><a href="index.html#features">Features</a></li>
     <li><a href="index.html#how">How it works</a></li>
-    <li><a href="auth.html">Pricing</a></li>
+    <li><a href="index.html#pricing">Pricing</a></li>
   </ul>
   <a href="auth.html" class="nav-cta">Start free →</a>
 </nav>
@@ -812,53 +812,88 @@
   <p class="section-label reveal">Pricing</p>
   <h2 class="section-title reveal">Simple, honest <em>pricing</em></h2>
 
+  <!-- Billing toggle -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:40px;">
+    <span id="lbl-annual" style="font-size:14px;font-weight:500;color:inherit;">Annual</span>
+    <button id="billing-tgl" onclick="flipLandingBilling()" style="width:44px;height:24px;border-radius:12px;background:#1a6cff;cursor:pointer;position:relative;transition:background 0.2s;border:none;flex-shrink:0;">
+      <span id="billing-knob" style="position:absolute;width:18px;height:18px;border-radius:50%;background:white;top:3px;left:3px;transition:transform 0.2s;display:block;"></span>
+    </button>
+    <span id="lbl-monthly" style="font-size:14px;color:#9998a8;">Monthly</span>
+    <span style="font-size:11px;background:#d1fae5;color:#065f46;border-radius:20px;padding:3px 10px;font-weight:500;">Save 40%</span>
+  </div>
+
   <div class="pricing-grid">
+    <!-- FREE -->
     <div class="price-card reveal">
       <span class="plan-badge">Starter</span>
       <div class="price-amount">$0</div>
       <div class="price-period">free forever</div>
-      <div class="price-desc">Perfect for getting started and testing the waters with social automation.</div>
+      <div class="price-desc">Perfect for getting started. No credit card needed.</div>
       <ul class="price-features">
-        <li class="pf-item"><div class="pf-check"></div>3 connected accounts</li>
-        <li class="pf-item"><div class="pf-check"></div>10 scheduled posts/month</li>
+        <li class="pf-item"><div class="pf-check"></div>3 social accounts</li>
+        <li class="pf-item"><div class="pf-check"></div>10 posts/month</li>
         <li class="pf-item"><div class="pf-check"></div>Basic analytics</li>
         <li class="pf-item"><div class="pf-check"></div>5 AI captions/month</li>
       </ul>
-      <button class="btn-plan btn-plan-outline">Get started free</button>
+      <a href="auth.html" class="btn-plan btn-plan-outline" style="text-decoration:none;display:block;text-align:center;">Get started free</a>
     </div>
 
+    <!-- PRO -->
     <div class="price-card featured reveal" style="transition-delay:0.1s">
       <span class="plan-badge">⚡ Most popular</span>
-      <div class="price-amount" style="color:white;">$29</div>
-      <div class="price-period">/month</div>
-      <div class="price-desc">For serious creators and professionals ready to scale their network fast.</div>
+      <div style="display:flex;align-items:baseline;gap:4px;">
+        <div class="price-amount" id="lp-pro-price" style="color:white;">$9</div>
+        <div class="price-period">/mo</div>
+      </div>
+      <div id="lp-pro-was" style="font-size:13px;color:rgba(255,255,255,0.4);text-decoration:line-through;min-height:20px;margin-bottom:4px;">Usually $15/mo</div>
+      <div class="price-desc">For creators serious about growing their network fast.</div>
       <ul class="price-features">
-        <li class="pf-item"><div class="pf-check"></div>10 connected accounts</li>
-        <li class="pf-item"><div class="pf-check"></div>Unlimited scheduled posts</li>
-        <li class="pf-item"><div class="pf-check"></div>Advanced analytics + growth tracking</li>
+        <li class="pf-item"><div class="pf-check"></div>10 social accounts</li>
+        <li class="pf-item"><div class="pf-check"></div>Unlimited posts</li>
         <li class="pf-item"><div class="pf-check"></div>Unlimited AI captions</li>
-        <li class="pf-item"><div class="pf-check"></div>Best-time scheduling</li>
+        <li class="pf-item"><div class="pf-check"></div>Smart auto-scheduling</li>
         <li class="pf-item"><div class="pf-check"></div>Cross-platform posting</li>
+        <li class="pf-item"><div class="pf-check"></div>Advanced analytics</li>
       </ul>
-      <button class="btn-plan btn-plan-white">Start 14-day trial</button>
+      <a href="auth.html" class="btn-plan btn-plan-white" style="text-decoration:none;display:block;text-align:center;">Start 7-day trial →</a>
     </div>
 
+    <!-- AGENCY -->
     <div class="price-card reveal" style="transition-delay:0.2s">
       <span class="plan-badge">Agency</span>
-      <div class="price-amount">$79</div>
-      <div class="price-period">/month</div>
-      <div class="price-desc">For agencies and power users managing multiple brands and clients.</div>
+      <div style="display:flex;align-items:baseline;gap:4px;">
+        <div class="price-amount" id="lp-agency-price">$19</div>
+        <div class="price-period">/mo</div>
+      </div>
+      <div id="lp-agency-was" style="font-size:13px;color:#9998a8;text-decoration:line-through;min-height:20px;margin-bottom:4px;">Usually $39/mo</div>
+      <div class="price-desc">For agencies managing multiple brands and clients.</div>
       <ul class="price-features">
         <li class="pf-item"><div class="pf-check"></div>Unlimited accounts</li>
-        <li class="pf-item"><div class="pf-check"></div>Multi-workspace management</li>
-        <li class="pf-item"><div class="pf-check"></div>White-label reports</li>
         <li class="pf-item"><div class="pf-check"></div>Team collaboration</li>
+        <li class="pf-item"><div class="pf-check"></div>White-label reports</li>
         <li class="pf-item"><div class="pf-check"></div>Priority support</li>
-        <li class="pf-item"><div class="pf-check"></div>API access</li>
+        <li class="pf-item"><div class="pf-check"></div>API access + webhooks</li>
+        <li class="pf-item"><div class="pf-check"></div>Custom integrations</li>
       </ul>
-      <button class="btn-plan btn-plan-outline">Contact sales</button>
+      <a href="auth.html" class="btn-plan btn-plan-outline" style="text-decoration:none;display:block;text-align:center;">Choose Agency →</a>
     </div>
   </div>
+
+  <script>
+  var _landingAnnual = true;
+  function flipLandingBilling() {
+    _landingAnnual = !_landingAnnual;
+    document.getElementById('billing-knob').style.transform = _landingAnnual ? '' : 'translateX(20px)';
+    document.getElementById('lbl-annual').style.fontWeight = _landingAnnual ? '500' : '400';
+    document.getElementById('lbl-annual').style.color = _landingAnnual ? 'inherit' : '#9998a8';
+    document.getElementById('lbl-monthly').style.fontWeight = !_landingAnnual ? '500' : '400';
+    document.getElementById('lbl-monthly').style.color = !_landingAnnual ? 'inherit' : '#9998a8';
+    document.getElementById('lp-pro-price').textContent = _landingAnnual ? '$9' : '$15';
+    document.getElementById('lp-agency-price').textContent = _landingAnnual ? '$19' : '$39';
+    document.getElementById('lp-pro-was').textContent = _landingAnnual ? 'Usually $15/mo' : '';
+    document.getElementById('lp-agency-was').textContent = _landingAnnual ? 'Usually $39/mo' : '';
+  }
+  </script>
 </section>
 
 <!-- CTA -->
