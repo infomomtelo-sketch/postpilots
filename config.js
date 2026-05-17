@@ -9,30 +9,8 @@ const POSTPILOT_CONFIG = {
   // ── Supabase ─────────────────────────────────────────────
   // From: supabase.com → your project → Settings → API
   supabase: {
-    url:     'https://YOUR_PROJECT_ID.supabase.co',   // Project URL
-    anonKey: 'YOUR_SUPABASE_ANON_KEY',                // anon / public key
-  },
-
-  // ── Stripe ───────────────────────────────────────────────
-  // From: stripe.com → Developers → API keys (use live key for prod)
-  stripe: {
-    publishableKey: 'pk_live_YOUR_STRIPE_PUBLISHABLE_KEY',
-
-    // Price IDs — from stripe.com → Products → your plan → Price ID
-    prices: {
-      proMonthly:     '// ============================================================
-//  PostPilot — Configuration
-//  Paste your keys here, then push to GitHub.
-//  This file is loaded by auth.html and app.html.
-// ============================================================
-
-const POSTPILOT_CONFIG = {
-
-  // ── Supabase ─────────────────────────────────────────────
-  // From: supabase.com → your project → Settings → API
-  supabase: {
     url:     'https://dmemzljerldzeiwqfxzp.supabase.co',   // Project URL
-    anonKey: 'YOUR_SUPABASE_ANON_KEY',                // anon / public key
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtZW16bGplcmxkemVpd3FmeHpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NDMxNzgsImV4cCI6MjA5NDIxOTE3OH0.u4FL1mk555dUesVNjF58pXwkQlvvQYQgR5JpcxRtB40',                // anon / public key
   },
 
   // ── Stripe ───────────────────────────────────────────────
