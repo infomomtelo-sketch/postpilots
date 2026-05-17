@@ -1,1 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PostPilot — Grow Your Network on Autopilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e0e0f;
+    --ink2: #3a3a3c;
+    --ink3: #7a7a80;
+    --paper: #f7f6f2;
+    --paper2: #eeece5;
+    --accent: #1a6cff;
+    --accent2: #0047d4;
+    --green: #00c46a;
+    --amber: #f59e0b;
+    --pink: #ff4f81;
+    --r: 10px;
+    --sans: 'DM Sans', sans-serif;
+    --serif: 'Instrument Serif', serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
 
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(247,246,242,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { font-size: 14px; color: var(--ink2); text-decoration: none; font-weight: 400; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-family: var(--sans);
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--ink2);
+    margin-bottom: 28px;
+    position: relative;
+    animation: fadeUp 0.6s ease both;
+  }
+  .badge-dot {
+    width: 7px; height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--ink);
+    max-width: 860px;
+    position: relative;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: 18px;
+    color: var(--ink3);
+    max-width: 500px;
+    line-height: 1.6;
+    margin-top: 20px;
+    font-weight: 300;
+    position: relative;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-actions {
+    display: flex; gap: 12px; align-items: center; margin-top: 36px;
+    position: relative;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 100px;
+    font-size: 15px;
+    font-family: var(--sans);
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(26,108,255,0.3);
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,108,255,0.4); }
+  .btn-ghost {
+    color: var(--ink2);
+    font-size: 14px;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--ink); }
+  .hero-social-proof {
+    display: flex; align-items: center; gap: 12px; margin-top: 48px;
+    position: relative;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .avatars { display: flex; }
+  .avatars img, .avatar-fallback {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 2px solid var(--paper);
+    margin-left: -8px;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500;
+  }
+  .avatar-fallback:first-child { margin-left: 0; }
+  .avatar-fallback { background: var(--paper2); color: var(--ink2); }
+  .af1 { background: #dbeafe; color: #1d4ed8; }
+  .af2 { background: #fce7f3; color: #9d174d; }
+  .af3 { background: #d1fae5; color: #065f46; }
+  .af4 { background: #fef3c7; color: #92400e; }
+  .proof-text { font-size: 13px; color: var(--ink3); }
+  .proof-text strong { color: var(--ink2); font-weight: 500; }
+
+  /* FLOATING CARDS */
+  .hero-cards {
+    position: relative;
+    margin-top: 64px;
+    width: 100%;
+    max-width: 900px;
+    height: 300px;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+  .float-card {
+    position: absolute;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    font-size: 13px;
+    animation: float 6s ease-in-out infinite;
+  }
+  .fc1 { left: 0; top: 20px; width: 220px; animation-delay: 0s; }
+  .fc2 { right: 0; top: 0; width: 240px; animation-delay: -2s; }
+  .fc3 { left: 50%; transform: translateX(-50%); top: 40px; width: 260px; animation-delay: -4s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .fc3 { animation: float3 6s ease-in-out infinite; animation-delay: -4s; }
+  @keyframes float3 {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-10px); }
+  }
+  .card-platform {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .platform-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .pi-li { background: #0a66c2; color: white; }
+  .pi-tw { background: #000; color: white; }
+  .pi-ig { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
+  .card-platform-name { font-size: 12px; font-weight: 500; color: var(--ink2); }
+  .card-stat {
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .stat-num { font-family: var(--serif); font-size: 28px; color: var(--ink); }
+  .stat-change { font-size: 12px; color: var(--green); font-weight: 500; }
+  .stat-label { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+  .post-preview {
+    font-size: 12px; color: var(--ink2); line-height: 1.5;
+    border-left: 2px solid var(--paper2);
+    padding-left: 10px; margin: 8px 0;
+  }
+  .post-meta { font-size: 11px; color: var(--ink3); display: flex; gap: 12px; }
+
+  /* SECTIONS */
+  section { padding: 100px 48px; }
+  .section-label {
+    font-size: 12px; font-weight: 500; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--ink);
+    max-width: 640px;
+  }
+  .section-title em { font-style: italic; color: var(--accent); }
+
+  /* HOW IT WORKS */
+  .how { background: var(--ink); color: white; }
+  .how .section-title { color: white; max-width: 100%; }
+  .how .section-label { color: #6b8cff; }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 64px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .step {
+    background: #161618;
+    padding: 40px 36px;
+    position: relative;
+    transition: background 0.3s;
+  }
+  .step:hover { background: #1e1e20; }
+  .step-num {
+    font-family: var(--serif);
+    font-size: 64px;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+    position: absolute;
+    top: 28px; right: 28px;
+  }
+  .step-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: rgba(26,108,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 20px;
+  }
+  .step h3 { font-size: 18px; font-weight: 500; color: white; margin-bottom: 10px; }
+  .step p { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.6; font-weight: 300; }
+
+  /* FEATURES */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 64px;
+  }
+  .feature-card {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.07);
+    border-radius: 20px;
+    padding: 36px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.08); }
+  .feature-card.wide { grid-column: span 2; }
+  .feature-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 20px;
+  }
+  .fi-blue { background: #dbeafe; }
+  .fi-green { background: #d1fae5; }
+  .fi-amber { background: #fef3c7; }
+  .fi-pink { background: #fce7f3; }
+  .fi-purple { background: #ede9fe; }
+  .feature-card h3 { font-size: 18px; font-weight: 500; margin-bottom: 10px; }
+  .feature-card p { font-size: 14px; color: var(--ink3); line-height: 1.6; font-weight: 300; }
+
+  /* PLATFORMS */
+  .platforms-row {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-top: 40px;
+  }
+  .platform-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 100px;
+    padding: 10px 20px;
+    font-size: 14px; font-weight: 500;
+    color: var(--ink2);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .platform-pill:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(26,108,255,0.1); }
+  .pp-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* SCHEDULE UI PREVIEW */
+  .schedule-preview {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 48px;
+    box-shadow: 0 16px 64px rgba(0,0,0,0.06);
+  }
+  .sp-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    background: var(--paper2);
+  }
+  .sp-title { font-size: 14px; font-weight: 500; }
+  .sp-tabs { display: flex; gap: 4px; }
+  .sp-tab {
+    font-size: 12px; padding: 5px 12px; border-radius: 6px;
+    border: 1px solid transparent; cursor: pointer;
+    color: var(--ink3); background: transparent;
+    font-family: var(--sans);
+  }
+  .sp-tab.active { background: white; border-color: rgba(0,0,0,0.1); color: var(--ink); }
+  .sp-body { padding: 24px; }
+  .queue-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .queue-item:last-child { border-bottom: none; }
+  .qi-time {
+    min-width: 60px; font-size: 12px; color: var(--ink3);
+    padding-top: 2px; font-weight: 500;
+  }
+  .qi-platforms { display: flex; gap: 4px; min-width: 72px; flex-wrap: wrap; }
+  .qi-platform {
+    width: 22px; height: 22px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+  }
+  .qip-li { background: #0a66c2; color: white; }
+  .qip-tw { background: #000; color: white; }
+  .qip-ig { background: #e1306c; color: white; }
+  .qip-tt { background: #010101; color: white; }
+  .qi-content { flex: 1; }
+  .qi-text { font-size: 13px; color: var(--ink2); line-height: 1.5; }
+  .qi-badges { display: flex; gap: 6px; margin-top: 6px; }
+  .qi-badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 4px;
+    font-weight: 500;
+  }
+  .qib-scheduled { background: #dbeafe; color: #1d4ed8; }
+  .qib-posted { background: #d1fae5; color: #065f46; }
+  .qib-ai { background: #ede9fe; color: #5b21b6; }
+  .qi-actions { display: flex; gap: 8px; align-items: center; }
+  .qi-action {
+    font-size: 12px; color: var(--ink3);
+    background: none; border: none; cursor: pointer;
+    padding: 4px 8px; border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .qi-action:hover { background: var(--paper2); color: var(--ink); }
+
+  /* STATS */
+  .stats-section { background: var(--paper2); }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 2px; background: rgba(0,0,0,0.08);
+    border-radius: 20px; overflow: hidden;
+    margin-top: 64px;
+  }
+  .stat-card {
+    background: var(--paper);
+    padding: 36px 32px;
+    transition: background 0.2s;
+  }
+  .stat-card:hover { background: white; }
+  .stat-big {
+    font-family: var(--serif);
+    font-size: 52px;
+    letter-spacing: -2px;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .stat-big span { color: var(--accent); }
+  .stat-desc { font-size: 14px; color: var(--ink3); margin-top: 8px; font-weight: 300; }
+
+  /* PRICING */
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-top: 64px;
+    align-items: start;
+  }
+  .price-card {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 20px;
+    padding: 36px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .price-card:hover { transform: translateY(-4px); }
+  .price-card.featured {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+    transform: scale(1.03);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+  }
+  .price-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+  .plan-badge {
+    font-size: 11px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--ink3); margin-bottom: 20px;
+    display: block;
+  }
+  .price-card.featured .plan-badge { color: rgba(255,255,255,0.5); }
+  .price-amount {
+    font-family: var(--serif);
+    font-size: 52px;
+    letter-spacing: -2px;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .price-card.featured .price-amount { color: white; }
+  .price-period { font-size: 14px; color: var(--ink3); font-weight: 300; }
+  .price-card.featured .price-period { color: rgba(255,255,255,0.4); }
+  .price-desc { font-size: 13px; color: var(--ink3); margin: 16px 0; font-weight: 300; line-height: 1.5; }
+  .price-card.featured .price-desc { color: rgba(255,255,255,0.45); }
+  .price-features { list-style: none; margin: 24px 0; display: flex; flex-direction: column; gap: 10px; }
+  .pf-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink2); }
+  .price-card.featured .pf-item { color: rgba(255,255,255,0.8); }
+  .pf-check {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #d1fae5; display: flex; align-items: center;
+    justify-content: center; font-size: 10px; flex-shrink: 0;
+  }
+  .price-card.featured .pf-check { background: rgba(0,196,106,0.2); }
+  .pf-check::after { content: '✓'; color: #065f46; }
+  .price-card.featured .pf-check::after { color: var(--green); }
+  .btn-plan {
+    width: 100%; padding: 13px; border-radius: 100px;
+    font-size: 14px; font-family: var(--sans); font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-plan-outline {
+    background: transparent; border: 1px solid rgba(0,0,0,0.15);
+    color: var(--ink);
+  }
+  .btn-plan-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-plan-white {
+    background: white; border: none; color: var(--ink);
+  }
+  .btn-plan-white:hover { background: var(--paper2); }
+
+  /* CTA */
+  .cta-section {
+    background: var(--accent);
+    text-align: center;
+    padding: 100px 48px;
+  }
+  .cta-section .section-title { color: white; max-width: 100%; margin: 0 auto 16px; }
+  .cta-section p { color: rgba(255,255,255,0.7); font-size: 16px; font-weight: 300; margin-bottom: 36px; }
+  .btn-cta-white {
+    background: white; color: var(--accent);
+    border: none; padding: 16px 36px; border-radius: 100px;
+    font-size: 16px; font-family: var(--sans); font-weight: 500;
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-cta-white:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.15); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: white;
+    padding: 60px 48px 32px;
+  }
+  .footer-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 32px;
+  }
+  .footer-brand { font-family: var(--serif); font-size: 24px; }
+  .footer-brand span { color: var(--accent); }
+  .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 6px; }
+  .footer-cols { display: flex; gap: 64px; }
+  .footer-col h4 { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+  .footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.6); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; }
+  .footer-col a:hover { color: white; }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .footer-copy { font-size: 13px; color: rgba(255,255,255,0.3); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .steps { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr; }
+    .feature-card.wide { grid-column: span 1; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .price-card.featured { transform: none; }
+    .hero-cards { display: none; }
+    .footer-top { flex-direction: column; gap: 32px; }
+    .footer-cols { gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="auth.html" class="nav-logo">Post<span>Pilot</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#features">Features</a></li>
+    <li><a href="index.html#how">How it works</a></li>
+    <li><a href="auth.html">Pricing</a></li>
+  </ul>
+  <a href="auth.html" class="nav-cta">Start free →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    Now with AI-generated captions
+  </div>
+
+  <h1>Grow your network<br>on <em>autopilot</em></h1>
+  <p class="hero-sub">Schedule, auto-post, and grow your social media presence across every platform — without lifting a finger.</p>
+
+  <div class="hero-actions">
+    <a href="auth.html" class="btn-primary">Get started free</a>
+    <a href="index.html#how" class="btn-ghost">See how it works →</a>
+  </div>
+
+  <div class="hero-social-proof">
+    <div class="avatars">
+      <div class="avatar-fallback af1">JM</div>
+      <div class="avatar-fallback af2">SR</div>
+      <div class="avatar-fallback af3">AK</div>
+      <div class="avatar-fallback af4">TL</div>
+    </div>
+    <p class="proof-text"><strong>2,400+ creators</strong> growing their networks with PostPilot</p>
+  </div>
+
+  <!-- floating cards -->
+  <div class="hero-cards">
+    <div class="float-card fc1">
+      <div class="card-platform">
+        <div class="platform-icon pi-li">in</div>
+        <span class="card-platform-name">LinkedIn</span>
+      </div>
+      <div class="card-stat">
+        <div>
+          <div class="stat-num">+847</div>
+          <div class="stat-label">new followers this month</div>
+        </div>
+        <div class="stat-change">↑ 34%</div>
+      </div>
+    </div>
+
+    <div class="float-card fc3">
+      <div class="card-platform">
+        <div class="platform-icon pi-tw">𝕏</div>
+        <span class="card-platform-name">Scheduled post</span>
+      </div>
+      <div class="post-preview">
+        "The best time to grow your network was yesterday. The second best time is right now 🚀 #growth #networking"
+      </div>
+      <div class="post-meta">
+        <span>📅 Today, 9:00 AM</span>
+        <span style="color:#00c46a;">✓ Sent</span>
+      </div>
+    </div>
+
+    <div class="float-card fc2">
+      <div class="card-platform">
+        <div class="platform-icon pi-ig">📸</div>
+        <span class="card-platform-name">Instagram</span>
+      </div>
+      <div class="card-stat">
+        <div>
+          <div class="stat-num">12.4k</div>
+          <div class="stat-label">reach this week</div>
+        </div>
+        <div class="stat-change">↑ 18%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <p class="section-label">How it works</p>
+  <h2 class="section-title">Three steps to <em>unstoppable</em> growth</h2>
+
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div class="step-icon">🔗</div>
+      <h3>Connect your accounts</h3>
+      <p>Link LinkedIn, X, Instagram, TikTok, and more in seconds. One dashboard for your entire social presence.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:0.1s">
+      <div class="step-num">02</div>
+      <div class="step-icon">✍️</div>
+      <h3>Create or generate content</h3>
+      <p>Write your own posts or let our AI craft high-engagement content tailored to your niche and voice.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:0.2s">
+      <div class="step-num">03</div>
+      <div class="step-icon">📈</div>
+      <h3>Watch your network grow</h3>
+      <p>PostPilot posts at peak times, tracks performance, and continuously optimizes for maximum reach.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <p class="section-label">Features</p>
+  <h2 class="section-title">Everything you need to <em>dominate</em> social</h2>
+
+  <div class="platforms-row reveal">
+    <div class="platform-pill"><div class="pp-dot" style="background:#0a66c2"></div>LinkedIn</div>
+    <div class="platform-pill"><div class="pp-dot" style="background:#000"></div>X / Twitter</div>
+    <div class="platform-pill"><div class="pp-dot" style="background:#e1306c"></div>Instagram</div>
+    <div class="platform-pill"><div class="pp-dot" style="background:#ff0050"></div>TikTok</div>
+    <div class="platform-pill"><div class="pp-dot" style="background:#1877f2"></div>Facebook</div>
+    <div class="platform-pill"><div class="pp-dot" style="background:#ff4500"></div>Reddit</div>
+  </div>
+
+  <div class="features-grid" style="margin-top:48px;">
+    <div class="feature-card reveal">
+      <div class="feature-icon fi-blue">📅</div>
+      <h3>Smart scheduling</h3>
+      <p>PostPilot analyzes when your audience is most active and schedules your posts at the perfect moment for maximum engagement.</p>
+    </div>
+    <div class="feature-card reveal" style="transition-delay:0.1s">
+      <div class="feature-icon fi-purple">🤖</div>
+      <h3>AI caption writer</h3>
+      <p>Describe your idea and our AI generates platform-optimized captions, hashtags, and calls-to-action that convert.</p>
+    </div>
+    <div class="feature-card reveal" style="transition-delay:0.2s">
+      <div class="feature-icon fi-green">🔁</div>
+      <h3>Cross-post in one click</h3>
+      <p>Publish simultaneously to all your connected platforms. Automatically adapt tone and format per platform.</p>
+    </div>
+    <div class="feature-card reveal" style="transition-delay:0.3s">
+      <div class="feature-icon fi-amber">📊</div>
+      <h3>Growth analytics</h3>
+      <p>Track followers, reach, engagement, and impressions across all platforms in a single unified dashboard.</p>
+    </div>
+    <div class="feature-card wide reveal" style="transition-delay:0.1s">
+      <div class="feature-icon fi-pink">🗓️</div>
+      <h3>Visual content calendar</h3>
+      <p>See your entire posting schedule at a glance. Drag-and-drop to reschedule. Spot gaps and fill them with one-click AI suggestions.</p>
+    </div>
+  </div>
+
+  <!-- SCHEDULE PREVIEW -->
+  <div class="schedule-preview reveal" style="transition-delay:0.2s">
+    <div class="sp-header">
+      <span class="sp-title">Post queue — Today</span>
+      <div class="sp-tabs">
+        <button class="sp-tab active">Queue</button>
+        <button class="sp-tab">Calendar</button>
+        <button class="sp-tab">Analytics</button>
+      </div>
+    </div>
+    <div class="sp-body">
+      <div class="queue-item">
+        <div class="qi-time">9:00 AM</div>
+        <div class="qi-platforms">
+          <div class="qi-platform qip-li">in</div>
+          <div class="qi-platform qip-tw">𝕏</div>
+        </div>
+        <div class="qi-content">
+          <div class="qi-text">5 habits that transformed my productivity in 2024 — a thread 🧵</div>
+          <div class="qi-badges">
+            <span class="qi-badge qib-posted">✓ Posted</span>
+            <span class="qi-badge qib-ai">AI-written</span>
+          </div>
+        </div>
+        <div class="qi-actions">
+          <button class="qi-action">Edit</button>
+          <button class="qi-action">Clone</button>
+        </div>
+      </div>
+      <div class="queue-item">
+        <div class="qi-time">12:30 PM</div>
+        <div class="qi-platforms">
+          <div class="qi-platform qip-ig">ig</div>
+          <div class="qi-platform qip-tt">tt</div>
+        </div>
+        <div class="qi-content">
+          <div class="qi-text">Behind the scenes of my morning routine 📸 Swipe to see the full setup →</div>
+          <div class="qi-badges">
+            <span class="qi-badge qib-scheduled">⏰ Scheduled</span>
+          </div>
+        </div>
+        <div class="qi-actions">
+          <button class="qi-action">Edit</button>
+          <button class="qi-action">Clone</button>
+        </div>
+      </div>
+      <div class="queue-item">
+        <div class="qi-time">6:00 PM</div>
+        <div class="qi-platforms">
+          <div class="qi-platform qip-li">in</div>
+        </div>
+        <div class="qi-content">
+          <div class="qi-text">Hot take: consistency beats talent every single time. Here's why 👇</div>
+          <div class="qi-badges">
+            <span class="qi-badge qib-scheduled">⏰ Scheduled</span>
+            <span class="qi-badge qib-ai">AI-written</span>
+          </div>
+        </div>
+        <div class="qi-actions">
+          <button class="qi-action">Edit</button>
+          <button class="qi-action">Clone</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <p class="section-label reveal">By the numbers</p>
+  <h2 class="section-title reveal">Real results,<br><em>real growth</em></h2>
+
+  <div class="stats-grid">
+    <div class="stat-card reveal">
+      <div class="stat-big">2.4<span>k</span></div>
+      <div class="stat-desc">Active creators using PostPilot daily</div>
+    </div>
+    <div class="stat-card reveal" style="transition-delay:0.1s">
+      <div class="stat-big">18<span>M</span></div>
+      <div class="stat-desc">Posts scheduled and published</div>
+    </div>
+    <div class="stat-card reveal" style="transition-delay:0.2s">
+      <div class="stat-big">3.2<span>×</span></div>
+      <div class="stat-desc">Average follower growth in 90 days</div>
+    </div>
+    <div class="stat-card reveal" style="transition-delay:0.3s">
+      <div class="stat-big">94<span>%</span></div>
+      <div class="stat-desc">Of users say PostPilot saves them 5+ hours/week</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <p class="section-label reveal">Pricing</p>
+  <h2 class="section-title reveal">Simple, honest <em>pricing</em></h2>
+
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <span class="plan-badge">Starter</span>
+      <div class="price-amount">$0</div>
+      <div class="price-period">free forever</div>
+      <div class="price-desc">Perfect for getting started and testing the waters with social automation.</div>
+      <ul class="price-features">
+        <li class="pf-item"><div class="pf-check"></div>3 connected accounts</li>
+        <li class="pf-item"><div class="pf-check"></div>10 scheduled posts/month</li>
+        <li class="pf-item"><div class="pf-check"></div>Basic analytics</li>
+        <li class="pf-item"><div class="pf-check"></div>5 AI captions/month</li>
+      </ul>
+      <button class="btn-plan btn-plan-outline">Get started free</button>
+    </div>
+
+    <div class="price-card featured reveal" style="transition-delay:0.1s">
+      <span class="plan-badge">⚡ Most popular</span>
+      <div class="price-amount" style="color:white;">$29</div>
+      <div class="price-period">/month</div>
+      <div class="price-desc">For serious creators and professionals ready to scale their network fast.</div>
+      <ul class="price-features">
+        <li class="pf-item"><div class="pf-check"></div>10 connected accounts</li>
+        <li class="pf-item"><div class="pf-check"></div>Unlimited scheduled posts</li>
+        <li class="pf-item"><div class="pf-check"></div>Advanced analytics + growth tracking</li>
+        <li class="pf-item"><div class="pf-check"></div>Unlimited AI captions</li>
+        <li class="pf-item"><div class="pf-check"></div>Best-time scheduling</li>
+        <li class="pf-item"><div class="pf-check"></div>Cross-platform posting</li>
+      </ul>
+      <button class="btn-plan btn-plan-white">Start 14-day trial</button>
+    </div>
+
+    <div class="price-card reveal" style="transition-delay:0.2s">
+      <span class="plan-badge">Agency</span>
+      <div class="price-amount">$79</div>
+      <div class="price-period">/month</div>
+      <div class="price-desc">For agencies and power users managing multiple brands and clients.</div>
+      <ul class="price-features">
+        <li class="pf-item"><div class="pf-check"></div>Unlimited accounts</li>
+        <li class="pf-item"><div class="pf-check"></div>Multi-workspace management</li>
+        <li class="pf-item"><div class="pf-check"></div>White-label reports</li>
+        <li class="pf-item"><div class="pf-check"></div>Team collaboration</li>
+        <li class="pf-item"><div class="pf-check"></div>Priority support</li>
+        <li class="pf-item"><div class="pf-check"></div>API access</li>
+      </ul>
+      <button class="btn-plan btn-plan-outline">Contact sales</button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="section-title">Ready to grow?<br><em>Start today.</em></h2>
+  <p>Join 2,400+ creators who've put their social media on autopilot.</p>
+  <a href="auth.html" class="btn-cta-white">Get started free — no credit card needed</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <a href="index.html" style="text-decoration:none;"><div class="footer-brand">Post<span>Pilot</span></div></a>
+      <div class="footer-tagline">Grow your network on autopilot.</div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="auth.html">Features</a>
+        <a href="auth.html">Pricing</a>
+        <a href="auth.html">Changelog</a>
+        <a href="auth.html">Roadmap</a>
+      </div>
+      <div class="footer-col">
+        <h4>Platforms</h4>
+        <a href="auth.html">LinkedIn</a>
+        <a href="auth.html">X / Twitter</a>
+        <a href="auth.html">Instagram</a>
+        <a href="auth.html">TikTok</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="auth.html">About</a>
+        <a href="auth.html">Blog</a>
+        <a href="auth.html">Privacy</a>
+        <a href="auth.html">Terms</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 PostPilot. All rights reserved.</span>
+    <span class="footer-copy">postpilot.xyz</span>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.sp-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.sp-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+</script>
+
+
+<!-- Cloudflare Web Analytics — replace YOUR_TOKEN with your token from dash.cloudflare.com → Web Analytics -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon='{"token": "YOUR_CLOUDFLARE_ANALYTICS_TOKEN"}'></script>
+</body>
+</html>
