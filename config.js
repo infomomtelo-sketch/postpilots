@@ -1,6 +1,5 @@
 // ============================================================
 //  PostPilot — Configuration
-//  This file is loaded by auth.html and app.html.
 // ============================================================
 
 const POSTPILOT_CONFIG = {
@@ -20,16 +19,15 @@ const POSTPILOT_CONFIG = {
       agencyMonthly: 'price_1TYAzjPyqn30Gz28vstdma9o',   // $39/mo
       agencyAnnual:  'price_1TYB0vPyqn30Gz28dncDVVx3',   // $19/mo billed annually
     },
-    // TODO: replace once found in stripe.com → Settings → Billing → Customer portal → Links
     portalUrl: 'https://billing.stripe.com/p/login/YOUR_PORTAL_ID',
   },
 
   // ── App ──────────────────────────────────────────────────
   app: {
-    name:    'PostPilot',
-    url:     'https://postpilot.xyz',
-    appUrl:  'https://postpilot.xyz/app.html',
-    authUrl: 'https://postpilot.xyz/auth.html',
+    name:    'PostPilots',
+    url:     'https://postpilots.xyz',
+    appUrl:  'https://postpilots.xyz/app.html',
+    authUrl: 'https://postpilots.xyz/auth.html',
   },
 
 };
