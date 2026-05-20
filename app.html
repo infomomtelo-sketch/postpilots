@@ -448,7 +448,8 @@ canvas { display: block; }
 <body>
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<div id="sidebarOverlay" onclick="closeSidebarMobile()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;"></div>
+<aside class="sidebar" id="mainSidebar">
   <div class="sidebar-logo">
     Post<span>Pilot</span>
     <span class="logo-badge">Pro</span>
@@ -527,7 +528,8 @@ canvas { display: block; }
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
-    <div class="page-title" id="pageTitle">Compose</div>
+    <button onclick="toggleSidebarMobile()" style="display:none;background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:4px 8px;margin-right:4px;" id="menuToggle">☰</button>
+<div class="page-title" id="pageTitle">Compose</div>
     <div class="topbar-right">
       <button class="tb-btn" onclick="showModal()">⚡ Auto-schedule all</button>
       <button class="tb-btn tb-btn-primary" onclick="switchTab('compose', document.querySelector('.nav-item'))">+ New post</button>
@@ -966,6 +968,14 @@ const platIcons = {
 
 // --- TABS ---
 function switchTab(tab, el) {
+  // Close sidebar on mobile when tab is selected
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar && window.innerWidth < 768) {
+    sidebar.style.transform = 'translateX(-100%)';
+    // Remove overlay if exists
+    const overlay = document.getElementById('sidebarOverlay');
+    if (overlay) overlay.style.display = 'none';
+  }
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
@@ -1042,20 +1052,22 @@ async function generateCaptions() {
     const headers = { 'Content-Type': 'application/json' }
     if (session) headers['Authorization'] = 'Bearer ' + session.access_token
 
+    const { data: { session } } = await sb.auth.getSession();
     const res = await fetch(POSTPILOT_CONFIG.supabase.url + '/functions/v1/generate-captions', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization': session ? 'Bearer ' + session.access_token : ''
+      },
       body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1000,
-        system:`You are a social media expert who writes high-engagement posts. Generate exactly 3 post variations for the user's topic. Return ONLY a JSON array with 3 objects, each with fields: "label" (e.g. "Hook-driven", "Story-based", "Value list"), "text" (the post content, max 240 chars). No markdown, no extra text. Just the raw JSON array.`,
-        messages:[{role:'user',content:`Topic: ${topic}\nTone: ${tone}\nPlatforms: ${selectedPlats || 'LinkedIn, Twitter, Instagram'}\nGenerate 3 engaging post variations optimized for social media growth.`}]
+        topic: topic,
+        tone: tone,
+        platforms: selectedPlats || 'LinkedIn, Twitter, Instagram'
       })
     });
     const data = await res.json();
-    const raw = data.content?.map(b=>b.text||'').join('');
-    const clean = raw.replace(/```json|```/g,'').trim();
-    const posts = JSON.parse(clean);
+    if (data.error) throw new Error(data.error);
+    const posts = data.captions;
     suggestions.innerHTML = '';
     posts.forEach(p => {
       const div = document.createElement('div');
