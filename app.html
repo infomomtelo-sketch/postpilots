@@ -1072,7 +1072,7 @@ async function generateCaptions() {
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'Authorization': session ? 'Bearer ' + session.access_token : ''
+        'apikey': POSTPILOT_CONFIG.supabase.anonKey
       },
       body: JSON.stringify({
         topic: topic,
