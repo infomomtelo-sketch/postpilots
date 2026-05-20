@@ -14,7 +14,7 @@
   --bg3: #1e1e22;
   --bg4: #26262c;
   --line: rgba(255,255,255,0.07);
-  --line2: rgba(255,255,255,0.12);  
+  --line2: rgba(255,255,255,0.12);
   --text: #f0eff4;
   --text2: #9998a8;
   --text3: #5a5968;
@@ -443,6 +443,26 @@ canvas { display: block; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+  @media (max-width: 700px) {
+    .sidebar {
+      position: fixed !important;
+      z-index: 100 !important;
+      transform: translateX(-100%) !important;
+      transition: transform 0.3s ease !important;
+      top: 0 !important; bottom: 0 !important;
+      height: 100vh !important;
+    }
+    .sidebar.mobile-open {
+      transform: translateX(0) !important;
+    }
+    .main { width: 100% !important; margin-left: 0 !important; }
+    #menuToggle { display: block !important; }
+    .composer-layout { grid-template-columns: 1fr !important; }
+    .analytics-grid { grid-template-columns: repeat(2,1fr) !important; }
+    .platform-breakdown { grid-template-columns: 1fr !important; }
+    .connect-grid { grid-template-columns: 1fr !important; }
+  }
 </style>
 </head>
 <body>
@@ -592,7 +612,7 @@ canvas { display: block; }
             <!-- AI BAR -->
             <div class="ai-bar">
               <div class="ai-bar-label">✨ AI</div>
-              <input class="ai-bar-input" id="aiTopicInput" placeholder="Describe your post topic, e.g. 'tips for growing on LinkedIn'..." onkeydown="if(event.key==='Enter')generateCaptions()"/>
+              <input class="ai-bar-input" id="aiTopicInput" placeholder="e.g. 5 tips for growing on LinkedIn, why consistency beats talent, my morning routine..." onkeydown="if(event.key==='Enter')generateCaptions()"/>
               <button class="ai-gen-btn" id="genBtn" onclick="generateCaptions()">Generate ↗</button>
             </div>
 
@@ -1047,11 +1067,6 @@ async function generateCaptions() {
   const selectedPlats = [...document.querySelectorAll('.pp-btn.selected')].map(b=>b.querySelector('.pp-icon').nextSibling.textContent.trim()).join(', ');
 
   try {
-    // Get Supabase session for auth
-    const { data: { session } } = await sb.auth.getSession()
-    const headers = { 'Content-Type': 'application/json' }
-    if (session) headers['Authorization'] = 'Bearer ' + session.access_token
-
     const { data: { session } } = await sb.auth.getSession();
     const res = await fetch(POSTPILOT_CONFIG.supabase.url + '/functions/v1/generate-captions', {
       method:'POST',
