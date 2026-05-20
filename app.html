@@ -1092,14 +1092,10 @@ async function generateCaptions() {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = 'auth.html'; return; }
 
-    const res = await fetch(POSTPILOT_CONFIG.supabase.url + '/functions/v1/generate-captions', {
+    const res = await fetch('https://generate-captures.infomomtelo.workers.dev/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': POSTPILOT_CONFIG.supabase.anonKey,
-        // FIX: This Authorization header was missing — it's required for the
-        // Edge Function to authenticate the request and reach the Anthropic API
-        'Authorization': 'Bearer ' + session.access_token
       },
       body: JSON.stringify({
         topic: topic,
