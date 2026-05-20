@@ -1067,6 +1067,7 @@ async function generateCaptions() {
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
+    if (!data.captions) throw new Error('No captions returned: ' + JSON.stringify(data));
     const posts = data.captions;
     suggestions.innerHTML = '';
     posts.forEach(p => {
@@ -1082,7 +1083,8 @@ async function generateCaptions() {
     });
     toast('3 captions generated ✨', 'success');
   } catch(e) {
-    suggestions.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:10px;">Could not reach Claude API. Check your network.</div>';
+    console.log('Caption error:', e.message);
+    suggestions.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:10px;">⚠️ ' + (e.message || 'Could not generate captions. Try again.') + '</div>';
   }
   btn.disabled = false;
   btn.textContent = 'Generate ↗';
