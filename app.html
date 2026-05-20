@@ -444,25 +444,25 @@ canvas { display: block; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
 
-  @media (max-width: 700px) {
-    .sidebar {
-      position: fixed !important;
-      z-index: 100 !important;
-      transform: translateX(-100%) !important;
-      transition: transform 0.3s ease !important;
-      top: 0 !important; bottom: 0 !important;
-      height: 100vh !important;
-    }
-    .sidebar.mobile-open {
-      transform: translateX(0) !important;
-    }
-    .main { width: 100% !important; margin-left: 0 !important; }
-    #menuToggle { display: block !important; }
-    .composer-layout { grid-template-columns: 1fr !important; }
-    .analytics-grid { grid-template-columns: repeat(2,1fr) !important; }
-    .platform-breakdown { grid-template-columns: 1fr !important; }
-    .connect-grid { grid-template-columns: 1fr !important; }
+@media (max-width: 700px) {
+  .sidebar {
+    position: fixed !important;
+    z-index: 100 !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s ease !important;
+    top: 0 !important; bottom: 0 !important;
+    height: 100vh !important;
   }
+  .sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+  .main { width: 100% !important; margin-left: 0 !important; }
+  #menuToggle { display: block !important; }
+  .composer-layout { grid-template-columns: 1fr !important; }
+  .analytics-grid { grid-template-columns: repeat(2,1fr) !important; }
+  .platform-breakdown { grid-template-columns: 1fr !important; }
+  .connect-grid { grid-template-columns: 1fr !important; }
+}
 </style>
 </head>
 <body>
@@ -549,7 +549,7 @@ canvas { display: block; }
 <div class="main">
   <div class="topbar">
     <button onclick="toggleSidebarMobile()" style="display:none;background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:4px 8px;margin-right:4px;" id="menuToggle">☰</button>
-<div class="page-title" id="pageTitle">Compose</div>
+    <div class="page-title" id="pageTitle">Compose</div>
     <div class="topbar-right">
       <button class="tb-btn" onclick="showModal()">⚡ Auto-schedule all</button>
       <button class="tb-btn tb-btn-primary" onclick="switchTab('compose', document.querySelector('.nav-item'))">+ New post</button>
@@ -941,14 +941,12 @@ const sb = createClient(POSTPILOT_CONFIG.supabase.url, POSTPILOT_CONFIG.supabase
     window.location.href = 'auth.html';
     return;
   }
-  // Populate user avatar/name in topbar
   const user = session.user;
   const name = user.user_metadata?.full_name || user.email || 'U';
   const initials = name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
   const avatarEl = document.querySelector('.tb-avatar');
   if (avatarEl) avatarEl.textContent = initials;
 
-  // Handle post-Stripe redirect
   const params = new URLSearchParams(window.location.search);
   if (params.get('subscribed') === 'true') {
     toast('Welcome to PostPilot Pro! 🎉', 'success');
@@ -960,6 +958,24 @@ const sb = createClient(POSTPILOT_CONFIG.supabase.url, POSTPILOT_CONFIG.supabase
 async function signOut() {
   await sb.auth.signOut();
   window.location.href = 'auth.html';
+}
+
+// ── Mobile sidebar ──────────────────────────────────────────
+function toggleSidebarMobile() {
+  const sidebar = document.getElementById('mainSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isOpen = sidebar.classList.contains('mobile-open');
+  if (isOpen) {
+    sidebar.classList.remove('mobile-open');
+    overlay.style.display = 'none';
+  } else {
+    sidebar.classList.add('mobile-open');
+    overlay.style.display = 'block';
+  }
+}
+function closeSidebarMobile() {
+  document.getElementById('mainSidebar').classList.remove('mobile-open');
+  document.getElementById('sidebarOverlay').style.display = 'none';
 }
 
 // --- STATE ---
@@ -988,11 +1004,9 @@ const platIcons = {
 
 // --- TABS ---
 function switchTab(tab, el) {
-  // Close sidebar on mobile when tab is selected
   const sidebar = document.querySelector('.sidebar');
   if (sidebar && window.innerWidth < 768) {
-    sidebar.style.transform = 'translateX(-100%)';
-    // Remove overlay if exists
+    sidebar.classList.remove('mobile-open');
     const overlay = document.getElementById('sidebarOverlay');
     if (overlay) overlay.style.display = 'none';
   }
@@ -1051,28 +1065,41 @@ function updatePreview() {
 }
 
 // --- AI CAPTION GENERATION ---
+// FIX: Added proper Authorization header with session.access_token
+// so the Supabase Edge Function can authenticate the request and
+// call the Anthropic API successfully.
 async function generateCaptions() {
   const topic = document.getElementById('aiTopicInput').value.trim();
   if(!topic) { toast('Please enter a topic first', 'error'); return; }
+
   const tone = document.getElementById('toneSelect').value;
   const btn = document.getElementById('genBtn');
   btn.disabled = true;
   btn.textContent = '...';
+
   const suggestions = document.getElementById('aiSuggestions');
   suggestions.innerHTML = `
     <div class="ai-suggestion"><div class="skeleton" style="height:12px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:90%;margin-bottom:4px;"></div><div class="skeleton" style="height:12px;width:75%;"></div></div>
     <div class="ai-suggestion"><div class="skeleton" style="height:12px;width:50%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:85%;margin-bottom:4px;"></div><div class="skeleton" style="height:12px;width:70%;"></div></div>
   `;
 
-  const selectedPlats = [...document.querySelectorAll('.pp-btn.selected')].map(b=>{const t=b.querySelector('.pp-icon');return t&&t.nextSibling?t.nextSibling.textContent.trim():b.dataset.plat||'';}).join(', ');
+  const selectedPlats = [...document.querySelectorAll('.pp-btn.selected')]
+    .map(b => { const t = b.querySelector('.pp-icon'); return t && t.nextSibling ? t.nextSibling.textContent.trim() : b.dataset.plat || ''; })
+    .join(', ');
 
   try {
+    // FIX: Get session first and guard against unauthenticated state
     const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'auth.html'; return; }
+
     const res = await fetch(POSTPILOT_CONFIG.supabase.url + '/functions/v1/generate-captions', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'apikey': POSTPILOT_CONFIG.supabase.anonKey
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': POSTPILOT_CONFIG.supabase.anonKey,
+        // FIX: This Authorization header was missing — it's required for the
+        // Edge Function to authenticate the request and reach the Anthropic API
+        'Authorization': 'Bearer ' + session.access_token
       },
       body: JSON.stringify({
         topic: topic,
@@ -1080,37 +1107,41 @@ async function generateCaptions() {
         platforms: selectedPlats || 'LinkedIn, Twitter, Instagram'
       })
     });
+
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     if (!data.captions) throw new Error('No captions returned: ' + JSON.stringify(data));
+
     const posts = data.captions;
     suggestions.innerHTML = '';
     posts.forEach(p => {
       const div = document.createElement('div');
       div.className = 'ai-suggestion';
-      div.innerHTML = `<div class="ai-suggestion-label">✨ ${p.label}</div><div>${p.text}</div><button class="use-btn" onclick="useSuggestion(this)">Use this</button>`;
-      div.querySelector('.use-btn').addEventListener('click', function(e){
+      div.innerHTML = `<div class="ai-suggestion-label">✨ ${p.label}</div><div>${p.text}</div><button class="use-btn">Use this</button>`;
+      div.querySelector('.use-btn').addEventListener('click', function(e) {
         e.stopPropagation();
         useSuggestion(this);
       });
-      div.addEventListener('click', function(){ useSuggestion(this.querySelector('.use-btn')); });
+      div.addEventListener('click', function() { useSuggestion(this.querySelector('.use-btn')); });
       suggestions.appendChild(div);
     });
+
     toast('3 captions generated ✨', 'success');
   } catch(e) {
-    console.log('Caption error:', e.message);
+    console.error('Caption error:', e.message);
     suggestions.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:10px;">⚠️ ' + (e.message || 'Could not generate captions. Try again.') + '</div>';
   }
+
   btn.disabled = false;
   btn.textContent = 'Generate ↗';
 }
 
 function useSuggestion(btn) {
-  const text = btn.parentElement.querySelector('div:last-of-type') || btn.previousElementSibling;
   const allDivs = btn.parentElement.querySelectorAll('div');
-  const textDiv = allDivs[allDivs.length-1];
+  const textDiv = allDivs[allDivs.length - 1];
   document.getElementById('composerText').value = textDiv.textContent;
-  updatePreview(); updateCharCount();
+  updatePreview();
+  updateCharCount();
   document.getElementById('aiSuggestions').innerHTML = '';
   document.getElementById('aiTopicInput').value = '';
   toast('Caption loaded into composer', 'success');
@@ -1121,7 +1152,7 @@ function openScheduleModal() {
   const t = document.getElementById('composerText').value.trim();
   if(!t) { toast('Write something first!', 'error'); return; }
   const d = document.getElementById('scheduleOptions');
-  d.style.display = d.style.display==='none'||!d.style.display ? 'block' : 'none';
+  d.style.display = d.style.display === 'none' || !d.style.display ? 'block' : 'none';
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('schedDate').value = today;
 }
@@ -1134,16 +1165,19 @@ function pickTime(el, time) {
 
 async function schedulePost() {
   const text = document.getElementById('composerText').value.trim();
-  if(!text) { toast('Write something first!','error'); return; }
+  if(!text) { toast('Write something first!', 'error'); return; }
   const date = document.getElementById('schedDate').value;
   const time = document.getElementById('schedTime').value;
-  if(!date || !time) { toast('Pick a date and time','error'); return; }
+  if(!date || !time) { toast('Pick a date and time', 'error'); return; }
 
-  const mapped = [...document.querySelectorAll('.pp-btn.selected')].map(b=>{
+  const mapped = [...document.querySelectorAll('.pp-btn.selected')].map(b => {
     const p = b.dataset.plat;
-    if(p==='linkedin')return 'linkedin'; if(p==='twitter')return 'twitter';
-    if(p==='instagram')return 'instagram'; if(p==='tiktok')return 'tiktok';
-    if(p==='facebook')return 'facebook'; return p;
+    if(p==='linkedin') return 'linkedin';
+    if(p==='twitter') return 'twitter';
+    if(p==='instagram') return 'instagram';
+    if(p==='tiktok') return 'tiktok';
+    if(p==='facebook') return 'facebook';
+    return p;
   });
 
   const scheduledAt = new Date(date + 'T' + time + ':00').toISOString();
@@ -1172,23 +1206,24 @@ async function schedulePost() {
     if (result.error) throw new Error(result.error);
 
     queueData.unshift({ id: result.postId, platforms: mapped.map(p=>p.substring(0,2)), text, time: date+' '+time, status:'scheduled' });
-    document.getElementById('composerText').value='';
-    document.getElementById('scheduleOptions').style.display='none';
-    updatePreview(); updateCharCount();
+    document.getElementById('composerText').value = '';
+    document.getElementById('scheduleOptions').style.display = 'none';
+    updatePreview();
+    updateCharCount();
     toast('Post scheduled ✅', 'success');
-    document.getElementById('aiSuggestions').innerHTML='';
+    document.getElementById('aiSuggestions').innerHTML = '';
   } catch(e) {
-    toast('Schedule error: '+e.message, 'error');
+    toast('Schedule error: ' + e.message, 'error');
   }
 }
 
 async function postNow() {
   const text = document.getElementById('composerText').value.trim();
-  if(!text){ toast('Write something first!','error'); return; }
+  if(!text) { toast('Write something first!', 'error'); return; }
 
   const platformMap = { linkedin:'post-to-linkedin', twitter:'post-to-twitter' };
-  const selected = [...document.querySelectorAll('.pp-btn.selected')].map(b=>b.dataset.plat);
-  const displayPlats = selected.map(p=>p.substring(0,2));
+  const selected = [...document.querySelectorAll('.pp-btn.selected')].map(b => b.dataset.plat);
+  const displayPlats = selected.map(p => p.substring(0,2));
 
   try {
     const { data: { session } } = await sb.auth.getSession();
@@ -1197,7 +1232,7 @@ async function postNow() {
     let anyPosted = false;
     for (const plat of selected) {
       const fn = platformMap[plat];
-      if (!fn) continue; // skip unconnected platforms silently
+      if (!fn) continue;
       const res = await fetch(
         POSTPILOT_CONFIG.supabase.url + '/functions/v1/' + fn,
         {
@@ -1213,10 +1248,11 @@ async function postNow() {
       if (r.success) anyPosted = true;
     }
 
-    queueData.unshift({ id: Date.now(), platforms: displayPlats.length?displayPlats:['li'], text, time:'Just now', status: anyPosted?'posted':'draft' });
-    document.getElementById('composerText').value='';
-    updatePreview(); updateCharCount();
-    document.getElementById('aiSuggestions').innerHTML='';
+    queueData.unshift({ id: Date.now(), platforms: displayPlats.length ? displayPlats : ['li'], text, time:'Just now', status: anyPosted ? 'posted' : 'draft' });
+    document.getElementById('composerText').value = '';
+    updatePreview();
+    updateCharCount();
+    document.getElementById('aiSuggestions').innerHTML = '';
     toast(anyPosted ? 'Posted successfully 🚀' : 'Saved as draft (connect accounts to post)', 'success');
   } catch(e) {
     toast('Post error: ' + e.message, 'error');
@@ -1225,13 +1261,13 @@ async function postNow() {
 
 // --- QUEUE ---
 function renderQueue() {
-  const filtered = currentFilter==='all' ? queueData : queueData.filter(p=>p.status===currentFilter);
+  const filtered = currentFilter === 'all' ? queueData : queueData.filter(p => p.status === currentFilter);
   const body = document.getElementById('queueBody');
-  body.innerHTML = filtered.map(p=>`
+  body.innerHTML = filtered.map(p => `
     <tr>
-      <td><div class="q-platforms">${p.platforms.map(pl=>{
-        const icon = platIcons[pl] || {cls:'',label:pl,style:'background:var(--bg4);color:var(--text2);'};
-        return `<div class="q-plat ${icon.cls}" ${icon.style?'style="'+icon.style+'"':''}>${icon.label}</div>`;
+      <td><div class="q-platforms">${p.platforms.map(pl => {
+        const icon = platIcons[pl] || { cls:'', label:pl, style:'background:var(--bg4);color:var(--text2);' };
+        return `<div class="q-plat ${icon.cls}" ${icon.style ? 'style="'+icon.style+'"' : ''}>${icon.label}</div>`;
       }).join('')}</div></td>
       <td><div class="q-text">${p.text}</div></td>
       <td><div class="q-time">${p.time}</div></td>
@@ -1247,27 +1283,35 @@ function renderQueue() {
 
 function filterQueue(f, el) {
   currentFilter = f;
-  document.querySelectorAll('.qf-pill').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.qf-pill').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   renderQueue();
 }
 
 function deleteItem(id) {
-  queueData = queueData.filter(p=>p.id!==id);
+  queueData = queueData.filter(p => p.id !== id);
   renderQueue();
   toast('Post deleted', 'error');
 }
 
 function cloneItem(id) {
-  const item = queueData.find(p=>p.id===id);
-  if(item) { queueData.push({...item, id:Date.now(), status:'draft', time:'Not scheduled'}); renderQueue(); toast('Post cloned', 'success'); }
+  const item = queueData.find(p => p.id === id);
+  if(item) {
+    queueData.push({...item, id:Date.now(), status:'draft', time:'Not scheduled'});
+    renderQueue();
+    toast('Post cloned', 'success');
+  }
 }
 
 function editQueueItem(id) {
-  const item = queueData.find(p=>p.id===id);
+  const item = queueData.find(p => p.id === id);
   if(item) {
     switchTab('compose', document.querySelector('.nav-item'));
-    setTimeout(()=>{ document.getElementById('composerText').value=item.text; updatePreview(); updateCharCount(); },100);
+    setTimeout(() => {
+      document.getElementById('composerText').value = item.text;
+      updatePreview();
+      updateCharCount();
+    }, 100);
   }
 }
 
@@ -1276,7 +1320,7 @@ function showModal() { document.getElementById('modalOverlay').classList.add('op
 function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
 
 function autoScheduleAll() {
-  queueData.forEach(p=>{ if(p.status==='draft') p.status='scheduled'; });
+  queueData.forEach(p => { if(p.status === 'draft') p.status = 'scheduled'; });
   closeModal();
   toast('All drafts auto-scheduled ⚡', 'success');
 }
@@ -1288,7 +1332,6 @@ async function connectAccount(name, btn) {
     'LinkedIn': 'post-to-linkedin',
   };
   const fnName = platformMap[name];
-  // Platforms without Edge Functions yet: simulate connect
   if (!fnName) {
     btn.textContent = 'Coming soon...';
     setTimeout(() => {
@@ -1315,7 +1358,7 @@ async function connectAccount(name, btn) {
     );
     const { url, error } = await res.json();
     if (error) throw new Error(error);
-    window.location.href = url; // redirect to OAuth provider
+    window.location.href = url;
   } catch(e) {
     btn.disabled = false;
     btn.textContent = 'Connect ' + name + ' →';
@@ -1328,9 +1371,12 @@ function toast(msg, type='success') {
   const wrap = document.getElementById('toastWrap');
   const el = document.createElement('div');
   el.className = `toast ${type}`;
-  el.innerHTML = (type==='success'?'✅':'❌') + ' ' + msg;
+  el.innerHTML = (type==='success' ? '✅' : '❌') + ' ' + msg;
   wrap.appendChild(el);
-  setTimeout(()=>{ el.style.animation='slideOut 0.3s ease forwards'; setTimeout(()=>el.remove(),300); }, 3000);
+  setTimeout(() => {
+    el.style.animation = 'slideOut 0.3s ease forwards';
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
 }
 
 // --- CHART ---
@@ -1340,27 +1386,27 @@ function renderChart() {
   if(chartInstance) chartInstance.destroy();
   const labels = ['May 1','May 5','May 9','May 13','May 16'];
   chartInstance = new Chart(ctx, {
-    type:'line',
-    data:{
+    type: 'line',
+    data: {
       labels,
-      datasets:[
+      datasets: [
         { label:'LinkedIn', data:[12050,12180,12290,12350,12441], borderColor:'#0a66c2', backgroundColor:'rgba(10,102,194,0.06)', tension:0.4, pointRadius:3, borderWidth:2 },
         { label:'X/Twitter', data:[8600,8680,8760,8830,8921], borderColor:'#888', backgroundColor:'rgba(150,150,150,0.05)', tension:0.4, pointRadius:3, borderWidth:2 },
         { label:'Instagram', data:[4900,4980,5060,5140,5241], borderColor:'#e1306c', backgroundColor:'rgba(225,48,108,0.06)', tension:0.4, pointRadius:3, borderWidth:2 },
       ]
     },
-    options:{
-      responsive:true,
-      plugins:{ legend:{ display:false } },
-      scales:{
-        x:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#5a5968', font:{family:'DM Sans',size:11} } },
-        y:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#5a5968', font:{family:'DM Sans',size:11} } }
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color:'rgba(255,255,255,0.04)' }, ticks: { color:'#5a5968', font:{family:'DM Sans',size:11} } },
+        y: { grid: { color:'rgba(255,255,255,0.04)' }, ticks: { color:'#5a5968', font:{family:'DM Sans',size:11} } }
       }
     }
   });
 }
 
-// set today's date for schedule input
+// Set today's date for schedule input
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('schedDate') && (document.getElementById('schedDate').value = today);
 </script>
