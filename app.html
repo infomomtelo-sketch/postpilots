@@ -931,8 +931,9 @@ function updatePreview() {
 
 // ── AI Caption Generation ──────────────────────────────────
 async function generateCaptions() {
-  const topic = document.getElementById('aiTopicInput').value.trim();
-  if (!topic) { toast('Please enter a topic first', 'error'); return; }
+  const input = document.getElementById('aiTopicInput');
+  const topic = input.value.trim();
+  if (!topic) { toast('Please enter a topic or click a suggestion above', 'error'); input.focus(); return; }
   const tone = document.getElementById('toneSelect').value;
   const btn = document.getElementById('genBtn');
   btn.disabled = true; btn.textContent = '...';
@@ -1116,8 +1117,11 @@ function initTopicChips() {
     const chip = document.createElement('button');
     chip.className = 'topic-chip';
     chip.textContent = topic;
-    chip.onclick = () => {
-      document.getElementById('aiTopicInput').value = topic;
+    chip.onclick = async () => {
+      const input = document.getElementById('aiTopicInput');
+      input.value = topic;
+      input.dispatchEvent(new Event('input'));
+      await new Promise(r => setTimeout(r, 50)); // wait for value to set
       generateCaptions();
     };
     container.appendChild(chip);
