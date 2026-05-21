@@ -292,8 +292,9 @@ Examples:
                 <span style="font-size:12px;color:var(--text3);">#️⃣ Hashtags</span>
               </div>
               <div class="composer-actions">
+                <button class="btn-sched" onclick="saveAsDraft()">💾 Save draft</button>
                 <button class="btn-sched" onclick="openScheduleModal()">📅 Schedule</button>
-                <button class="btn-post-now" onclick="saveAsDraft()">💾 Save draft</button>
+                <button class="btn-post-now" onclick="postNow()">🚀 Post now</button>
               </div>
             </div>
           </div>
@@ -521,6 +522,23 @@ Examples:
 </div>
 
 <div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ONBOARDING TOUR -->
+<div id="onboardingOverlay" style="display:none;position:fixed;inset:0;z-index:3000;pointer-events:none;"></div>
+<div id="onboardingTooltip" style="display:none;position:fixed;z-index:3001;background:#17171a;border:1px solid #5b6cf9;border-radius:12px;padding:16px 20px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <span id="onboardingStep" style="font-size:10px;color:#5a5968;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Step 1 of 4</span>
+    <button onclick="skipOnboarding()" style="margin-left:auto;background:none;border:none;color:#5a5968;cursor:pointer;font-size:16px;line-height:1;">×</button>
+  </div>
+  <div id="onboardingTitle" style="font-size:14px;font-weight:600;color:#f0eff4;margin-bottom:4px;"></div>
+  <div id="onboardingText" style="font-size:12px;color:#9998a8;line-height:1.5;margin-bottom:12px;"></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <div id="onboardingDots" style="display:flex;gap:4px;flex:1;"></div>
+    <button id="onboardingNext" onclick="nextOnboardingStep()" style="padding:7px 16px;border-radius:7px;background:#5b6cf9;border:none;color:white;font-size:12px;font-family:var(--sans);font-weight:500;cursor:pointer;pointer-events:all;">Next →</button>
+  </div>
+</div>
+<!-- Animated hand pointer -->
+<div id="onboardingHand" style="display:none;position:fixed;z-index:3002;font-size:32px;pointer-events:none;transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5));">👆</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 const { createClient } = supabase;
@@ -868,6 +886,44 @@ async function disconnectAccount(platform, btn) {
   } catch(e) { btn.disabled = false; toast('Error: ' + e.message, 'error'); }
 }
 
+async function postNow() {
+  const text = document.getElementById('composerText').value.trim();
+  if (!text) { toast('Write something first!', 'error'); return; }
+  if (!getPlan().canSchedule) {
+    showUpgradeModal('Posting requires a Pro plan. Upgrade to post to LinkedIn, Twitter and Instagram.');
+    return;
+  }
+  const platforms = [...document.querySelectorAll('.pp-btn.selected')].map(b => b.dataset.plat);
+  // Check if any connected accounts match selected platforms
+  const connected = connectedAccounts.map(a => a.platform);
+  const canPost = platforms.some(p => connected.includes(p));
+  if (!canPost) {
+    toast('Connect a social account first in the Accounts tab', 'error');
+    switchTab('accounts', document.querySelectorAll('.nav-item')[3]);
+    return;
+  }
+  // Save as posted immediately
+  try {
+    const { error } = await sb.from('posts').insert({
+      user_id: currentUser.id,
+      content: text,
+      platforms,
+      status: 'posted',
+      posted_at: new Date().toISOString(),
+      tone: document.getElementById('toneSelect').value,
+      ai_generated: document.getElementById('aiTopicInput').value.length > 0,
+    });
+    if (error) throw error;
+    document.getElementById('composerText').value = '';
+    updatePreview(); updateCharCount();
+    document.getElementById('aiSuggestions').innerHTML = '';
+    toast('Post saved! Auto-posting coming soon 🚀', 'success');
+    await loadPosts();
+  } catch(e) {
+    toast('Error: ' + e.message, 'error');
+  }
+}
+
 async function signOut() { await sb.auth.signOut(); window.location.href = 'auth.html'; }
 
 // ── Mobile sidebar ─────────────────────────────────────────
@@ -1161,6 +1217,144 @@ function toast(msg, type='success') {
 document.getElementById('schedDate') && (document.getElementById('schedDate').value = new Date().toISOString().split('T')[0]);
 initTopicChips();
 initRotatingPlaceholder();
+
+// ── Onboarding Tour ────────────────────────────────────────
+const ONBOARDING_STEPS = [
+  {
+    title: '👋 Welcome to PostPilots!',
+    text: 'Let us show you how to create and schedule your first post in 4 easy steps.',
+    target: '.composer-card',
+    position: 'right',
+  },
+  {
+    title: '✨ Generate AI captions',
+    text: 'Click any topic chip below or type your own topic, then hit Generate to get 3 AI-written captions instantly.',
+    target: '#topicChips',
+    position: 'top',
+  },
+  {
+    title: '📝 Write or edit your post',
+    text: 'Your generated caption appears here. Edit it, add emojis, hashtags — make it yours!',
+    target: '#composerText',
+    position: 'bottom',
+  },
+  {
+    title: '📅 Schedule or post',
+    text: 'Hit Schedule to pick a date/time for auto-posting, or Save draft to come back later. Connect accounts in the Accounts tab to post live!',
+    target: '.composer-actions',
+    position: 'top',
+  },
+];
+
+let currentOnboardingStep = 0;
+
+function startOnboarding() {
+  if (localStorage.getItem('postpilots_onboarded')) return;
+  currentOnboardingStep = 0;
+  showOnboardingStep(0);
+}
+
+function showOnboardingStep(index) {
+  const step = ONBOARDING_STEPS[index];
+  if (!step) { completeOnboarding(); return; }
+
+  const tooltip = document.getElementById('onboardingTooltip');
+  const hand = document.getElementById('onboardingHand');
+  const overlay = document.getElementById('onboardingOverlay');
+
+  // Update tooltip content
+  document.getElementById('onboardingStep').textContent = `Step ${index + 1} of ${ONBOARDING_STEPS.length}`;
+  document.getElementById('onboardingTitle').textContent = step.title;
+  document.getElementById('onboardingText').textContent = step.text;
+
+  // Update dots
+  const dots = document.getElementById('onboardingDots');
+  dots.innerHTML = ONBOARDING_STEPS.map((_, i) =>
+    `<div style="width:6px;height:6px;border-radius:50%;background:${i === index ? '#5b6cf9' : '#2a2a30'};transition:background 0.3s;"></div>`
+  ).join('');
+
+  // Update button
+  const btn = document.getElementById('onboardingNext');
+  btn.textContent = index === ONBOARDING_STEPS.length - 1 ? "Let's go! 🚀" : 'Next →';
+
+  // Find target element
+  const target = document.querySelector(step.target);
+  if (!target) { tooltip.style.display = 'block'; hand.style.display = 'none'; return; }
+
+  const rect = target.getBoundingClientRect();
+  
+  // Position hand pointer on target
+  hand.style.display = 'block';
+  hand.style.left = (rect.left + rect.width / 2 - 16) + 'px';
+  hand.style.top = (rect.top - 40) + 'px';
+
+  // Animate hand
+  hand.style.animation = 'none';
+  setTimeout(() => { hand.style.animation = 'handBounce 1s ease infinite'; }, 50);
+
+  // Position tooltip
+  tooltip.style.display = 'block';
+  const tooltipW = 280;
+  let left = rect.left + rect.width / 2 - tooltipW / 2;
+  let top = step.position === 'top' ? rect.top - 140 : rect.bottom + 20;
+  
+  // Keep within viewport
+  left = Math.max(10, Math.min(left, window.innerWidth - tooltipW - 10));
+  top = Math.max(10, top);
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+
+  // Highlight target
+  overlay.style.display = 'block';
+  overlay.style.background = 'rgba(0,0,0,0.5)';
+  
+  // Add highlight ring around target
+  const existing = document.getElementById('onboardingHighlight');
+  if (existing) existing.remove();
+  const highlight = document.createElement('div');
+  highlight.id = 'onboardingHighlight';
+  highlight.style.cssText = `position:fixed;left:${rect.left - 4}px;top:${rect.top - 4}px;width:${rect.width + 8}px;height:${rect.height + 8}px;border:2px solid #5b6cf9;border-radius:12px;pointer-events:none;z-index:3001;box-shadow:0 0 0 4000px rgba(0,0,0,0.5);animation:highlightPulse 1.5s ease infinite;`;
+  document.body.appendChild(highlight);
+}
+
+function nextOnboardingStep() {
+  currentOnboardingStep++;
+  if (currentOnboardingStep >= ONBOARDING_STEPS.length) {
+    completeOnboarding();
+  } else {
+    showOnboardingStep(currentOnboardingStep);
+  }
+}
+
+function skipOnboarding() { completeOnboarding(); }
+
+function completeOnboarding() {
+  document.getElementById('onboardingTooltip').style.display = 'none';
+  document.getElementById('onboardingHand').style.display = 'none';
+  document.getElementById('onboardingOverlay').style.display = 'none';
+  const h = document.getElementById('onboardingHighlight');
+  if (h) h.remove();
+  localStorage.setItem('postpilots_onboarded', '1');
+  toast('You\'re all set! Start creating posts ✨', 'success');
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes handBounce {
+    0%, 100% { transform: translateY(0) rotate(-10deg); }
+    50% { transform: translateY(-10px) rotate(10deg); }
+  }
+  @keyframes highlightPulse {
+    0%, 100% { border-color: #5b6cf9; box-shadow: 0 0 0 4000px rgba(0,0,0,0.5), 0 0 20px rgba(91,108,249,0.3); }
+    50% { border-color: #7b89ff; box-shadow: 0 0 0 4000px rgba(0,0,0,0.5), 0 0 30px rgba(91,108,249,0.6); }
+  }
+`;
+document.head.appendChild(style);
+
+// Start onboarding after 1 second for new users
+setTimeout(startOnboarding, 1000);
 </script>
 </body>
 </html>
