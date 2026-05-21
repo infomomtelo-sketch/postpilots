@@ -195,7 +195,16 @@ canvas{display:block;}
 <body>
 <div id="sidebarOverlay" onclick="closeSidebarMobile()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;"></div>
 <aside class="sidebar" id="mainSidebar">
-  <div class="sidebar-logo">Post<span>Pilot</span><span class="logo-badge">Pro</span></div>
+  <div class="sidebar-logo">Post<span>Pilot</span><span class="logo-badge" id="planBadge">Free</span></div>
+  <!-- Plan indicator -->
+  <div id="planBanner" style="margin:8px 12px;padding:10px 12px;border-radius:8px;background:var(--bg3);border:1px solid var(--line);font-size:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <span style="color:var(--text3);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:1px;">Current plan</span>
+      <span id="planName" style="font-weight:600;color:var(--accent2);font-size:11px;">Free</span>
+    </div>
+    <div id="planDetails" style="color:var(--text3);font-size:11px;margin-bottom:8px;">AI captions only · 3 draft limit</div>
+    <button id="upgradeBtn" onclick="showUpgradeModal('Upgrade to unlock scheduling, auto-posting and more.')" style="width:100%;padding:6px;border-radius:6px;background:var(--accent);border:none;color:white;font-size:11px;font-family:var(--sans);font-weight:500;cursor:pointer;">⚡ Upgrade plan</button>
+  </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Main</div>
     <div class="nav-item active" onclick="switchTab('compose',this)"><span class="icon">✏️</span> Compose</div>
@@ -530,11 +539,38 @@ const PLANS = {
 function getPlan() { return PLANS[userPlan] || PLANS.free; }
 function updatePlanBadge() {
   const badge = document.querySelector('.logo-badge');
-  if (!badge) return;
-  badge.textContent = getPlan().label;
-  if (userPlan === 'free') badge.style.background = 'var(--text3)';
-  else if (userPlan === 'agency') badge.style.background = 'linear-gradient(135deg,#f59e0b,#ef4444)';
-  else badge.style.background = 'var(--accent)';
+  if (badge) {
+    badge.textContent = getPlan().label;
+    if (userPlan === 'free') badge.style.background = 'var(--text3)';
+    else if (userPlan === 'agency') badge.style.background = 'linear-gradient(135deg,#f59e0b,#ef4444)';
+    else badge.style.background = 'var(--accent)';
+  }
+  // Update plan banner
+  const planName = document.getElementById('planName');
+  const planDetails = document.getElementById('planDetails');
+  const upgradeBtn = document.getElementById('upgradeBtn');
+  const planBanner = document.getElementById('planBanner');
+  if (!planName) return;
+  if (userPlan === 'free') {
+    planName.textContent = 'Free';
+    planName.style.color = 'var(--text3)';
+    planDetails.textContent = 'AI captions only · 3 draft limit';
+    upgradeBtn.style.display = 'block';
+    planBanner.style.borderColor = 'var(--line)';
+  } else if (userPlan === 'pro') {
+    planName.textContent = 'Pro ✨';
+    planName.style.color = 'var(--accent2)';
+    planDetails.textContent = 'LinkedIn, Twitter, Instagram · Unlimited';
+    upgradeBtn.textContent = '⬆️ Upgrade to Agency';
+    upgradeBtn.style.display = 'block';
+    planBanner.style.borderColor = 'rgba(91,108,249,0.3)';
+  } else if (userPlan === 'agency') {
+    planName.textContent = 'Agency 🚀';
+    planName.style.color = '#f59e0b';
+    planDetails.textContent = 'All 9 platforms · Unlimited everything';
+    upgradeBtn.style.display = 'none';
+    planBanner.style.borderColor = 'rgba(245,158,11,0.3)';
+  }
 }
 function showUpgradeModal(reason) {
   document.getElementById('upgradeReason').textContent = reason;
