@@ -1283,22 +1283,34 @@ function showOnboardingStep(index) {
 
   const rect = target.getBoundingClientRect();
   
-  // Position hand pointer on target
+  // Position hand pointer on target center
+  const targetCenterX = rect.left + rect.width / 2;
+  const targetCenterY = rect.top + rect.height / 2;
+
   hand.style.display = 'block';
-  hand.style.left = (rect.left + rect.width / 2 - 16) + 'px';
-  hand.style.top = (rect.top - 40) + 'px';
+  hand.style.left = (targetCenterX - 16) + 'px';
+  hand.style.top = (targetCenterY - 16) + 'px';
 
   // Animate hand
   hand.style.animation = 'none';
   setTimeout(() => { hand.style.animation = 'handBounce 1s ease infinite'; }, 50);
 
-  // Position tooltip
+  // Position tooltip — prefer below target, flip if too close to bottom
   tooltip.style.display = 'block';
   const tooltipW = 280;
+  const tooltipH = 160;
   let left = rect.left + rect.width / 2 - tooltipW / 2;
-  let top = step.position === 'top' ? rect.top - 140 : rect.bottom + 20;
-  
-  // Keep within viewport
+  let top;
+
+  if (step.position === 'top') {
+    top = rect.top - tooltipH - 12;
+    if (top < 10) top = rect.bottom + 12; // flip below if not enough space
+  } else {
+    top = rect.bottom + 12;
+    if (top + tooltipH > window.innerHeight - 10) top = rect.top - tooltipH - 12;
+  }
+
+  // Keep within viewport horizontally
   left = Math.max(10, Math.min(left, window.innerWidth - tooltipW - 10));
   top = Math.max(10, top);
 
