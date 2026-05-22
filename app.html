@@ -691,18 +691,41 @@ async function loadConnectedAccounts() {
 }
 
 function updateAccountsUI() {
+  const plan = getPlan();
   document.querySelectorAll('.connect-card[data-platform]').forEach(card => {
     const plat = card.dataset.platform;
     const connected = connectedAccounts.find(a => a.platform === plat);
     const dot = card.querySelector('.cc-dot');
     const statusText = card.querySelector('.cc-status span');
     const btn = card.querySelector('.cc-btn');
+    const isAllowed = plan.platforms.includes(plat);
+
+    if (!isAllowed) {
+      card.classList.remove('connected');
+      card.style.opacity = '0.55';
+      card.style.filter = 'grayscale(0.4)';
+      dot.className = 'cc-dot off';
+      statusText.style.color = 'var(--text3)';
+      const requiredPlan = ['tiktok','facebook','youtube','reddit','bluesky','threads'].includes(plat) ? 'Agency' : 'Pro';
+      statusText.textContent = `🔒 Requires ${requiredPlan} plan`;
+      btn.className = 'cc-btn';
+      btn.style.cssText = 'background:var(--bg4);border:1px solid var(--line2);color:var(--text3);cursor:pointer;padding:8px 16px;border-radius:8px;font-size:13px;font-family:var(--sans);font-weight:500;width:100%;text-align:center;';
+      btn.textContent = `⚡ Upgrade to ${requiredPlan}`;
+      btn.onclick = () => showUpgradeModal(`${plat.charAt(0).toUpperCase()+plat.slice(1)} requires the ${requiredPlan} plan.`);
+      return;
+    }
+
+    // Unlocked
+    card.style.opacity = '1';
+    card.style.filter = 'none';
+
     if (connected) {
       card.classList.add('connected');
       dot.className = 'cc-dot on';
       statusText.style.color = 'var(--green)';
       statusText.textContent = 'Connected · @' + (connected.platform_username || 'connected');
       btn.className = 'cc-btn cc-btn-disconnect';
+      btn.style.cssText = '';
       btn.textContent = 'Disconnect';
       btn.onclick = () => disconnectAccount(plat, btn);
     } else {
@@ -711,13 +734,13 @@ function updateAccountsUI() {
       statusText.style.color = 'var(--text3)';
       statusText.textContent = 'Not connected';
       btn.className = 'cc-btn cc-btn-connect';
+      btn.style.cssText = '';
       const label = plat.charAt(0).toUpperCase() + plat.slice(1);
       btn.textContent = 'Connect ' + label + ' →';
       btn.onclick = () => connectAccount(label, btn);
     }
   });
 }
-
 function updateSidebarAccounts() {
   const el = document.getElementById('sidebarAccountsList');
   const cfg = {
