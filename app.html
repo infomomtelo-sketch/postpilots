@@ -658,7 +658,9 @@ async function startCheckout(priceId) {
   document.getElementById('prevHandle').textContent = userHandles.linkedin;
 
   // Load user plan
-  userPlan = profile?.plan || 'free';
+  // Force fresh profile read
+const { data: freshProfile } = await sb.from('profiles').select('plan').eq('id', currentUser.id).single();
+userPlan = freshProfile?.plan || profile?.plan || 'free';
   updatePlanBadge();
 
   await loadConnectedAccounts();
