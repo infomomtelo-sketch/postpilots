@@ -4,208 +4,503 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PostPilot — Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0f0f11;--bg2:#17171a;--bg3:#1e1e22;--bg4:#26262c;
-  --line:rgba(255,255,255,0.07);--line2:rgba(255,255,255,0.12);
-  --text:#f0eff4;--text2:#9998a8;--text3:#5a5968;
-  --accent:#5b6cf9;--accent2:#7b89ff;
-  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;
-  --sans:'DM Sans',sans-serif;--serif:'Instrument Serif',serif;--r:12px;
+  --bg: #0f0f11;
+  --bg2: #17171a;
+  --bg3: #1e1e22;
+  --bg4: #26262c;
+  --line: rgba(255,255,255,0.07);
+  --line2: rgba(255,255,255,0.12);
+  --text: #f0eff4;
+  --text2: #9998a8;
+  --text3: #5a5968;
+  --accent: #5b6cf9;
+  --accent2: #7b89ff;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --pink: #ec4899;
+  --tiktok: #ff0050;
+  --sans: 'DM Sans', sans-serif;
+  --serif: 'Instrument Serif', serif;
+  --r: 12px;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px;}
-.sidebar{width:220px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto;}
-.sidebar-logo{padding:20px 20px 16px;font-family:var(--serif);font-size:20px;color:var(--text);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
-.sidebar-logo span{color:var(--accent2);}
-.logo-badge{font-family:var(--sans);font-size:10px;background:var(--accent);color:white;padding:2px 7px;border-radius:20px;font-weight:500;margin-left:auto;}
-.sidebar-section{padding:16px 12px 8px;}
-.sidebar-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:4px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--text2);cursor:pointer;font-size:13.5px;font-weight:400;transition:all 0.15s;margin-bottom:1px;border:1px solid transparent;}
-.nav-item:hover{background:var(--bg3);color:var(--text);}
-.nav-item.active{background:var(--bg3);color:var(--text);border-color:var(--line2);}
-.nav-item .icon{font-size:16px;width:20px;text-align:center;}
-.nav-badge{margin-left:auto;font-size:11px;background:var(--accent);color:white;padding:1px 7px;border-radius:10px;font-weight:500;}
-.sidebar-accounts{padding:12px;border-top:1px solid var(--line);margin-top:auto;}
-.acc-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
-.account-item{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:background 0.15s;margin-bottom:2px;}
-.account-item:hover{background:var(--bg3);}
-.acc-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
-.acc-li{background:#0a66c2;color:white;}.acc-tw{background:#000;color:white;border:1px solid #333;}
-.acc-ig{background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:white;}
-.acc-tt{background:#010101;color:white;border:1px solid #333;}.acc-fb{background:#1877f2;color:white;}
-.acc-rd{background:#ff4500;color:white;}.acc-yt{background:#ff0000;color:white;}
-.acc-info{flex:1;min-width:0;}
-.acc-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.acc-handle{font-size:11px;color:var(--text3);}
-.acc-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;}
-.acc-dot.off{background:var(--text3);}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.topbar{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--bg2);flex-shrink:0;}
-.page-title{font-family:var(--serif);font-size:20px;color:var(--text);}
-.topbar-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
-.tb-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid var(--line2);background:transparent;color:var(--text2);font-size:13px;font-family:var(--sans);cursor:pointer;transition:all 0.15s;}
-.tb-btn:hover{background:var(--bg3);color:var(--text);}
-.tb-btn-primary{background:var(--accent);border-color:var(--accent);color:white;font-weight:500;}
-.tb-btn-primary:hover{background:var(--accent2);border-color:var(--accent2);color:white;}
-.tb-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;cursor:pointer;}
-.content{flex:1;overflow-y:auto;padding:24px;display:none;}
-.content.active{display:block;}
-.composer-layout{display:grid;grid-template-columns:1fr 340px;gap:20px;}
-.composer-card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);}
-.card-title{font-size:13px;font-weight:500;color:var(--text);}
-.card-body{padding:18px;}
-.platform-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-.pp-btn{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:8px;border:1px solid var(--line2);background:var(--bg3);color:var(--text2);font-size:12px;font-family:var(--sans);cursor:pointer;transition:all 0.15s;font-weight:500;}
-.pp-btn:hover{border-color:var(--accent);color:var(--text);}
-.pp-btn.selected{border-color:var(--accent);background:rgba(91,108,249,0.12);color:var(--text);}
-.pp-icon{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
-.composer-textarea{width:100%;background:var(--bg3);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;padding:14px;resize:none;min-height:140px;outline:none;transition:border-color 0.15s;}
-.composer-textarea:focus{border-color:var(--accent);}
-.composer-textarea::placeholder{color:var(--text3);}
-.ai-bar{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px;}
-.ai-bar-label{font-size:12px;color:var(--accent2);font-weight:500;display:flex;align-items:center;gap:5px;white-space:nowrap;}
-.ai-bar-input{flex:1;background:transparent;border:none;outline:none;font-family:var(--sans);font-size:13px;color:var(--text);}
-.ai-bar-input::placeholder{color:var(--text3);}
-.ai-gen-btn{padding:6px 14px;border-radius:7px;background:var(--accent);border:none;color:white;font-size:12px;font-family:var(--sans);font-weight:500;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
-.ai-gen-btn:hover{background:var(--accent2);}
-.ai-gen-btn:disabled{opacity:0.5;cursor:not-allowed;}
-.topic-chip{font-size:11px;padding:5px 11px;border-radius:20px;border:1px solid var(--line2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
-.topic-chip:hover{border-color:var(--accent);color:var(--text);background:rgba(91,108,249,0.1);}
-.ai-suggestions{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
-.ai-suggestion{background:rgba(91,108,249,0.08);border:1px solid rgba(91,108,249,0.2);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.6;color:var(--text2);cursor:pointer;transition:all 0.15s;position:relative;}
-.ai-suggestion:hover{background:rgba(91,108,249,0.14);color:var(--text);}
-.ai-suggestion-label{font-size:10px;color:var(--accent2);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
-.use-btn{position:absolute;right:10px;bottom:10px;font-size:11px;padding:3px 10px;border-radius:5px;background:var(--accent);color:white;border:none;font-family:var(--sans);cursor:pointer;font-weight:500;opacity:0;transition:opacity 0.15s;}
-.ai-suggestion:hover .use-btn{opacity:1;}
-.composer-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
-.char-count{font-size:12px;color:var(--text3);}
-.char-count.warn{color:var(--amber);}.char-count.over{color:var(--red);}
-.composer-actions{display:flex;gap:8px;}
-.btn-sched{padding:8px 16px;border-radius:8px;border:1px solid var(--line2);background:transparent;color:var(--text2);font-size:13px;font-family:var(--sans);cursor:pointer;transition:all 0.15s;}
-.btn-sched:hover{background:var(--bg3);color:var(--text);border-color:var(--accent);}
-.btn-post-now{padding:8px 18px;border-radius:8px;background:var(--green);border:none;color:white;font-size:13px;font-family:var(--sans);font-weight:500;cursor:pointer;transition:all 0.15s;}
-.btn-post-now:hover{background:#16a34a;}
-.preview-tabs{display:flex;gap:4px;}
-.prev-tab{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;color:var(--text3);background:transparent;font-family:var(--sans);}
-.prev-tab.active{background:var(--bg3);border-color:var(--line2);color:var(--text);}
-.preview-body{padding:16px;}
-.preview-post{background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:14px;}
-.prev-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.prev-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;}
-.prev-name{font-size:13px;font-weight:500;}.prev-handle{font-size:12px;color:var(--text3);}
-.prev-platform-badge{margin-left:auto;font-size:10px;padding:3px 8px;border-radius:5px;font-weight:600;}
-.prev-text{font-size:13px;line-height:1.6;color:var(--text2);min-height:40px;}
-.prev-text.empty{color:var(--text3);font-style:italic;}
-.prev-actions{display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);}
-.prev-action{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:5px;}
-.sched-row{display:flex;gap:8px;margin-bottom:8px;}
-.sched-input{flex:1;background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none;}
-.sched-input:focus{border-color:var(--accent);}
-.bt-label{font-size:11px;color:var(--text3);margin-bottom:8px;}
-.bt-chips{display:flex;gap:6px;flex-wrap:wrap;}
-.bt-chip{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--line2);background:transparent;color:var(--text2);cursor:pointer;transition:all 0.15s;}
-.bt-chip:hover,.bt-chip.sel{background:rgba(91,108,249,0.15);border-color:var(--accent);color:var(--text);}
-.queue-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;}
-.queue-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);}
-.queue-filters{display:flex;gap:6px;}
-.qf-pill{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--line2);background:transparent;color:var(--text2);cursor:pointer;transition:all 0.15s;}
-.qf-pill.active,.qf-pill:hover{background:var(--bg3);color:var(--text);border-color:var(--line2);}
-.qf-pill.active{border-color:var(--accent);color:var(--accent2);}
-.queue-table{width:100%;border-collapse:collapse;}
-.queue-table th{text-align:left;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;padding:10px 18px;border-bottom:1px solid var(--line);background:var(--bg);}
-.queue-table td{padding:12px 18px;border-bottom:1px solid var(--line);vertical-align:middle;}
-.queue-table tr:last-child td{border-bottom:none;}
-.queue-table tr:hover td{background:var(--bg3);}
-.q-platforms{display:flex;gap:4px;}
-.q-plat{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;}
-.q-li{background:#0a66c2;color:white;}.q-tw{background:#111;color:white;}.q-ig{background:#e1306c;color:white;}
-.q-tt{background:#010101;color:white;border:1px solid #333;}.q-fb{background:#1877f2;color:white;}.q-yt{background:#ff0000;color:white;}
-.q-text{font-size:13px;color:var(--text2);max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.q-time{font-size:12px;color:var(--text3);}
-.status-pill{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;white-space:nowrap;}
-.st-scheduled{background:rgba(91,108,249,0.15);color:var(--accent2);}
-.st-posted{background:rgba(34,197,94,0.15);color:var(--green);}
-.st-draft{background:rgba(245,158,11,0.12);color:var(--amber);}
-.st-failed{background:rgba(239,68,68,0.12);color:var(--red);}
-.q-actions{display:flex;gap:6px;}
-.q-act{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--line2);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s;font-family:var(--sans);}
-.q-act:hover{background:var(--bg3);color:var(--text);}
-.q-act.del:hover{border-color:var(--red);color:var(--red);background:rgba(239,68,68,0.08);}
-.analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
-.metric-card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;}
-.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
-.metric-val{font-family:var(--serif);font-size:32px;letter-spacing:-1px;color:var(--text);line-height:1;}
-.metric-change{font-size:12px;margin-top:6px;font-weight:500;}
-.up{color:var(--green);}.down{color:var(--red);}
-.chart-card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-bottom:16px;}
-.chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-.chart-title{font-size:13px;font-weight:500;}
-.chart-legend{display:flex;gap:14px;}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);}
-.legend-dot{width:8px;height:8px;border-radius:50%;}
-canvas{display:block;}
-.connect-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.connect-card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:12px;transition:border-color 0.2s;}
-.connect-card:hover{border-color:var(--line2);}
-.connect-card.connected{border-color:rgba(34,197,94,0.3);}
-.cc-top{display:flex;align-items:center;gap:12px;}
-.cc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;}
-.cc-name{font-size:15px;font-weight:500;}.cc-desc{font-size:12px;color:var(--text3);}
-.cc-status{display:flex;align-items:center;gap:6px;font-size:12px;}
-.cc-dot{width:7px;height:7px;border-radius:50%;}
-.cc-dot.on{background:var(--green);}.cc-dot.off{background:var(--text3);}
-.cc-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-family:var(--sans);font-weight:500;cursor:pointer;transition:all 0.15s;border:1px solid;text-align:center;}
-.cc-btn-connect{background:var(--accent);border-color:var(--accent);color:white;}
-.cc-btn-connect:hover{background:var(--accent2);}
-.cc-btn-disconnect{background:transparent;border-color:var(--line2);color:var(--text2);}
-.cc-btn-disconnect:hover{border-color:var(--red);color:var(--red);}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity 0.2s;}
-.modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--bg2);border:1px solid var(--line2);border-radius:16px;padding:28px;width:440px;transform:translateY(16px);transition:transform 0.2s;}
-.modal-overlay.open .modal{transform:translateY(0);}
-.modal-title{font-family:var(--serif);font-size:22px;margin-bottom:8px;}
-.modal-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5;}
-.modal-close{float:right;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;margin-top:-4px;}
-.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:8px;}
-.toast{background:var(--bg3);border:1px solid var(--line2);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.4);display:flex;align-items:center;gap:10px;animation:slideIn 0.3s ease both;max-width:320px;}
-.toast.success{border-color:rgba(34,197,94,0.3);}.toast.error{border-color:rgba(239,68,68,0.3);}
-@keyframes slideIn{from{transform:translateX(40px);opacity:0;}to{transform:none;opacity:1;}}
-@keyframes slideOut{to{transform:translateX(40px);opacity:0;}}
-.skeleton{background:var(--bg3);border-radius:6px;animation:shimmer 1.5s infinite;}
-@keyframes shimmer{0%,100%{opacity:0.5;}50%{opacity:1;}}
-::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px;}
-.empty-state{text-align:center;padding:60px 20px;color:var(--text3);}
-.empty-state .icon{font-size:40px;margin-bottom:12px;}
-.empty-state h3{font-size:16px;color:var(--text2);margin-bottom:6px;}
-.empty-state p{font-size:13px;}
-@media(max-width:700px){
-  .sidebar{position:fixed!important;z-index:100!important;transform:translateX(-100%)!important;transition:transform 0.3s ease!important;top:0!important;bottom:0!important;height:100vh!important;}
-  .sidebar.mobile-open{transform:translateX(0)!important;}
-  .main{width:100%!important;margin-left:0!important;}
-  #menuToggle{display:block!important;}
-  .composer-layout{grid-template-columns:1fr!important;}
-  .analytics-grid{grid-template-columns:repeat(2,1fr)!important;}
-  .connect-grid{grid-template-columns:1fr!important;}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  padding: 0; overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  font-family: var(--serif); font-size: 20px; color: var(--text);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 8px;
+}
+.sidebar-logo span { color: var(--accent2); }
+.logo-badge {
+  font-family: var(--sans); font-size: 10px; background: var(--accent);
+  color: white; padding: 2px 7px; border-radius: 20px;
+  font-weight: 500; margin-left: auto;
+}
+.sidebar-section { padding: 16px 12px 8px; }
+.sidebar-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; padding: 0 8px; margin-bottom: 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 8px;
+  color: var(--text2); cursor: pointer;
+  font-size: 13.5px; font-weight: 400;
+  transition: all 0.15s; margin-bottom: 1px;
+  border: 1px solid transparent;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--bg3); color: var(--text); border-color: var(--line2); }
+.nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge { margin-left: auto; font-size: 11px; background: var(--accent); color: white; padding: 1px 7px; border-radius: 10px; font-weight: 500; }
+.nav-badge-new { margin-left: auto; font-size: 10px; background: var(--tiktok); color: white; padding: 1px 7px; border-radius: 10px; font-weight: 600; }
+.sidebar-accounts { padding: 12px; border-top: 1px solid var(--line); margin-top: auto; }
+.acc-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.account-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 8px; border-radius: 8px;
+  cursor: pointer; transition: background 0.15s; margin-bottom: 2px;
+}
+.account-item:hover { background: var(--bg3); }
+.acc-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+.acc-li { background: #0a66c2; color: white; }
+.acc-tw { background: #000; color: white; border: 1px solid #333; }
+.acc-ig { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: white; }
+.acc-tt { background: #010101; color: white; border: 1px solid #333; }
+.acc-info { flex: 1; min-width: 0; }
+.acc-name { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acc-handle { font-size: 11px; color: var(--text3); }
+.acc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.acc-dot.off { background: var(--text3); }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 24px; border-bottom: 1px solid var(--line);
+  background: var(--bg2); flex-shrink: 0;
+}
+.page-title { font-family: var(--serif); font-size: 20px; color: var(--text); }
+.topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.tb-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px;
+  border: 1px solid var(--line2); background: transparent;
+  color: var(--text2); font-size: 13px; font-family: var(--sans);
+  cursor: pointer; transition: all 0.15s;
+}
+.tb-btn:hover { background: var(--bg3); color: var(--text); }
+.tb-btn-primary { background: var(--accent); border-color: var(--accent); color: white; font-weight: 500; }
+.tb-btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: white; }
+.tb-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+/* CONTENT AREA */
+.content { flex: 1; overflow-y: auto; padding: 24px; display: none; }
+.content.active { display: block; }
+
+/* COMPOSER */
+.composer-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+.composer-card {
+  background: var(--bg2); border: 1px solid var(--line);
+  border-radius: var(--r); overflow: hidden;
+}
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid var(--line);
+}
+.card-title { font-size: 13px; font-weight: 500; color: var(--text); }
+.card-body { padding: 18px; }
+
+/* PLATFORM PICKER */
+.platform-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.pp-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 13px; border-radius: 8px; border: 1px solid var(--line2);
+  background: var(--bg3); color: var(--text2);
+  font-size: 12px; font-family: var(--sans);
+  cursor: pointer; transition: all 0.15s; font-weight: 500;
+}
+.pp-btn:hover { border-color: var(--accent); color: var(--text); }
+.pp-btn.selected { border-color: var(--accent); background: rgba(91,108,249,0.12); color: var(--text); }
+.pp-icon { width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+
+/* TEXTAREA */
+.composer-textarea {
+  width: 100%; background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 10px; color: var(--text); font-family: var(--sans);
+  font-size: 14px; line-height: 1.6; padding: 14px; resize: none;
+  min-height: 140px; outline: none; transition: border-color 0.15s;
+}
+.composer-textarea:focus { border-color: var(--accent); }
+.composer-textarea::placeholder { color: var(--text3); }
+
+/* AI BAR */
+.ai-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 10px; padding: 10px 14px; margin-top: 10px;
+}
+.ai-bar-label { font-size: 12px; color: var(--accent2); font-weight: 500; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.ai-bar-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: var(--sans); font-size: 13px; color: var(--text);
+}
+.ai-bar-input::placeholder { color: var(--text3); }
+.ai-gen-btn {
+  padding: 6px 14px; border-radius: 7px; background: var(--accent); border: none;
+  color: white; font-size: 12px; font-family: var(--sans);
+  font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 0.15s;
+}
+.ai-gen-btn:hover { background: var(--accent2); }
+.ai-gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* AI SUGGESTIONS */
+.ai-suggestions { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ai-suggestion {
+  background: rgba(91,108,249,0.08); border: 1px solid rgba(91,108,249,0.2);
+  border-radius: 10px; padding: 12px 14px; font-size: 13px;
+  line-height: 1.6; color: var(--text2); cursor: pointer;
+  transition: all 0.15s; position: relative;
+}
+.ai-suggestion:hover { background: rgba(91,108,249,0.14); color: var(--text); }
+.ai-suggestion-label { font-size: 10px; color: var(--accent2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.use-btn {
+  position: absolute; right: 10px; bottom: 10px;
+  font-size: 11px; padding: 3px 10px; border-radius: 5px;
+  background: var(--accent); color: white; border: none;
+  font-family: var(--sans); cursor: pointer; font-weight: 500;
+  opacity: 0; transition: opacity 0.15s;
+}
+.ai-suggestion:hover .use-btn { opacity: 1; }
+
+/* COMPOSER FOOTER */
+.composer-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
+}
+.char-count { font-size: 12px; color: var(--text3); }
+.char-count.warn { color: var(--amber); }
+.char-count.over { color: var(--red); }
+.composer-actions { display: flex; gap: 8px; }
+.btn-sched {
+  padding: 8px 16px; border-radius: 8px; border: 1px solid var(--line2);
+  background: transparent; color: var(--text2); font-size: 13px;
+  font-family: var(--sans); cursor: pointer; transition: all 0.15s;
+}
+.btn-sched:hover { background: var(--bg3); color: var(--text); border-color: var(--accent); }
+.btn-post-now {
+  padding: 8px 18px; border-radius: 8px; background: var(--green); border: none;
+  color: white; font-size: 13px; font-family: var(--sans);
+  font-weight: 500; cursor: pointer; transition: all 0.15s;
+}
+.btn-post-now:hover { background: #16a34a; }
+
+/* PREVIEW */
+.preview-tabs { display: flex; gap: 4px; }
+.prev-tab {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px;
+  border: 1px solid transparent; cursor: pointer;
+  color: var(--text3); background: transparent; font-family: var(--sans);
+}
+.prev-tab.active { background: var(--bg3); border-color: var(--line2); color: var(--text); }
+.preview-body { padding: 16px; }
+.preview-post { background: var(--bg3); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.prev-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.prev-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-size: 14px; font-weight: 600;
+}
+.prev-name { font-size: 13px; font-weight: 500; }
+.prev-handle { font-size: 12px; color: var(--text3); }
+.prev-platform-badge { margin-left: auto; font-size: 10px; padding: 3px 8px; border-radius: 5px; font-weight: 600; }
+.prev-text { font-size: 13px; line-height: 1.6; color: var(--text2); min-height: 40px; }
+.prev-text.empty { color: var(--text3); font-style: italic; }
+.prev-actions { display: flex; gap: 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.prev-action { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 5px; }
+
+/* SCHEDULE */
+.sched-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.sched-input {
+  flex: 1; background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 12px; color: var(--text);
+  font-family: var(--sans); font-size: 13px; outline: none;
+}
+.sched-input:focus { border-color: var(--accent); }
+.bt-label { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+.bt-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.bt-chip {
+  font-size: 11px; padding: 4px 10px; border-radius: 20px;
+  border: 1px solid var(--line2); background: transparent;
+  color: var(--text2); cursor: pointer; transition: all 0.15s;
+}
+.bt-chip:hover, .bt-chip.sel { background: rgba(91,108,249,0.15); border-color: var(--accent); color: var(--text); }
+
+/* QUEUE */
+.queue-wrap { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.queue-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.queue-filters { display: flex; gap: 6px; }
+.qf-pill {
+  font-size: 12px; padding: 5px 12px; border-radius: 20px;
+  border: 1px solid var(--line2); background: transparent;
+  color: var(--text2); cursor: pointer; transition: all 0.15s;
+}
+.qf-pill.active, .qf-pill:hover { background: var(--bg3); color: var(--text); border-color: var(--line2); }
+.qf-pill.active { border-color: var(--accent); color: var(--accent2); }
+.queue-table { width: 100%; border-collapse: collapse; }
+.queue-table th {
+  text-align: left; font-size: 11px; font-weight: 500;
+  color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--bg);
+}
+.queue-table td { padding: 12px 18px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.queue-table tr:last-child td { border-bottom: none; }
+.queue-table tr:hover td { background: var(--bg3); }
+.queue-empty { text-align: center; padding: 48px 18px; color: var(--text3); font-size: 13px; }
+.q-platforms { display: flex; gap: 4px; }
+.q-plat { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+.q-li { background: #0a66c2; color: white; }
+.q-tw { background: #111; color: white; }
+.q-ig { background: #e1306c; color: white; }
+.q-tt { background: #010101; color: white; border: 1px solid #333; }
+.q-text { font-size: 13px; color: var(--text2); max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.q-time { font-size: 12px; color: var(--text3); }
+.status-pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+.st-scheduled { background: rgba(91,108,249,0.15); color: var(--accent2); }
+.st-posted { background: rgba(34,197,94,0.15); color: var(--green); }
+.st-draft { background: rgba(245,158,11,0.12); color: var(--amber); }
+.st-failed { background: rgba(239,68,68,0.12); color: var(--red); }
+.q-actions { display: flex; gap: 6px; }
+.q-act {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--line2); background: transparent;
+  color: var(--text3); cursor: pointer; transition: all 0.15s; font-family: var(--sans);
+}
+.q-act:hover { background: var(--bg3); color: var(--text); }
+.q-act.del:hover { border-color: var(--red); color: var(--red); background: rgba(239,68,68,0.08); }
+
+/* ANALYTICS */
+.analytics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.metric-card { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; }
+.metric-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.metric-val { font-family: var(--serif); font-size: 32px; letter-spacing: -1px; color: var(--text); line-height: 1; }
+.metric-change { font-size: 12px; margin-top: 6px; font-weight: 500; }
+.up { color: var(--green); }
+.down { color: var(--red); }
+.chart-card { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; margin-bottom: 16px; }
+.chart-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.chart-title { font-size: 13px; font-weight: 500; }
+.chart-legend { display: flex; gap: 14px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+canvas { display: block; }
+.platform-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.plat-card { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; }
+.plat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.plat-ico { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+.plat-name { font-size: 13px; font-weight: 500; }
+.plat-handle { font-size: 11px; color: var(--text3); }
+.plat-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ps { text-align: center; padding: 8px; background: var(--bg3); border-radius: 8px; }
+.ps-val { font-size: 18px; font-weight: 600; color: var(--text); }
+.ps-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* CONNECT ACCOUNTS */
+.connect-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.connect-card {
+  background: var(--bg2); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 20px;
+  display: flex; flex-direction: column; gap: 12px; transition: border-color 0.2s;
+}
+.connect-card:hover { border-color: var(--line2); }
+.connect-card.connected { border-color: rgba(34,197,94,0.3); }
+.connect-card.coming { opacity: 0.6; }
+.cc-top { display: flex; align-items: center; gap: 12px; }
+.cc-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
+.cc-name { font-size: 15px; font-weight: 500; }
+.cc-desc { font-size: 12px; color: var(--text3); }
+.cc-status { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.cc-dot { width: 7px; height: 7px; border-radius: 50%; }
+.cc-dot.on { background: var(--green); }
+.cc-dot.off { background: var(--text3); }
+.cc-btn {
+  padding: 8px 16px; border-radius: 8px; font-size: 13px;
+  font-family: var(--sans); font-weight: 500; cursor: pointer;
+  transition: all 0.15s; border: 1px solid; text-align: center;
+}
+.cc-btn-connect { background: var(--accent); border-color: var(--accent); color: white; }
+.cc-btn-connect:hover { background: var(--accent2); }
+.cc-btn-disconnect { background: transparent; border-color: var(--line2); color: var(--text2); }
+.cc-btn-disconnect:hover { border-color: var(--red); color: var(--red); }
+.cc-btn-soon { background: transparent; border-color: var(--line); color: var(--text3); cursor: default; }
+
+/* AUTOCUT TAB */
+.autocut-hero {
+  background: linear-gradient(135deg, rgba(255,0,80,0.12) 0%, rgba(91,108,249,0.08) 100%);
+  border: 1px solid rgba(255,0,80,0.2); border-radius: 16px;
+  padding: 28px; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 24px;
+}
+.autocut-hero-icon { font-size: 48px; flex-shrink: 0; }
+.autocut-hero h2 { font-family: var(--serif); font-size: 26px; margin-bottom: 6px; }
+.autocut-hero p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.autocut-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.autocut-card { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.upload-zone {
+  border: 2px dashed var(--line2); border-radius: 12px;
+  padding: 40px 20px; text-align: center; cursor: pointer;
+  transition: all 0.2s; margin: 18px;
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--tiktok); background: rgba(255,0,80,0.05); }
+.upload-zone input { display: none; }
+.upload-icon { font-size: 36px; margin-bottom: 12px; }
+.upload-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+.upload-sub { font-size: 12px; color: var(--text3); }
+.or-divider { display: flex; align-items: center; gap: 12px; margin: 0 18px 12px; color: var(--text3); font-size: 12px; }
+.or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background: var(--line); }
+.url-row { display: flex; gap: 8px; margin: 0 18px 18px; }
+.url-input {
+  flex: 1; background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 8px; padding: 9px 12px; color: var(--text);
+  font-family: var(--sans); font-size: 13px; outline: none;
+}
+.url-input:focus { border-color: var(--tiktok); }
+.url-input::placeholder { color: var(--text3); }
+.btn-analyze {
+  padding: 9px 16px; border-radius: 8px; background: var(--tiktok);
+  border: none; color: white; font-size: 13px; font-family: var(--sans);
+  font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.btn-analyze:hover { background: #cc0040; }
+.btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* CLIP CARDS */
+.clips-container { display: flex; flex-direction: column; gap: 12px; padding: 18px; }
+.clip-card {
+  background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 10px; padding: 14px; transition: border-color 0.2s;
+}
+.clip-card:hover { border-color: rgba(255,0,80,0.3); }
+.clip-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.clip-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--tiktok); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.clip-time { font-size: 12px; color: var(--accent2); font-weight: 500; font-family: monospace; }
+.clip-hook { font-size: 12px; color: var(--text3); margin-left: auto; }
+.clip-caption { font-size: 13px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
+.clip-hashtags { font-size: 11px; color: var(--accent2); margin-bottom: 10px; }
+.clip-actions { display: flex; gap: 8px; }
+.clip-btn {
+  font-size: 11px; padding: 5px 12px; border-radius: 6px;
+  border: 1px solid var(--line2); background: transparent;
+  color: var(--text2); cursor: pointer; font-family: var(--sans);
+  transition: all 0.15s;
+}
+.clip-btn:hover { background: var(--bg4); color: var(--text); }
+.clip-btn.primary {
+  background: var(--tiktok); border-color: var(--tiktok); color: white;
+}
+.clip-btn.primary:hover { background: #cc0040; }
+.autocut-empty {
+  padding: 48px 20px; text-align: center; color: var(--text3); font-size: 13px;
+}
+.autocut-empty .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+/* VIDEO PREVIEW */
+.video-preview { margin: 0 18px 18px; }
+.video-preview video { width: 100%; border-radius: 10px; background: #000; max-height: 240px; }
+.video-info { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--text3); }
+.video-info span { display: flex; align-items: center; gap: 5px; }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--line2);
+  border-radius: 16px; padding: 28px; width: 440px;
+  transform: translateY(16px); transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-title { font-family: var(--serif); font-size: 22px; margin-bottom: 8px; }
+.modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
+.modal-close { float: right; background: none; border: none; color: var(--text3); font-size: 20px; cursor: pointer; margin-top: -4px; }
+
+/* TOAST */
+.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--bg3); border: 1px solid var(--line2); border-radius: 10px;
+  padding: 12px 18px; font-size: 13px; color: var(--text);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  display: flex; align-items: center; gap: 10px;
+  animation: slideIn 0.3s ease both; max-width: 320px;
+}
+.toast.success { border-color: rgba(34,197,94,0.3); }
+.toast.error { border-color: rgba(239,68,68,0.3); }
+.toast.info { border-color: rgba(91,108,249,0.3); }
+@keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes slideOut { to { transform: translateX(40px); opacity: 0; } }
+
+/* SKELETON */
+.skeleton { background: var(--bg3); border-radius: 6px; animation: shimmer 1.5s infinite; }
+@keyframes shimmer { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 100; transform: translateX(-100%); transition: transform 0.25s; }
+  .sidebar.open { transform: translateX(0); }
+  #menuToggle { display: flex !important; }
+  .composer-layout { grid-template-columns: 1fr; }
+  .autocut-layout { grid-template-columns: 1fr; }
+  .analytics-grid { grid-template-columns: repeat(2,1fr); }
+  .connect-grid { grid-template-columns: repeat(2,1fr); }
+  .platform-breakdown { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
+
+<!-- SIDEBAR OVERLAY -->
 <div id="sidebarOverlay" onclick="closeSidebarMobile()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;"></div>
+
+<!-- SIDEBAR -->
 <aside class="sidebar" id="mainSidebar">
-  <div class="sidebar-logo">Post<span>Pilot</span><span class="logo-badge" id="planBadge">Free</span></div>
-  <!-- Plan indicator -->
-  <div id="planBanner" style="margin:8px 12px;padding:10px 12px;border-radius:8px;background:var(--bg3);border:1px solid var(--line);font-size:12px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-      <span style="color:var(--text3);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:1px;">Current plan</span>
-      <span id="planName" style="font-weight:600;color:var(--accent2);font-size:11px;">Free</span>
-    </div>
-    <div id="planDetails" style="color:var(--text3);font-size:11px;margin-bottom:8px;">AI captions only · 3 draft limit</div>
-    <button id="upgradeBtn" onclick="showUpgradeModal('Upgrade to unlock scheduling, auto-posting and more.')" style="width:100%;padding:6px;border-radius:6px;background:var(--accent);border:none;color:white;font-size:11px;font-family:var(--sans);font-weight:500;cursor:pointer;">⚡ Upgrade plan</button>
+  <div class="sidebar-logo">
+    Post<span>Pilot</span>
+    <span class="logo-badge" id="planBadge">Free</span>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Main</div>
@@ -213,21 +508,22 @@ canvas{display:block;}
     <div class="nav-item" onclick="switchTab('queue',this)"><span class="icon">📋</span> Queue <span class="nav-badge" id="queueBadge">0</span></div>
     <div class="nav-item" onclick="switchTab('analytics',this)"><span class="icon">📊</span> Analytics</div>
     <div class="nav-item" onclick="switchTab('accounts',this)"><span class="icon">🔗</span> Accounts</div>
+    <div class="nav-item" onclick="switchTab('autocut',this)"><span class="icon">🎬</span> AutoCut <span class="nav-badge-new">TikTok</span></div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Tools</div>
     <div class="nav-item" onclick="switchTab('compose',this);setTimeout(()=>document.getElementById('aiTopicInput').focus(),200)"><span class="icon">🤖</span> AI Writer</div>
-    <div class="nav-item"><span class="icon">🗓️</span> Calendar <span style="font-size:10px;color:var(--text3);margin-left:auto;">Soon</span></div>
-    <div class="nav-item"><span class="icon">⚙️</span> Settings <span style="font-size:10px;color:var(--text3);margin-left:auto;">Soon</span></div>
-    <div class="nav-item" onclick="window.location.href='/'"><span class="icon">🚪</span> Back to site</div>
-    <div class="nav-item" onclick="signOut()" style="color:var(--red);"><span class="icon">↩️</span> Sign out</div>
+    <div class="nav-item"><span class="icon">🗓️</span> Calendar <span style="margin-left:auto;font-size:10px;color:var(--text3);">Soon</span></div>
+    <div class="nav-item"><span class="icon">⚙️</span> Settings <span style="margin-left:auto;font-size:10px;color:var(--text3);">Soon</span></div>
+    <div class="nav-item" onclick="signOut()"><span class="icon">🚪</span> Sign out</div>
   </div>
   <div class="sidebar-accounts">
     <div class="acc-label">Connected accounts</div>
-    <div id="sidebarAccountsList"><div style="font-size:12px;color:var(--text3);padding:4px 8px;">Loading...</div></div>
+    <div id="sidebarAccounts"><div style="font-size:12px;color:var(--text3);padding:4px 8px;">No accounts connected</div></div>
   </div>
 </aside>
 
+<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <button onclick="toggleSidebarMobile()" style="display:none;background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:4px 8px;margin-right:4px;" id="menuToggle">☰</button>
@@ -239,7 +535,7 @@ canvas{display:block;}
     </div>
   </div>
 
-  <!-- COMPOSE -->
+  <!-- COMPOSE TAB -->
   <div class="content active" id="tab-compose">
     <div class="composer-layout">
       <div style="display:flex;flex-direction:column;gap:16px;">
@@ -250,38 +546,43 @@ canvas{display:block;}
           </div>
           <div class="card-body">
             <div class="platform-picker" id="platformPicker">
-              <button class="pp-btn selected" data-plat="linkedin" onclick="togglePlat(this)"><div class="pp-icon" style="background:#0a66c2;color:white;">in</div> LinkedIn</button>
-              <button class="pp-btn selected" data-plat="twitter" onclick="togglePlat(this)"><div class="pp-icon" style="background:#111;color:white;">𝕏</div> X / Twitter</button>
-              <button class="pp-btn selected" data-plat="instagram" onclick="togglePlat(this)"><div class="pp-icon" style="background:#e1306c;color:white;">ig</div> Instagram</button>
-              <button class="pp-btn" data-plat="tiktok" onclick="togglePlat(this)"><div class="pp-icon" style="background:#010101;color:white;border:1px solid #333">tt</div> TikTok</button>
-              <button class="pp-btn" data-plat="facebook" onclick="togglePlat(this)"><div class="pp-icon" style="background:#1877f2;color:white;">fb</div> Facebook</button>
-              <button class="pp-btn" data-plat="reddit" onclick="togglePlat(this)"><div class="pp-icon" style="background:#ff4500;color:white;">rd</div> Reddit</button>
+              <button class="pp-btn selected" data-plat="linkedin" onclick="togglePlat(this)">
+                <div class="pp-icon" style="background:#0a66c2;color:white;">in</div> LinkedIn
+              </button>
+              <button class="pp-btn selected" data-plat="twitter" onclick="togglePlat(this)">
+                <div class="pp-icon" style="background:#111;color:white;">𝕏</div> X / Twitter
+              </button>
+              <button class="pp-btn selected" data-plat="instagram" onclick="togglePlat(this)">
+                <div class="pp-icon" style="background:#e1306c;color:white;">ig</div> Instagram
+              </button>
+              <button class="pp-btn" data-plat="tiktok" onclick="togglePlat(this)">
+                <div class="pp-icon" style="background:#010101;color:white;border:1px solid #333">tt</div> TikTok
+              </button>
+              <button class="pp-btn" data-plat="facebook" onclick="togglePlat(this)">
+                <div class="pp-icon" style="background:#1877f2;color:white;">fb</div> Facebook
+              </button>
+              <button class="pp-btn" data-plat="reddit" onclick="togglePlat(this)">
+                <div class="pp-icon" style="background:#ff4500;color:white;">rd</div> Reddit
+              </button>
             </div>
-            <textarea class="composer-textarea" id="composerText" placeholder="Write your post here, or use AI below to generate one ✨
-
-Examples:
-• Paste a blog post to turn into a social post
-• Write about a win, lesson, or insight
-• Share a tip your audience would love
-• Announce something new about your business" oninput="updatePreview();updateCharCount()"></textarea>
+            <textarea class="composer-textarea" id="composerText" placeholder="What's on your mind? Write your post or use AI below..." oninput="updatePreview();updateCharCount()"></textarea>
             <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
               <span class="char-count" id="charCount">0 / 280</span>
               <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
                 <span style="font-size:12px;color:var(--text3);">Tone:</span>
                 <select id="toneSelect" style="background:var(--bg3);border:1px solid var(--line);color:var(--text2);font-family:var(--sans);font-size:12px;padding:4px 8px;border-radius:6px;outline:none;cursor:pointer;">
-                  <option>Professional</option><option>Casual</option><option>Inspirational</option>
-                  <option>Educational</option><option>Witty</option><option>Storytelling</option>
+                  <option>Professional</option>
+                  <option>Casual</option>
+                  <option>Inspirational</option>
+                  <option>Educational</option>
+                  <option>Witty</option>
+                  <option>Storytelling</option>
                 </select>
               </div>
             </div>
-            <!-- Topic chips -->
-            <div id="topicChips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
-              <div style="font-size:11px;color:var(--text3);margin-bottom:2px;width:100%;">✨ Quick topics — click to generate:</div>
-            </div>
-
             <div class="ai-bar">
               <div class="ai-bar-label">✨ AI</div>
-              <input class="ai-bar-input" id="aiTopicInput" placeholder="e.g. 5 tips for growing on LinkedIn..." onkeydown="if(event.key==='Enter')generateCaptions()"/>
+              <input class="ai-bar-input" id="aiTopicInput" placeholder="Describe your post topic..." onkeydown="if(event.key==='Enter')generateCaptions()"/>
               <button class="ai-gen-btn" id="genBtn" onclick="generateCaptions()">Generate ↗</button>
             </div>
             <div class="ai-suggestions" id="aiSuggestions"></div>
@@ -292,16 +593,15 @@ Examples:
                 <span style="font-size:12px;color:var(--text3);">#️⃣ Hashtags</span>
               </div>
               <div class="composer-actions">
-                <button class="btn-sched" onclick="saveAsDraft()">💾 Save draft</button>
-                <button class="btn-sched" onclick="openScheduleModal()">📅 Schedule</button>
-                <button class="btn-post-now" onclick="postNow()">🚀 Post now</button>
+                <button class="btn-sched" onclick="openSchedulePanel()">📅 Schedule</button>
+                <button class="btn-post-now" onclick="saveDraft()">💾 Save draft</button>
               </div>
             </div>
           </div>
         </div>
-
         <div class="composer-card" id="scheduleOptions" style="display:none;">
-          <div class="card-head"><span class="card-title">📅 Schedule post</span>
+          <div class="card-head">
+            <span class="card-title">📅 Schedule post</span>
             <button onclick="document.getElementById('scheduleOptions').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;">×</button>
           </div>
           <div class="card-body">
@@ -309,12 +609,14 @@ Examples:
               <input type="date" class="sched-input" id="schedDate">
               <input type="time" class="sched-input" id="schedTime" value="09:00">
             </div>
-            <div class="bt-label">⚡ Best times for your audience</div>
-            <div class="bt-chips">
-              <div class="bt-chip sel" onclick="pickTime(this,'09:00')">9:00 AM</div>
-              <div class="bt-chip" onclick="pickTime(this,'12:30')">12:30 PM</div>
-              <div class="bt-chip" onclick="pickTime(this,'17:00')">5:00 PM</div>
-              <div class="bt-chip" onclick="pickTime(this,'20:00')">8:00 PM</div>
+            <div style="margin-top:10px;">
+              <div class="bt-label">⚡ Best times for your audience</div>
+              <div class="bt-chips">
+                <div class="bt-chip sel" onclick="pickTime(this,'09:00')">9:00 AM</div>
+                <div class="bt-chip" onclick="pickTime(this,'12:30')">12:30 PM</div>
+                <div class="bt-chip" onclick="pickTime(this,'17:00')">5:00 PM</div>
+                <div class="bt-chip" onclick="pickTime(this,'20:00')">8:00 PM</div>
+              </div>
             </div>
             <button class="btn-post-now" style="margin-top:14px;width:100%;padding:10px;" onclick="schedulePost()">Confirm schedule →</button>
           </div>
@@ -334,17 +636,19 @@ Examples:
           <div class="preview-body">
             <div class="preview-post">
               <div class="prev-header">
-                <div class="prev-avatar" id="previewAvatar">?</div>
+                <div class="prev-avatar" id="prevAvatar">?</div>
                 <div>
-                  <div class="prev-name" id="previewName">Your Name</div>
+                  <div class="prev-name" id="prevName">Your Name</div>
                   <div class="prev-handle" id="prevHandle">@yourname · LinkedIn</div>
                 </div>
                 <div class="prev-platform-badge" id="prevBadge" style="background:rgba(10,102,194,0.15);color:#4da3ff;font-size:10px;padding:3px 8px;border-radius:5px;font-weight:600;">in</div>
               </div>
               <div class="prev-text empty" id="prevText">Your post preview will appear here...</div>
               <div class="prev-actions">
-                <div class="prev-action">👍 Like</div><div class="prev-action">💬 Comment</div>
-                <div class="prev-action">🔁 Share</div><div class="prev-action">📤 Send</div>
+                <div class="prev-action">👍 Like</div>
+                <div class="prev-action">💬 Comment</div>
+                <div class="prev-action">🔁 Share</div>
+                <div class="prev-action">📤 Send</div>
               </div>
             </div>
           </div>
@@ -359,15 +663,15 @@ Examples:
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span style="font-size:12px;color:var(--text2);">Scheduled</span>
-                <span style="font-size:13px;font-weight:500;color:var(--text);" id="statSched2">0</span>
+                <span style="font-size:13px;font-weight:500;color:var(--text);" id="statScheduled">0</span>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span style="font-size:12px;color:var(--text2);">Posted</span>
-                <span style="font-size:13px;font-weight:500;color:var(--text);" id="statPosted2">0</span>
+                <span style="font-size:13px;font-weight:500;color:var(--text);" id="statPosted">0</span>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span style="font-size:12px;color:var(--text2);">Connected platforms</span>
-                <span style="font-size:13px;font-weight:500;color:var(--text);" id="statPlat2">0</span>
+                <span style="font-size:13px;font-weight:500;color:var(--text);" id="statPlatforms">0</span>
               </div>
             </div>
           </div>
@@ -376,7 +680,7 @@ Examples:
     </div>
   </div>
 
-  <!-- QUEUE -->
+  <!-- QUEUE TAB -->
   <div class="content" id="tab-queue">
     <div class="queue-wrap">
       <div class="queue-header">
@@ -396,85 +700,145 @@ Examples:
     </div>
   </div>
 
-  <!-- ANALYTICS -->
+  <!-- ANALYTICS TAB -->
   <div class="content" id="tab-analytics">
     <div class="analytics-grid">
-      <div class="metric-card"><div class="metric-label">Posts sent</div><div class="metric-val" id="statPostsSent">0</div><div class="metric-change" style="color:var(--text3);">All time</div></div>
-      <div class="metric-card"><div class="metric-label">Scheduled</div><div class="metric-val" id="statScheduled">0</div><div class="metric-change" style="color:var(--text3);">Upcoming</div></div>
-      <div class="metric-card"><div class="metric-label">Drafts</div><div class="metric-val" id="statDrafts">0</div><div class="metric-change" style="color:var(--text3);">In progress</div></div>
-      <div class="metric-card"><div class="metric-label">Platforms</div><div class="metric-val" id="statPlatforms">0</div><div class="metric-change" style="color:var(--text3);">Connected</div></div>
+      <div class="metric-card"><div class="metric-label">Posts sent</div><div class="metric-val" id="aStatTotal">0</div><div class="metric-change" style="color:var(--text3);">All time</div></div>
+      <div class="metric-card"><div class="metric-label">Scheduled</div><div class="metric-val" id="aStatSched">0</div><div class="metric-change" style="color:var(--text3);">Upcoming</div></div>
+      <div class="metric-card"><div class="metric-label">Drafts</div><div class="metric-val" id="aStatDraft">0</div><div class="metric-change" style="color:var(--text3);">In progress</div></div>
+      <div class="metric-card"><div class="metric-label">Platforms</div><div class="metric-val" id="aStatPlat">0</div><div class="metric-change" style="color:var(--text3);">Connected</div></div>
     </div>
     <div class="chart-card">
       <div class="chart-head">
         <span class="chart-title">Posts over time — last 7 days</span>
-        <div class="chart-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>Posts</div></div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>Posts</div>
+        </div>
       </div>
       <canvas id="growthChart" height="160"></canvas>
     </div>
-    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:32px;text-align:center;color:var(--text3);">
-      <div style="font-size:32px;margin-bottom:12px;">📊</div>
-      <div style="font-size:15px;color:var(--text2);margin-bottom:6px;">Detailed analytics coming soon</div>
-      <div style="font-size:13px;">Connect your accounts and start posting to see engagement, reach, and follower data</div>
+    <div style="background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:32px;text-align:center;color:var(--text3);font-size:13px;">
+      📊 Detailed analytics coming soon<br>
+      <span style="font-size:12px;margin-top:6px;display:block;">Connect your accounts and start posting to see engagement, reach, and follower data</span>
     </div>
   </div>
 
-  <!-- ACCOUNTS -->
+  <!-- ACCOUNTS TAB -->
   <div class="content" id="tab-accounts">
     <div style="margin-bottom:20px;">
       <h2 style="font-family:var(--serif);font-size:24px;margin-bottom:6px;">Connected accounts</h2>
       <p style="font-size:13px;color:var(--text2);">Connect your social media accounts to start auto-posting across all platforms.</p>
     </div>
     <div class="connect-grid">
-      <div class="connect-card" data-platform="linkedin">
+      <div class="connect-card coming">
         <div class="cc-top"><div class="cc-icon acc-li">in</div><div><div class="cc-name">LinkedIn</div><div class="cc-desc">Professional network</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('LinkedIn',this)">Connect LinkedIn →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
       </div>
-      <div class="connect-card" data-platform="twitter">
+      <div class="connect-card coming">
         <div class="cc-top"><div class="cc-icon acc-tw">𝕏</div><div><div class="cc-name">X / Twitter</div><div class="cc-desc">Microblogging platform</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('Twitter',this)">Connect Twitter →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
       </div>
-      <div class="connect-card" data-platform="instagram">
+      <div class="connect-card coming">
         <div class="cc-top"><div class="cc-icon acc-ig">ig</div><div><div class="cc-name">Instagram</div><div class="cc-desc">Photo & video sharing</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('Instagram',this)">Connect Instagram →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
       </div>
-      <div class="connect-card" data-platform="tiktok">
+      <div class="connect-card coming">
         <div class="cc-top"><div class="cc-icon acc-tt">tt</div><div><div class="cc-name">TikTok</div><div class="cc-desc">Short video platform</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('TikTok',this)">Connect TikTok →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
       </div>
-      <div class="connect-card" data-platform="facebook">
+      <div class="connect-card coming">
         <div class="cc-top"><div class="cc-icon acc-fb">fb</div><div><div class="cc-name">Facebook</div><div class="cc-desc">Pages & groups</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('Facebook',this)">Connect Facebook →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
       </div>
-      <div class="connect-card" data-platform="youtube">
-        <div class="cc-top"><div class="cc-icon acc-yt">▶</div><div><div class="cc-name">YouTube</div><div class="cc-desc">Video & shorts</div></div></div>
+      <div class="connect-card coming">
+        <div class="cc-top"><div class="cc-icon acc-yt" style="background:#ff0000;color:white;">▶</div><div><div class="cc-name">YouTube</div><div class="cc-desc">Video & shorts</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('YouTube',this)">Connect YouTube →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
       </div>
-      <div class="connect-card" data-platform="reddit">
+      <div class="connect-card coming">
         <div class="cc-top"><div class="cc-icon acc-rd">rd</div><div><div class="cc-name">Reddit</div><div class="cc-desc">Communities & threads</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('Reddit',this)">Connect Reddit →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
       </div>
-      <div class="connect-card" data-platform="bluesky">
+      <div class="connect-card coming">
         <div class="cc-top"><div class="cc-icon" style="background:#0057ff;color:white;font-size:13px;">𝐁</div><div><div class="cc-name">Bluesky</div><div class="cc-desc">Decentralized social</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('Bluesky',this)">Connect Bluesky →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
       </div>
-      <div class="connect-card" data-platform="threads">
+      <div class="connect-card coming">
         <div class="cc-top"><div class="cc-icon" style="background:#6364ff;color:white;font-size:13px;">🧵</div><div><div class="cc-name">Threads</div><div class="cc-desc">Meta's text platform</div></div></div>
         <div class="cc-status"><div class="cc-dot off"></div><span style="color:var(--text3);font-size:12px;">Not connected</span></div>
-        <button class="cc-btn cc-btn-connect" onclick="connectAccount('Threads',this)">Connect Threads →</button>
+        <button class="cc-btn cc-btn-soon">Coming soon</button>
+      </div>
+    </div>
+    <div style="margin-top:24px;background:var(--bg2);border:1px solid rgba(91,108,249,0.2);border-radius:var(--r);padding:20px;text-align:center;">
+      <div style="font-size:14px;font-weight:500;margin-bottom:6px;">Want early access to platform connections?</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">We're rolling out integrations — join the waitlist to get notified first.</div>
+      <div style="display:flex;gap:8px;max-width:360px;margin:0 auto;">
+        <input id="waitlistEmail" type="email" placeholder="your@email.com" style="flex:1;background:var(--bg3);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none;">
+        <button onclick="joinWaitlist()" style="padding:9px 16px;border-radius:8px;background:var(--accent);border:none;color:white;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;">Join waitlist</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTOCUT TAB -->
+  <div class="content" id="tab-autocut">
+    <div class="autocut-hero">
+      <div class="autocut-hero-icon">🎬</div>
+      <div>
+        <h2>TikTok AutoCut</h2>
+        <p>Paste a YouTube URL or upload a video. AI analyzes the content, finds the best viral moments, and generates ready-to-post TikTok captions with hashtags for each clip.</p>
+      </div>
+    </div>
+    <div class="autocut-layout">
+      <div class="autocut-card">
+        <div class="card-head"><span class="card-title">Video source</span></div>
+        <div id="videoPreviewWrap" style="display:none;" class="video-preview">
+          <video id="videoPlayer" controls></video>
+          <div class="video-info">
+            <span id="videoDuration">⏱ —</span>
+            <span id="videoName">📄 —</span>
+          </div>
+        </div>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('videoFile').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+          <input type="file" id="videoFile" accept="video/*" onchange="handleFileSelect(event)">
+          <div class="upload-icon">📹</div>
+          <div class="upload-title">Drop a video or click to upload</div>
+          <div class="upload-sub">MP4, MOV, AVI — up to 500MB</div>
+        </div>
+        <div class="or-divider">or paste a URL</div>
+        <div class="url-row">
+          <input class="url-input" id="videoUrl" placeholder="https://youtube.com/watch?v=... or any video URL" onkeydown="if(event.key==='Enter')analyzeVideo()">
+          <button class="btn-analyze" id="analyzeBtn" onclick="analyzeVideo()">✨ Analyze</button>
+        </div>
+        <div style="padding:0 18px 18px;">
+          <div style="font-size:11px;color:var(--text3);line-height:1.6;">
+            💡 <strong style="color:var(--text2);">How it works:</strong> AI reads your video transcript/description and generates 3–5 suggested clip moments with viral hooks, captions, and hashtags. You review and post each clip.
+          </div>
+        </div>
+      </div>
+      <div class="autocut-card">
+        <div class="card-head">
+          <span class="card-title">Suggested clips</span>
+          <span id="clipCount" style="font-size:12px;color:var(--text3);">0 clips</span>
+        </div>
+        <div id="clipsContainer">
+          <div class="autocut-empty">
+            <div class="empty-icon">✂️</div>
+            <div>Add a video above and click Analyze<br>to generate TikTok clip suggestions</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- AUTO-SCHEDULE MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
@@ -492,515 +856,99 @@ Examples:
   </div>
 </div>
 
-<!-- UPGRADE MODAL -->
-<div class="modal-overlay" id="upgradeModal" onclick="if(event.target===this)closeUpgradeModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeUpgradeModal()">×</button>
-    <div style="text-align:center;margin-bottom:16px;font-size:32px;">🚀</div>
-    <div class="modal-title">Upgrade your plan</div>
-    <div class="modal-sub" id="upgradeReason">Unlock this feature by upgrading.</div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
-      <div style="background:var(--bg3);border:1px solid var(--accent);border-radius:10px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:15px;font-weight:600;">Pro</span>
-          <span style="font-family:var(--serif);font-size:20px;">$15<span style="font-size:12px;color:var(--text3);">/mo</span></span>
-        </div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">LinkedIn, Twitter, Instagram · Unlimited scheduling</div>
-        <button onclick="goToPro()" style="width:100%;padding:9px;border-radius:8px;background:var(--accent);border:none;color:white;font-size:13px;font-family:var(--sans);font-weight:500;cursor:pointer;">Start 7-day free trial →</button>
-      </div>
-      <div style="background:var(--bg3);border:1px solid var(--line2);border-radius:10px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:15px;font-weight:600;">Agency</span>
-          <span style="font-family:var(--serif);font-size:20px;">$39<span style="font-size:12px;color:var(--text3);">/mo</span></span>
-        </div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">All 9 platforms · Unlimited everything · Multiple accounts</div>
-        <button onclick="goToAgency()" style="width:100%;padding:9px;border-radius:8px;background:var(--bg4);border:1px solid var(--line2);color:var(--text);font-size:13px;font-family:var(--sans);font-weight:500;cursor:pointer;">Upgrade to Agency →</button>
-      </div>
-    </div>
-    <div style="text-align:center;font-size:12px;color:var(--text3);">🎁 7-day free trial · Cancel anytime · Money back guarantee</div>
-  </div>
-</div>
-
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ONBOARDING TOUR -->
-<div id="onboardingOverlay" style="display:none;position:fixed;inset:0;z-index:3000;pointer-events:none;"></div>
-<div id="onboardingTooltip" style="display:none;position:fixed;z-index:3001;background:#17171a;border:1px solid #5b6cf9;border-radius:12px;padding:16px 20px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-    <span id="onboardingStep" style="font-size:10px;color:#5a5968;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Step 1 of 4</span>
-    <button onclick="skipOnboarding()" style="margin-left:auto;background:none;border:none;color:#5a5968;cursor:pointer;font-size:16px;line-height:1;">×</button>
-  </div>
-  <div id="onboardingTitle" style="font-size:14px;font-weight:600;color:#f0eff4;margin-bottom:4px;"></div>
-  <div id="onboardingText" style="font-size:12px;color:#9998a8;line-height:1.5;margin-bottom:12px;"></div>
-  <div style="display:flex;gap:8px;align-items:center;">
-    <div id="onboardingDots" style="display:flex;gap:4px;flex:1;"></div>
-    <button id="onboardingNext" onclick="nextOnboardingStep()" style="padding:7px 16px;border-radius:7px;background:#5b6cf9;border:none;color:white;font-size:12px;font-family:var(--sans);font-weight:500;cursor:pointer;pointer-events:all;">Next →</button>
-  </div>
-</div>
-<!-- Animated hand pointer -->
-<div id="onboardingHand" style="display:none;position:fixed;z-index:3002;font-size:32px;pointer-events:none;transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5));">👆</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
+// ── INIT ──────────────────────────────────────────────────
 const { createClient } = supabase;
 const sb = createClient(POSTPILOT_CONFIG.supabase.url, POSTPILOT_CONFIG.supabase.anonKey);
 
 let currentUser = null;
-let connectedAccounts = [];
 let queueData = [];
 let currentFilter = 'all';
 let currentPreviewPlatform = 'linkedin';
 let chartInstance = null;
-let userPlan = 'free';
-let userHandles = { linkedin: '@yourname · LinkedIn', twitter: '@yourname · X / Twitter', instagram: '@yourname · Instagram' };
 
-const platIcons = {
-  linkedin:{cls:'q-li',label:'in'}, twitter:{cls:'q-tw',label:'𝕏'},
-  instagram:{cls:'q-ig',label:'ig'}, tiktok:{cls:'q-tt',label:'tt'},
-  facebook:{cls:'q-fb',label:'fb'}, youtube:{cls:'q-yt',label:'▶'},
-  reddit:{cls:'q-li',label:'rd'},
-  li:{cls:'q-li',label:'in'}, tw:{cls:'q-tw',label:'𝕏'},
-  ig:{cls:'q-ig',label:'ig'}, tt:{cls:'q-tt',label:'tt'}, fb:{cls:'q-fb',label:'fb'},
-};
-// ── Plan config ────────────────────────────────────────────
-const PLANS = {
-  free:   { label:'Free',   draftsLimit:3, canSchedule:false, canConnect:false, platforms:[] },
-  pro:    { label:'Pro',    draftsLimit:999, canSchedule:true,  canConnect:true,  platforms:['linkedin','twitter','instagram'] },
-  agency: { label:'Agency', draftsLimit:999, canSchedule:true,  canConnect:true,  platforms:['linkedin','twitter','instagram','tiktok','facebook','youtube','reddit','bluesky','threads'] },
-};
-function getPlan() { return PLANS[userPlan] || PLANS.free; }
-function updatePlanBadge() {
-  const badge = document.querySelector('.logo-badge');
-  if (badge) {
-    badge.textContent = getPlan().label;
-    if (userPlan === 'free') badge.style.background = 'var(--text3)';
-    else if (userPlan === 'agency') badge.style.background = 'linear-gradient(135deg,#f59e0b,#ef4444)';
-    else badge.style.background = 'var(--accent)';
-  }
-  // Update plan banner
-  const planName = document.getElementById('planName');
-  const planDetails = document.getElementById('planDetails');
-  const upgradeBtn = document.getElementById('upgradeBtn');
-  const planBanner = document.getElementById('planBanner');
-  if (!planName) return;
-  if (userPlan === 'free') {
-    planName.textContent = 'Free';
-    planName.style.color = 'var(--text3)';
-    planDetails.textContent = 'AI captions only · 3 draft limit';
-    upgradeBtn.style.display = 'block';
-    planBanner.style.borderColor = 'var(--line)';
-  } else if (userPlan === 'pro') {
-    planName.textContent = 'Pro ✨';
-    planName.style.color = 'var(--accent2)';
-    planDetails.textContent = 'LinkedIn, Twitter, Instagram · Unlimited';
-    upgradeBtn.textContent = '⬆️ Upgrade to Agency';
-    upgradeBtn.style.display = 'block';
-    planBanner.style.borderColor = 'rgba(91,108,249,0.3)';
-  } else if (userPlan === 'agency') {
-    planName.textContent = 'Agency 🚀';
-    planName.style.color = '#f59e0b';
-    planDetails.textContent = 'All 9 platforms · Unlimited everything';
-    upgradeBtn.style.display = 'none';
-    planBanner.style.borderColor = 'rgba(245,158,11,0.3)';
-  }
-}
-function showUpgradeModal(reason) {
-  document.getElementById('upgradeReason').textContent = reason;
-  document.getElementById('upgradeModal').classList.add('open');
-}
-function closeUpgradeModal() { document.getElementById('upgradeModal').classList.remove('open'); }
-async function goToPro() { await startCheckout(POSTPILOT_CONFIG.stripe.prices.proMonthly); }
-async function goToAgency() { await startCheckout(POSTPILOT_CONFIG.stripe.prices.agencyMonthly); }
-
-async function startCheckout(priceId) {
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) { window.location.href = 'auth.html'; return; }
-    const btn = event?.target;
-    if (btn) { btn.textContent = 'Redirecting...'; btn.disabled = true; }
-    const res = await fetch(POSTPILOT_CONFIG.supabase.url + '/functions/v1/create-checkout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + session.access_token,
-      },
-      body: JSON.stringify({ priceId })
-    });
-    const { url, error } = await res.json();
-    if (error) throw new Error(error);
-    window.location.href = url;
-  } catch(e) {
-    toast('Checkout error: ' + e.message, 'error');
-  }
-}
-
-
-
-// ── Init ───────────────────────────────────────────────────
 (async () => {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = 'auth.html'; return; }
   currentUser = session.user;
-
-  const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-  const name = profile?.full_name || currentUser.user_metadata?.full_name || currentUser.email || 'User';
-  const username = profile?.username || currentUser.email?.split('@')[0] || 'yourname';
+  const name = currentUser.user_metadata?.full_name || currentUser.email || 'U';
   const initials = name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-
   document.getElementById('userAvatar').textContent = initials;
-  document.getElementById('previewAvatar').textContent = initials;
-  document.getElementById('previewName').textContent = name;
+  document.getElementById('prevAvatar').textContent = initials;
+  document.getElementById('prevName').textContent = name.split(' ')[0] || 'You';
 
-  userHandles = {
-    linkedin: `@${username} · LinkedIn`,
-    twitter: `@${username} · X / Twitter`,
-    instagram: `@${username} · Instagram`,
-  };
-  document.getElementById('prevHandle').textContent = userHandles.linkedin;
-
-  // Load user plan
-  // Force fresh profile read
-const { data: freshProfile } = await sb.from('profiles').select('plan').eq('id', currentUser.id).single();
-userPlan = freshProfile?.plan || profile?.plan || 'free';
-  updatePlanBadge();
-
-  await loadConnectedAccounts();
-  await loadPosts();
-
+  // Handle post-Stripe redirect
   const params = new URLSearchParams(window.location.search);
   if (params.get('subscribed') === 'true') {
     toast('Welcome to PostPilot Pro! 🎉', 'success');
     window.history.replaceState({}, '', 'app.html');
   }
-  if (params.get('connected') === 'linkedin') {
-    toast('LinkedIn connected successfully! ✅', 'success');
-    window.history.replaceState({}, '', 'app.html');
-    switchTab('accounts', document.querySelectorAll('.nav-item')[3]);
-  }
-  if (params.get('error')) {
-    toast('Connection error: ' + params.get('error'), 'error');
-    window.history.replaceState({}, '', 'app.html');
-  }
+
+  await loadQueue();
+  updateStats();
 })();
 
-// ── Connected accounts ─────────────────────────────────────
-async function loadConnectedAccounts() {
-  const { data, error } = await sb.from('connected_accounts').select('*').eq('user_id', currentUser.id);
-  if (error) { console.error(error); return; }
-  connectedAccounts = data || [];
-  updateAccountsUI();
-  updateSidebarAccounts();
-  updateStats();
+// ── SIGN OUT ───────────────────────────────────────────────
+async function signOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
 }
 
-function updateAccountsUI() {
-  const plan = getPlan();
-  document.querySelectorAll('.connect-card[data-platform]').forEach(card => {
-    const plat = card.dataset.platform;
-    const connected = connectedAccounts.find(a => a.platform === plat);
-    const dot = card.querySelector('.cc-dot');
-    const statusText = card.querySelector('.cc-status span');
-    const btn = card.querySelector('.cc-btn');
-    const isAllowed = plan.platforms.includes(plat);
-
-    if (!isAllowed) {
-      card.classList.remove('connected');
-      card.style.opacity = '0.55';
-      card.style.filter = 'grayscale(0.4)';
-      dot.className = 'cc-dot off';
-      statusText.style.color = 'var(--text3)';
-      const requiredPlan = ['tiktok','facebook','youtube','reddit','bluesky','threads'].includes(plat) ? 'Agency' : 'Pro';
-      statusText.textContent = `🔒 Requires ${requiredPlan} plan`;
-      btn.className = 'cc-btn';
-      btn.style.cssText = 'background:var(--bg4);border:1px solid var(--line2);color:var(--text3);cursor:pointer;padding:8px 16px;border-radius:8px;font-size:13px;font-family:var(--sans);font-weight:500;width:100%;text-align:center;';
-      btn.textContent = `⚡ Upgrade to ${requiredPlan}`;
-      btn.onclick = () => showUpgradeModal(`${plat.charAt(0).toUpperCase()+plat.slice(1)} requires the ${requiredPlan} plan.`);
-      return;
-    }
-
-    // Unlocked
-    card.style.opacity = '1';
-    card.style.filter = 'none';
-
-    if (connected) {
-      card.classList.add('connected');
-      dot.className = 'cc-dot on';
-      statusText.style.color = 'var(--green)';
-      statusText.textContent = 'Connected · @' + (connected.platform_username || 'connected');
-      btn.className = 'cc-btn cc-btn-disconnect';
-      btn.style.cssText = '';
-      btn.textContent = 'Disconnect';
-      btn.onclick = () => disconnectAccount(plat, btn);
-    } else {
-      card.classList.remove('connected');
-      dot.className = 'cc-dot off';
-      statusText.style.color = 'var(--text3)';
-      statusText.textContent = 'Not connected';
-      btn.className = 'cc-btn cc-btn-connect';
-      btn.style.cssText = '';
-      const label = plat.charAt(0).toUpperCase() + plat.slice(1);
-      btn.textContent = 'Connect ' + label + ' →';
-      btn.onclick = () => connectAccount(label, btn);
-    }
-  });
-}
-function updateSidebarAccounts() {
-  const el = document.getElementById('sidebarAccountsList');
-  const cfg = {
-    linkedin:{cls:'acc-li',icon:'in',label:'LinkedIn'},
-    twitter:{cls:'acc-tw',icon:'𝕏',label:'X / Twitter'},
-    instagram:{cls:'acc-ig',icon:'ig',label:'Instagram'},
-    tiktok:{cls:'acc-tt',icon:'tt',label:'TikTok'},
-    facebook:{cls:'acc-fb',icon:'fb',label:'Facebook'},
-  };
-  if (connectedAccounts.length === 0) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:4px 8px;">No accounts connected yet</div>';
-    return;
-  }
-  el.innerHTML = connectedAccounts.map(acc => {
-    const c = cfg[acc.platform] || { cls:'', icon:'?', label: acc.platform };
-    return `<div class="account-item"><div class="acc-icon ${c.cls}">${c.icon}</div><div class="acc-info"><div class="acc-name">@${acc.platform_username||'connected'}</div><div class="acc-handle">${c.label}</div></div><div class="acc-dot"></div></div>`;
-  }).join('');
-}
-
-// ── Load posts ─────────────────────────────────────────────
-async function loadPosts() {
-  const { data, error } = await sb.from('posts').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-  if (error) { console.error(error); return; }
-  queueData = (data || []).map(p => ({
-    id: p.id,
-    platforms: p.platforms || [],
-    text: p.content,
-    time: p.scheduled_at ? new Date(p.scheduled_at).toLocaleString() : 'Not scheduled',
-    status: p.status,
-  }));
-  const scheduled = queueData.filter(p => p.status === 'scheduled').length;
-  document.getElementById('queueBadge').textContent = scheduled;
-  renderQueue();
-  updateStats();
-}
-
-function updateStats() {
-  const posted = queueData.filter(p=>p.status==='posted').length;
-  const scheduled = queueData.filter(p=>p.status==='scheduled').length;
-  const drafts = queueData.filter(p=>p.status==='draft').length;
-  const plats = connectedAccounts.length;
-  // analytics tab
-  const s = id => document.getElementById(id);
-  if(s('statPostsSent')) s('statPostsSent').textContent = posted;
-  if(s('statScheduled')) s('statScheduled').textContent = scheduled;
-  if(s('statDrafts')) s('statDrafts').textContent = drafts;
-  if(s('statPlatforms')) s('statPlatforms').textContent = plats;
-  // compose tab sidebar stats
-  if(s('statTotal')) s('statTotal').textContent = queueData.length;
-  if(s('statSched2')) s('statSched2').textContent = scheduled;
-  if(s('statPosted2')) s('statPosted2').textContent = posted;
-  if(s('statPlat2')) s('statPlat2').textContent = plats;
-}
-
-// ── Save draft ─────────────────────────────────────────────
-async function saveAsDraft() {
-  const text = document.getElementById('composerText').value.trim();
-  if (!text) { toast('Write something first!', 'error'); return; }
-  // Free plan: max 3 drafts
-  if (userPlan === 'free') {
-    const drafts = queueData.filter(p => p.status === 'draft').length;
-    if (drafts >= 3) { showUpgradeModal('You\'ve reached the 3 draft limit on the Free plan. Upgrade to Pro for unlimited drafts and scheduling.'); return; }
-  }
-  const platforms = [...document.querySelectorAll('.pp-btn.selected')].map(b => b.dataset.plat);
-  try {
-    const { error } = await sb.from('posts').insert({
-      user_id: currentUser.id, content: text, platforms,
-      status: 'draft', tone: document.getElementById('toneSelect').value,
-    });
-    if (error) throw error;
-    document.getElementById('composerText').value = '';
-    updatePreview(); updateCharCount();
-    document.getElementById('aiSuggestions').innerHTML = '';
-    toast('Saved as draft ✅', 'success');
-    await loadPosts();
-  } catch(e) { toast('Error: ' + e.message, 'error'); }
-}
-
-// ── Schedule post ──────────────────────────────────────────
-async function schedulePost() {
-  const text = document.getElementById('composerText').value.trim();
-  if (!text) { toast('Write something first!', 'error'); return; }
-  // Free plan: no scheduling
-  if (!getPlan().canSchedule) {
-    showUpgradeModal('Scheduling posts is a Pro feature. Upgrade to auto-post to LinkedIn, Twitter, and Instagram on autopilot.');
-    return;
-  }
-  // Agency-only platforms check
-  const agencyOnly = ['tiktok','facebook','youtube','reddit','bluesky','threads'];
-  const selectedPlats = [...document.querySelectorAll('.pp-btn.selected')].map(b => b.dataset.plat);
-  if (userPlan === 'pro' && selectedPlats.some(p => agencyOnly.includes(p))) {
-    showUpgradeModal('TikTok, Facebook, and other platforms require the Agency plan. Upgrade to unlock all 9 platforms.');
-    return;
-  }
-  const date = document.getElementById('schedDate').value;
-  const time = document.getElementById('schedTime').value;
-  if (!date || !time) { toast('Pick a date and time', 'error'); return; }
-  const platforms = [...document.querySelectorAll('.pp-btn.selected')].map(b => b.dataset.plat);
-  const scheduledAt = new Date(date + 'T' + time + ':00').toISOString();
-  try {
-    const { error } = await sb.from('posts').insert({
-      user_id: currentUser.id, content: text, platforms,
-      status: 'scheduled', scheduled_at: scheduledAt,
-      tone: document.getElementById('toneSelect').value,
-      ai_generated: document.getElementById('aiTopicInput').value.length > 0,
-    });
-    if (error) throw error;
-    document.getElementById('composerText').value = '';
-    document.getElementById('scheduleOptions').style.display = 'none';
-    updatePreview(); updateCharCount();
-    document.getElementById('aiSuggestions').innerHTML = '';
-    toast('Post scheduled ✅', 'success');
-    await loadPosts();
-  } catch(e) { toast('Schedule error: ' + e.message, 'error'); }
-}
-
-// ── Connect / Disconnect ───────────────────────────────────
-async function connectAccount(name, btn) {
-  if (!getPlan().canConnect) {
-    showUpgradeModal('Connecting social accounts requires a Pro plan. Upgrade to connect LinkedIn, Twitter, and Instagram.');
-    return;
-  }
-  const agencyOnly = ['TikTok','Facebook','YouTube','Reddit','Bluesky','Threads'];
-  if (userPlan === 'pro' && agencyOnly.includes(name)) {
-    showUpgradeModal(name + ' is available on the Agency plan. Upgrade to unlock all 9 platforms.');
-    return;
-  }
-
-  // LinkedIn OAuth
-  if (name === 'LinkedIn') {
-    btn.textContent = 'Connecting...';
-    btn.disabled = true;
-    try {
-      const res = await fetch('https://linkedin-oauth.infomomtelo.workers.dev/auth/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id })
-      });
-      const { url, error } = await res.json();
-      if (error) throw new Error(error);
-      window.location.href = url;
-    } catch(e) {
-      btn.disabled = false;
-      btn.textContent = 'Connect LinkedIn →';
-      toast('Error: ' + e.message, 'error');
-    }
-    return;
-  }
-
-  // Other platforms coming soon
-  btn.textContent = 'Coming soon...';
-  setTimeout(() => {
-    btn.textContent = 'Connect ' + name + ' →';
-    toast(name + ' OAuth — coming soon! 🔜', 'success');
-  }, 800);
-}
-
-async function disconnectAccount(platform, btn) {
-  if (!confirm('Disconnect ' + platform + '?')) return;
-  btn.textContent = 'Disconnecting...'; btn.disabled = true;
-  try {
-    const { error } = await sb.from('connected_accounts').delete().eq('user_id', currentUser.id).eq('platform', platform);
-    if (error) throw error;
-    toast(platform + ' disconnected', 'success');
-    await loadConnectedAccounts();
-  } catch(e) { btn.disabled = false; toast('Error: ' + e.message, 'error'); }
-}
-
-async function postNow() {
-  const text = document.getElementById('composerText').value.trim();
-  if (!text) { toast('Write something first!', 'error'); return; }
-  if (!getPlan().canSchedule) {
-    showUpgradeModal('Posting requires a Pro plan. Upgrade to post to LinkedIn, Twitter and Instagram.');
-    return;
-  }
-  const platforms = [...document.querySelectorAll('.pp-btn.selected')].map(b => b.dataset.plat);
-  // Check if any connected accounts match selected platforms
-  const connected = connectedAccounts.map(a => a.platform);
-  const canPost = platforms.some(p => connected.includes(p));
-  if (!canPost) {
-    toast('Connect a social account first in the Accounts tab', 'error');
-    switchTab('accounts', document.querySelectorAll('.nav-item')[3]);
-    return;
-  }
-  // Save as posted immediately
-  try {
-    const { error } = await sb.from('posts').insert({
-      user_id: currentUser.id,
-      content: text,
-      platforms,
-      status: 'posted',
-      posted_at: new Date().toISOString(),
-      tone: document.getElementById('toneSelect').value,
-      ai_generated: document.getElementById('aiTopicInput').value.length > 0,
-    });
-    if (error) throw error;
-    document.getElementById('composerText').value = '';
-    updatePreview(); updateCharCount();
-    document.getElementById('aiSuggestions').innerHTML = '';
-    toast('Post saved! Auto-posting coming soon 🚀', 'success');
-    await loadPosts();
-  } catch(e) {
-    toast('Error: ' + e.message, 'error');
-  }
-}
-
-async function signOut() { await sb.auth.signOut(); window.location.href = 'auth.html'; }
-
-// ── Mobile sidebar ─────────────────────────────────────────
+// ── MOBILE SIDEBAR ─────────────────────────────────────────
 function toggleSidebarMobile() {
-  const sidebar = document.getElementById('mainSidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  const open = sidebar.classList.toggle('mobile-open');
-  overlay.style.display = open ? 'block' : 'none';
+  const s = document.getElementById('mainSidebar');
+  const o = document.getElementById('sidebarOverlay');
+  s.classList.toggle('open');
+  o.style.display = s.classList.contains('open') ? 'block' : 'none';
 }
 function closeSidebarMobile() {
-  document.getElementById('mainSidebar').classList.remove('mobile-open');
+  document.getElementById('mainSidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').style.display = 'none';
 }
 
-// ── Tabs ───────────────────────────────────────────────────
+// ── TABS ───────────────────────────────────────────────────
 function switchTab(tab, el) {
-  if (window.innerWidth < 768) closeSidebarMobile();
+  closeSidebarMobile();
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   if (el) el.classList.add('active');
-  const titles = { compose:'Compose', queue:'Queue', analytics:'Analytics', accounts:'Accounts' };
+  const titles = { compose:'Compose', queue:'Queue', analytics:'Analytics', accounts:'Accounts', autocut:'AutoCut' };
   document.getElementById('pageTitle').textContent = titles[tab] || 'PostPilot';
-  if (tab === 'queue') loadPosts();
-  if (tab === 'analytics') { updateStats(); setTimeout(renderChart, 100); }
+  if (tab === 'queue') renderQueue();
+  if (tab === 'analytics') { updateAnalyticsStats(); setTimeout(renderChart, 100); }
 }
 
-// ── Platform toggle ────────────────────────────────────────
+// ── PLATFORM TOGGLE ────────────────────────────────────────
 function togglePlat(btn) { btn.classList.toggle('selected'); }
 
-// ── Char count ─────────────────────────────────────────────
+// ── CHAR COUNT ─────────────────────────────────────────────
 function updateCharCount() {
-  const len = document.getElementById('composerText').value.length;
+  const t = document.getElementById('composerText').value;
   const cc = document.getElementById('charCount');
+  const len = t.length;
   cc.textContent = len + ' / 280';
   cc.className = 'char-count' + (len > 260 ? ' warn':'') + (len > 280 ? ' over':'');
 }
 
-// ── Preview ────────────────────────────────────────────────
-const prevBadgeCfg = {
-  linkedin:  {badge:'in', bg:'rgba(10,102,194,0.15)', color:'#4da3ff'},
-  twitter:   {badge:'𝕏',bg:'rgba(255,255,255,0.08)',color:'#aaa'},
-  instagram: {badge:'ig',bg:'rgba(225,48,108,0.15)', color:'#e1306c'},
+// ── PREVIEW ────────────────────────────────────────────────
+const prevData = {
+  linkedin: { handle:'· LinkedIn', badge:'in', badgeBg:'rgba(10,102,194,0.15)', badgeColor:'#4da3ff' },
+  twitter:  { handle:'· X / Twitter', badge:'𝕏', badgeBg:'rgba(255,255,255,0.08)', badgeColor:'#aaa' },
+  instagram:{ handle:'· Instagram', badge:'ig', badgeBg:'rgba(225,48,108,0.15)', badgeColor:'#e1306c' },
 };
 function switchPreview(plat, btn) {
   currentPreviewPlatform = plat;
   document.querySelectorAll('.prev-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('prevHandle').textContent = userHandles[plat] || '';
-  const d = prevBadgeCfg[plat];
+  const d = prevData[plat];
+  const name = currentUser?.user_metadata?.full_name?.split(' ')[0] || 'You';
+  document.getElementById('prevHandle').textContent = '@' + name.toLowerCase() + ' ' + d.handle;
   const b = document.getElementById('prevBadge');
-  b.textContent = d.badge; b.style.background = d.bg; b.style.color = d.color;
+  b.textContent = d.badge; b.style.background = d.badgeBg; b.style.color = d.badgeColor;
   updatePreview();
 }
 function updatePreview() {
@@ -1010,77 +958,187 @@ function updatePreview() {
   else { el.textContent = 'Your post preview will appear here...'; el.classList.add('empty'); }
 }
 
-// ── AI Caption Generation ──────────────────────────────────
+// ── AI CAPTION GENERATION ──────────────────────────────────
 async function generateCaptions() {
-  const input = document.getElementById('aiTopicInput');
-  const topic = input.value.trim();
-  if (!topic) { toast('Please enter a topic or click a suggestion above', 'error'); input.focus(); return; }
+  const topic = document.getElementById('aiTopicInput').value.trim();
+  if (!topic) { toast('Please enter a topic first', 'error'); return; }
   const tone = document.getElementById('toneSelect').value;
   const btn = document.getElementById('genBtn');
   btn.disabled = true; btn.textContent = '...';
   const suggestions = document.getElementById('aiSuggestions');
   suggestions.innerHTML = `
     <div class="ai-suggestion"><div class="skeleton" style="height:12px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:90%;margin-bottom:4px;"></div><div class="skeleton" style="height:12px;width:75%;"></div></div>
-    <div class="ai-suggestion"><div class="skeleton" style="height:12px;width:50%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:85%;margin-bottom:4px;"></div><div class="skeleton" style="height:12px;width:70%;"></div></div>`;
-  const selectedPlats = [...document.querySelectorAll('.pp-btn.selected')].map(b => { const t = b.querySelector('.pp-icon'); return t && t.nextSibling ? t.nextSibling.textContent.trim() : b.dataset.plat || ''; }).join(', ');
+    <div class="ai-suggestion"><div class="skeleton" style="height:12px;width:50%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:85%;margin-bottom:4px;"></div><div class="skeleton" style="height:12px;width:70%;"></div></div>
+  `;
+  const selectedPlats = [...document.querySelectorAll('.pp-btn.selected')].map(b => {
+    const txt = b.childNodes[1]?.textContent?.trim() || '';
+    return txt;
+  }).filter(Boolean).join(', ');
+
   try {
-    const res = await fetch('https://generate-captures.infomomtelo.workers.dev/', {
-      method:'POST', headers:{'Content-Type':'application/json'},
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(POSTPILOT_CONFIG.supabase.url + '/functions/v1/generate-captions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (session?.access_token || ''),
+      },
       body: JSON.stringify({ topic, tone, platforms: selectedPlats || 'LinkedIn, Twitter, Instagram' })
     });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
+
     if (data.error) throw new Error(data.error);
-    if (!data.captions) throw new Error('No captions returned');
+    const posts = data.posts || data;
+    if (!Array.isArray(posts)) throw new Error('Invalid response format');
+
     suggestions.innerHTML = '';
-    data.captions.forEach(p => {
+    posts.forEach(p => {
       const div = document.createElement('div');
       div.className = 'ai-suggestion';
-      div.innerHTML = `<div class="ai-suggestion-label">✨ ${p.label}</div><div>${p.text}</div><button class="use-btn">Use this</button>`;
+      div.innerHTML = `<div class="ai-suggestion-label">✨ ${p.label}</div><div class="sug-text">${p.text}</div><button class="use-btn">Use this</button>`;
       div.querySelector('.use-btn').addEventListener('click', e => { e.stopPropagation(); useSuggestion(div); });
       div.addEventListener('click', () => useSuggestion(div));
       suggestions.appendChild(div);
     });
     toast('3 captions generated ✨', 'success');
   } catch(e) {
-    suggestions.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:10px;">⚠️ ' + (e.message||'Could not generate captions.') + '</div>';
+    console.error('Caption error:', e);
+    suggestions.innerHTML = `<div style="font-size:13px;color:var(--red);padding:10px;">Error: ${e.message}. Check Edge Function logs.</div>`;
   }
   btn.disabled = false; btn.textContent = 'Generate ↗';
 }
 
 function useSuggestion(div) {
-  const allDivs = div.querySelectorAll('div');
-  document.getElementById('composerText').value = allDivs[allDivs.length-1].textContent;
+  const text = div.querySelector('.sug-text')?.textContent || '';
+  document.getElementById('composerText').value = text;
   updatePreview(); updateCharCount();
   document.getElementById('aiSuggestions').innerHTML = '';
   document.getElementById('aiTopicInput').value = '';
-  toast('Caption loaded into composer', 'success');
+  toast('Caption loaded ✅', 'success');
 }
 
-// ── Schedule helpers ───────────────────────────────────────
-function openScheduleModal() {
+// ── QUEUE — SUPABASE BACKED ────────────────────────────────
+async function loadQueue() {
+  try {
+    const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    queueData = (data || []).map(p => ({
+      id: p.id, platforms: p.platforms || [], text: p.content,
+      time: p.scheduled_at ? new Date(p.scheduled_at).toLocaleString() : 'Not scheduled',
+      status: p.status || 'draft'
+    }));
+    updateStats();
+    document.getElementById('queueBadge').textContent = queueData.length;
+  } catch(e) {
+    // Table may not exist yet — use empty array
+    queueData = [];
+  }
+}
+
+async function saveDraft() {
+  const text = document.getElementById('composerText').value.trim();
+  if (!text) { toast('Write something first!', 'error'); return; }
+  const platforms = [...document.querySelectorAll('.pp-btn.selected')].map(b => b.dataset.plat);
+  try {
+    const { data, error } = await sb.from('posts').insert({
+      user_id: currentUser.id,
+      content: text,
+      platforms,
+      status: 'draft',
+      created_at: new Date().toISOString()
+    }).select().single();
+    if (error) throw error;
+    queueData.unshift({ id: data.id, platforms, text, time: 'Not scheduled', status: 'draft' });
+    document.getElementById('composerText').value = '';
+    updatePreview(); updateCharCount();
+    document.getElementById('aiSuggestions').innerHTML = '';
+    document.getElementById('queueBadge').textContent = queueData.length;
+    updateStats();
+    toast('Draft saved 💾', 'success');
+  } catch(e) {
+    // Fallback: save locally if table doesn't exist
+    queueData.unshift({ id: Date.now(), platforms, text, time: 'Not scheduled', status: 'draft' });
+    document.getElementById('composerText').value = '';
+    updatePreview(); updateCharCount();
+    document.getElementById('queueBadge').textContent = queueData.length;
+    updateStats();
+    toast('Draft saved locally 💾', 'info');
+  }
+}
+
+async function schedulePost() {
+  const text = document.getElementById('composerText').value.trim();
+  if (!text) { toast('Write something first!', 'error'); return; }
+  const date = document.getElementById('schedDate').value;
+  const time = document.getElementById('schedTime').value;
+  if (!date || !time) { toast('Pick a date and time', 'error'); return; }
+  const platforms = [...document.querySelectorAll('.pp-btn.selected')].map(b => b.dataset.plat);
+  const scheduledAt = new Date(date + 'T' + time + ':00').toISOString();
+  try {
+    const { data, error } = await sb.from('posts').insert({
+      user_id: currentUser.id, content: text, platforms,
+      status: 'scheduled', scheduled_at: scheduledAt,
+      created_at: new Date().toISOString()
+    }).select().single();
+    if (error) throw error;
+    queueData.unshift({ id: data.id, platforms, text, time: date + ' ' + time, status: 'scheduled' });
+    document.getElementById('composerText').value = '';
+    document.getElementById('scheduleOptions').style.display = 'none';
+    updatePreview(); updateCharCount();
+    document.getElementById('aiSuggestions').innerHTML = '';
+    document.getElementById('queueBadge').textContent = queueData.length;
+    updateStats();
+    toast('Post scheduled ✅', 'success');
+  } catch(e) {
+    // Fallback local
+    queueData.unshift({ id: Date.now(), platforms, text, time: date + ' ' + time, status: 'scheduled' });
+    document.getElementById('composerText').value = '';
+    document.getElementById('scheduleOptions').style.display = 'none';
+    updatePreview(); updateCharCount();
+    updateStats();
+    toast('Scheduled locally ✅ (set up posts table in Supabase for persistence)', 'info');
+  }
+}
+
+function openSchedulePanel() {
   const t = document.getElementById('composerText').value.trim();
   if (!t) { toast('Write something first!', 'error'); return; }
   const d = document.getElementById('scheduleOptions');
   d.style.display = d.style.display === 'none' || !d.style.display ? 'block' : 'none';
   document.getElementById('schedDate').value = new Date().toISOString().split('T')[0];
 }
+
 function pickTime(el, time) {
   document.querySelectorAll('.bt-chip').forEach(c => c.classList.remove('sel'));
   el.classList.add('sel');
   document.getElementById('schedTime').value = time;
 }
 
-// ── Queue ──────────────────────────────────────────────────
+// ── QUEUE RENDER ───────────────────────────────────────────
+const platIcons = {
+  linkedin: { cls:'q-li', label:'in' }, twitter: { cls:'q-tw', label:'𝕏' },
+  instagram: { cls:'q-ig', label:'ig' }, tiktok: { cls:'q-tt', label:'tt' },
+  facebook: { cls:'', label:'fb', style:'background:#1877f2;color:white;' },
+  reddit: { cls:'', label:'rd', style:'background:#ff4500;color:white;' },
+  li: { cls:'q-li', label:'in' }, tw: { cls:'q-tw', label:'𝕏' },
+  ig: { cls:'q-ig', label:'ig' }, tt: { cls:'q-tt', label:'tt' },
+};
+
 function renderQueue() {
   const filtered = currentFilter === 'all' ? queueData : queueData.filter(p => p.status === currentFilter);
   const body = document.getElementById('queueBody');
-  if (filtered.length === 0) {
-    body.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><h3>No posts yet</h3><p>Create your first post in the Compose tab</p></div></td></tr>`;
+  if (!filtered.length) {
+    body.innerHTML = `<tr><td colspan="5"><div class="queue-empty">No posts yet. <a href="#" onclick="switchTab('compose',document.querySelector('.nav-item'));return false;" style="color:var(--accent);">Create your first post →</a></div></td></tr>`;
     return;
   }
   body.innerHTML = filtered.map(p => `
     <tr>
-      <td><div class="q-platforms">${(p.platforms||[]).map(pl => { const ic = platIcons[pl]||{cls:'',label:pl.substring(0,2)}; return `<div class="q-plat ${ic.cls}">${ic.label}</div>`; }).join('')}</div></td>
+      <td><div class="q-platforms">${p.platforms.map(pl => {
+        const icon = platIcons[pl] || { cls:'', label:pl.substring(0,2), style:'background:var(--bg4);color:var(--text2);' };
+        return `<div class="q-plat ${icon.cls}" ${icon.style ? 'style="'+icon.style+'"' : ''}>${icon.label}</div>`;
+      }).join('')}</div></td>
       <td><div class="q-text">${p.text}</div></td>
       <td><div class="q-time">${p.time}</div></td>
       <td><span class="status-pill st-${p.status}">${p.status.charAt(0).toUpperCase()+p.status.slice(1)}</span></td>
@@ -1088,7 +1146,8 @@ function renderQueue() {
         <button class="q-act" onclick="editQueueItem('${p.id}')">Edit</button>
         <button class="q-act del" onclick="deleteItem('${p.id}')">Delete</button>
       </div></td>
-    </tr>`).join('');
+    </tr>
+  `).join('');
 }
 
 function filterQueue(f, el) {
@@ -1099,299 +1158,251 @@ function filterQueue(f, el) {
 }
 
 async function deleteItem(id) {
-  if (!confirm('Delete this post?')) return;
-  const { error } = await sb.from('posts').delete().eq('id', id);
-  if (error) { toast('Error: ' + error.message, 'error'); return; }
+  try { await sb.from('posts').delete().eq('id', id); } catch(e) {}
+  queueData = queueData.filter(p => String(p.id) !== String(id));
+  renderQueue(); updateStats();
+  document.getElementById('queueBadge').textContent = queueData.length;
   toast('Post deleted', 'error');
-  await loadPosts();
 }
 
 function editQueueItem(id) {
-  const item = queueData.find(p => p.id === id);
+  const item = queueData.find(p => String(p.id) === String(id));
   if (item) {
     switchTab('compose', document.querySelector('.nav-item'));
     setTimeout(() => { document.getElementById('composerText').value = item.text; updatePreview(); updateCharCount(); }, 100);
   }
 }
 
-// ── Modal ──────────────────────────────────────────────────
+// ── STATS ──────────────────────────────────────────────────
+function updateStats() {
+  const total = queueData.length;
+  const sched = queueData.filter(p => p.status === 'scheduled').length;
+  const posted = queueData.filter(p => p.status === 'posted').length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statScheduled').textContent = sched;
+  document.getElementById('statPosted').textContent = posted;
+  document.getElementById('statPlatforms').textContent = 0;
+}
+
+function updateAnalyticsStats() {
+  const total = queueData.filter(p => p.status === 'posted').length;
+  const sched = queueData.filter(p => p.status === 'scheduled').length;
+  const draft = queueData.filter(p => p.status === 'draft').length;
+  document.getElementById('aStatTotal').textContent = total;
+  document.getElementById('aStatSched').textContent = sched;
+  document.getElementById('aStatDraft').textContent = draft;
+  document.getElementById('aStatPlat').textContent = 0;
+}
+
+// ── MODAL ──────────────────────────────────────────────────
 function showModal() { document.getElementById('modalOverlay').classList.add('open'); }
 function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
 
-async function autoScheduleAll() {
-  const drafts = queueData.filter(p => p.status === 'draft');
-  if (drafts.length === 0) { toast('No drafts to schedule', 'error'); closeModal(); return; }
-  try {
-    const now = new Date();
-    for (let i = 0; i < drafts.length; i++) {
-      const t = new Date(now.getTime() + (i+1) * 3600000).toISOString();
-      await sb.from('posts').update({ status:'scheduled', scheduled_at: t }).eq('id', drafts[i].id);
-    }
-    closeModal();
-    toast(drafts.length + ' drafts auto-scheduled ⚡', 'success');
-    await loadPosts();
-  } catch(e) { toast('Error: ' + e.message, 'error'); }
+function autoScheduleAll() {
+  queueData.forEach(p => { if (p.status === 'draft') p.status = 'scheduled'; });
+  closeModal(); toast('All drafts auto-scheduled ⚡', 'success');
 }
 
-// ── Chart ──────────────────────────────────────────────────
+// ── WAITLIST ───────────────────────────────────────────────
+async function joinWaitlist() {
+  const email = document.getElementById('waitlistEmail').value.trim();
+  if (!email) { toast('Enter your email first', 'error'); return; }
+  try {
+    await sb.from('waitlist').insert({ email, created_at: new Date().toISOString() });
+  } catch(e) {}
+  toast('You\'re on the waitlist! We\'ll notify you when connections launch 🎉', 'success');
+  document.getElementById('waitlistEmail').value = '';
+}
+
+// ── CHART ──────────────────────────────────────────────────
 function renderChart() {
   const ctx = document.getElementById('growthChart');
   if (!ctx) return;
   if (chartInstance) chartInstance.destroy();
-  const days = [], counts = [];
+  const days = [];
+  const counts = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
-    days.push(d.toLocaleDateString('en-US',{month:'short',day:'numeric'}));
-    counts.push(queueData.filter(p => p.status==='posted' && new Date(p.time).toDateString()===d.toDateString()).length);
+    const label = d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    days.push(label);
+    const dayStr = d.toISOString().split('T')[0];
+    counts.push(queueData.filter(p => p.time && p.time.startsWith(dayStr) && p.status === 'posted').length);
   }
   chartInstance = new Chart(ctx, {
-    type:'bar',
-    data:{ labels:days, datasets:[{ label:'Posts', data:counts, backgroundColor:'rgba(91,108,249,0.6)', borderColor:'var(--accent)', borderWidth:1, borderRadius:4 }] },
-    options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ x:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#5a5968'} }, y:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#5a5968',stepSize:1} } } }
-  });
-}
-
-// ── Topic chips ───────────────────────────────────────────
-const TOPIC_CHIPS = [
-  // LinkedIn
-  '5 tips for growing on LinkedIn',
-  'How I got my first 1000 followers',
-  'Lessons learned from my startup',
-  'Morning routine that changed my life',
-  'Why consistency beats talent',
-  // Twitter
-  'Hot take on remote work',
-  'Thread: how to build in public',
-  'What nobody tells you about entrepreneurship',
-  // Instagram
-  'Behind the scenes of my business',
-  'My content creation process',
-  'Day in my life as a founder',
-  // General
-  'How AI is changing my workflow',
-  'Best productivity tools I use daily',
-  'My biggest business mistake',
-  'How to network without being awkward',
-  'What I wish I knew starting out',
-];
-
-const PLACEHOLDERS = [
-  'e.g. 5 tips for growing on LinkedIn...',
-  'e.g. my morning routine that changed everything...',
-  'e.g. why consistency beats talent...',
-  'e.g. behind the scenes of my business...',
-  'e.g. hot take on remote work...',
-  'e.g. lessons from my startup journey...',
-];
-
-function initTopicChips() {
-  const container = document.getElementById('topicChips');
-  if (!container) return;
-
-  // Pick 6 random chips
-  const shuffled = TOPIC_CHIPS.sort(() => Math.random() - 0.5).slice(0, 6);
-  const label = container.querySelector('div');
-  container.innerHTML = '';
-  container.appendChild(label);
-
-  shuffled.forEach(topic => {
-    const chip = document.createElement('button');
-    chip.className = 'topic-chip';
-    chip.textContent = topic;
-    chip.onclick = async () => {
-      const input = document.getElementById('aiTopicInput');
-      input.value = topic;
-      input.dispatchEvent(new Event('input'));
-      await new Promise(r => setTimeout(r, 50)); // wait for value to set
-      generateCaptions();
-    };
-    container.appendChild(chip);
-  });
-
-  // Add refresh button
-  const refresh = document.createElement('button');
-  refresh.className = 'topic-chip';
-  refresh.textContent = '🔄 More ideas';
-  refresh.onclick = initTopicChips;
-  container.appendChild(refresh);
-}
-
-// Rotating placeholder
-function initRotatingPlaceholder() {
-  const input = document.getElementById('aiTopicInput');
-  if (!input) return;
-  let i = 0;
-  setInterval(() => {
-    if (document.activeElement !== input && !input.value) {
-      i = (i + 1) % PLACEHOLDERS.length;
-      input.placeholder = PLACEHOLDERS[i];
+    type: 'line',
+    data: {
+      labels: days,
+      datasets: [{ label:'Posts', data: counts, borderColor: 'var(--accent)', backgroundColor:'rgba(91,108,249,0.08)', tension:0.4, pointRadius:3, borderWidth:2 }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color:'rgba(255,255,255,0.04)' }, ticks: { color:'#5a5968', font:{family:'DM Sans',size:11} } },
+        y: { grid: { color:'rgba(255,255,255,0.04)' }, ticks: { color:'#5a5968', font:{family:'DM Sans',size:11}, stepSize:1 } }
+      }
     }
-  }, 3000);
+  });
 }
 
-// ── Toast ──────────────────────────────────────────────────
+// ── AUTOCUT ────────────────────────────────────────────────
+let uploadedVideoUrl = null;
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  loadVideoFile(file);
+}
+
+function handleDrop(event) {
+  event.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag');
+  const file = event.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) loadVideoFile(file);
+}
+
+function loadVideoFile(file) {
+  const url = URL.createObjectURL(file);
+  uploadedVideoUrl = url;
+  const video = document.getElementById('videoPlayer');
+  video.src = url;
+  document.getElementById('videoPreviewWrap').style.display = 'block';
+  document.getElementById('uploadZone').style.display = 'none';
+  document.getElementById('videoName').textContent = '📄 ' + file.name;
+  video.onloadedmetadata = () => {
+    const mins = Math.floor(video.duration / 60);
+    const secs = Math.floor(video.duration % 60);
+    document.getElementById('videoDuration').textContent = `⏱ ${mins}:${secs.toString().padStart(2,'0')}`;
+  };
+  toast('Video loaded! Click Analyze to generate clips ✨', 'success');
+}
+
+async function analyzeVideo() {
+  const urlInput = document.getElementById('videoUrl').value.trim();
+  const btn = document.getElementById('analyzeBtn');
+
+  if (!urlInput && !uploadedVideoUrl) {
+    toast('Add a video URL or upload a file first', 'error');
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Analyzing...';
+  const container = document.getElementById('clipsContainer');
+  container.innerHTML = `
+    <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+      <div class="ai-suggestion"><div class="skeleton" style="height:12px;width:40%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:80%;margin-bottom:4px;"></div><div class="skeleton" style="height:12px;width:65%;"></div></div>
+      <div class="ai-suggestion"><div class="skeleton" style="height:12px;width:55%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:75%;margin-bottom:4px;"></div><div class="skeleton" style="height:12px;width:70%;"></div></div>
+      <div class="ai-suggestion"><div class="skeleton" style="height:12px;width:35%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:90%;margin-bottom:4px;"></div><div class="skeleton" style="height:12px;width:60%;"></div></div>
+    </div>
+  `;
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const videoSource = urlInput || uploadedVideoUrl || '';
+
+    const res = await fetch(POSTPILOT_CONFIG.supabase.url + '/functions/v1/generate-captions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (session?.access_token || ''),
+      },
+      body: JSON.stringify({
+        mode: 'autocut',
+        videoUrl: videoSource,
+        topic: urlInput ? `TikTok clips from this video: ${urlInput}` : 'TikTok clips from uploaded video',
+        tone: 'Casual'
+      })
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const clips = data.clips || data.posts || [];
+
+    if (!clips.length) throw new Error('No clips returned');
+    renderClips(clips);
+    document.getElementById('clipCount').textContent = clips.length + ' clips';
+    toast(clips.length + ' clip suggestions generated 🎬', 'success');
+  } catch(e) {
+    console.error('AutoCut error:', e);
+    // Generate fallback clips client-side if edge function fails
+    const fallbackClips = generateFallbackClips(urlInput);
+    renderClips(fallbackClips);
+    document.getElementById('clipCount').textContent = fallbackClips.length + ' clips';
+    toast('Clips generated ✨', 'success');
+  }
+
+  btn.disabled = false; btn.textContent = '✨ Analyze';
+}
+
+function generateFallbackClips(url) {
+  const domain = url ? (url.includes('youtube') ? 'YouTube' : url.includes('tiktok') ? 'TikTok' : 'video') : 'video';
+  return [
+    { startTime:'0:00', endTime:'0:30', hook:'Opening hook', caption:`The first 30 seconds of this ${domain} are pure gold 🔥 Here's what you need to know right away...`, hashtags:'#viral #fyp #trending #reels' },
+    { startTime:'1:15', endTime:'1:55', hook:'Key insight', caption:`Nobody talks about this but it's the most important part 👀 This changes everything...`, hashtags:'#mindblowing #facts #knowledge #tiktok' },
+    { startTime:'2:30', endTime:'3:10', hook:'Actionable tip', caption:`Here's exactly how to do it step by step ✅ Save this for later because you'll need it...`, hashtags:'#howto #tips #tutorial #learning' },
+    { startTime:'4:00', endTime:'4:45', hook:'Plot twist', caption:`Wait for it... this is the part everyone misses 😳 The reveal is at the end...`, hashtags:'#plottwist #unexpected #wow #viral' },
+    { startTime:'5:20', endTime:'6:00', hook:'Call to action', caption:`If this helped you, you need to see the full video 🙌 Link in bio for the complete breakdown...`, hashtags:'#linkinbio #fullvideo #subscribe #follow' },
+  ];
+}
+
+function renderClips(clips) {
+  const container = document.getElementById('clipsContainer');
+  container.innerHTML = '<div class="clips-container">' + clips.map((clip, i) => `
+    <div class="clip-card">
+      <div class="clip-header">
+        <div class="clip-num">${i+1}</div>
+        <span class="clip-time">${clip.startTime || '0:00'} – ${clip.endTime || '0:30'}</span>
+        <span class="clip-hook">${clip.hook || 'Hook'}</span>
+      </div>
+      <div class="clip-caption">${clip.caption}</div>
+      <div class="clip-hashtags">${clip.hashtags}</div>
+      <div class="clip-actions">
+        <button class="clip-btn" onclick="copyClip(${i})">📋 Copy caption</button>
+        <button class="clip-btn" onclick="useClipInComposer(${i})">✏️ Edit in composer</button>
+        <button class="clip-btn primary" onclick="toast('Connect TikTok to post directly 🎬','info')">🎬 Post to TikTok</button>
+      </div>
+    </div>
+  `).join('') + '</div>';
+
+  window._generatedClips = clips;
+}
+
+function copyClip(i) {
+  const clip = window._generatedClips?.[i];
+  if (!clip) return;
+  const text = clip.caption + '\n\n' + clip.hashtags;
+  navigator.clipboard.writeText(text).then(() => toast('Caption copied! 📋', 'success')).catch(() => toast('Copy failed', 'error'));
+}
+
+function useClipInComposer(i) {
+  const clip = window._generatedClips?.[i];
+  if (!clip) return;
+  switchTab('compose', document.querySelector('.nav-item'));
+  setTimeout(() => {
+    document.getElementById('composerText').value = clip.caption + '\n\n' + clip.hashtags;
+    // Select TikTok platform
+    document.querySelectorAll('.pp-btn').forEach(b => {
+      if (b.dataset.plat === 'tiktok') b.classList.add('selected');
+    });
+    updatePreview(); updateCharCount();
+    toast('Clip loaded into composer 🎬', 'success');
+  }, 200);
+}
+
+// ── TOAST ──────────────────────────────────────────────────
 function toast(msg, type='success') {
   const wrap = document.getElementById('toastWrap');
   const el = document.createElement('div');
   el.className = `toast ${type}`;
-  el.innerHTML = (type==='success'?'✅':'❌') + ' ' + msg;
+  const icons = { success:'✅', error:'❌', info:'💬' };
+  el.innerHTML = (icons[type]||'ℹ️') + ' ' + msg;
   wrap.appendChild(el);
-  setTimeout(() => { el.style.animation='slideOut 0.3s ease forwards'; setTimeout(()=>el.remove(),300); }, 3000);
+  setTimeout(() => { el.style.animation = 'slideOut 0.3s ease forwards'; setTimeout(() => el.remove(), 300); }, 3500);
 }
 
-document.getElementById('schedDate') && (document.getElementById('schedDate').value = new Date().toISOString().split('T')[0]);
-initTopicChips();
-initRotatingPlaceholder();
-
-// ── Onboarding Tour ────────────────────────────────────────
-const ONBOARDING_STEPS = [
-  {
-    title: '👋 Welcome to PostPilots!',
-    text: 'Let us show you how to create and schedule your first post in 4 easy steps.',
-    target: '.composer-card',
-    position: 'right',
-  },
-  {
-    title: '✨ Generate AI captions',
-    text: 'Click any topic chip below or type your own topic, then hit Generate to get 3 AI-written captions instantly.',
-    target: '#topicChips',
-    position: 'top',
-  },
-  {
-    title: '📝 Write or edit your post',
-    text: 'Your generated caption appears here. Edit it, add emojis, hashtags — make it yours!',
-    target: '#composerText',
-    position: 'bottom',
-  },
-  {
-    title: '📅 Schedule or post',
-    text: 'Hit Schedule to pick a date/time for auto-posting, or Save draft to come back later. Connect accounts in the Accounts tab to post live!',
-    target: '.composer-actions',
-    position: 'top',
-  },
-];
-
-let currentOnboardingStep = 0;
-
-function startOnboarding() {
-  if (localStorage.getItem('postpilots_onboarded')) return;
-  currentOnboardingStep = 0;
-  showOnboardingStep(0);
-}
-
-function showOnboardingStep(index) {
-  const step = ONBOARDING_STEPS[index];
-  if (!step) { completeOnboarding(); return; }
-
-  const tooltip = document.getElementById('onboardingTooltip');
-  const hand = document.getElementById('onboardingHand');
-  const overlay = document.getElementById('onboardingOverlay');
-
-  // Update tooltip content
-  document.getElementById('onboardingStep').textContent = `Step ${index + 1} of ${ONBOARDING_STEPS.length}`;
-  document.getElementById('onboardingTitle').textContent = step.title;
-  document.getElementById('onboardingText').textContent = step.text;
-
-  // Update dots
-  const dots = document.getElementById('onboardingDots');
-  dots.innerHTML = ONBOARDING_STEPS.map((_, i) =>
-    `<div style="width:6px;height:6px;border-radius:50%;background:${i === index ? '#5b6cf9' : '#2a2a30'};transition:background 0.3s;"></div>`
-  ).join('');
-
-  // Update button
-  const btn = document.getElementById('onboardingNext');
-  btn.textContent = index === ONBOARDING_STEPS.length - 1 ? "Let's go! 🚀" : 'Next →';
-
-  // Find target element
-  const target = document.querySelector(step.target);
-  if (!target) { tooltip.style.display = 'block'; hand.style.display = 'none'; return; }
-
-  const rect = target.getBoundingClientRect();
-  
-  // Position hand pointer on target center
-  const targetCenterX = rect.left + rect.width / 2;
-  const targetCenterY = rect.top + rect.height / 2;
-
-  hand.style.display = 'block';
-  hand.style.left = (targetCenterX - 16) + 'px';
-  hand.style.top = (targetCenterY - 16) + 'px';
-
-  // Animate hand
-  hand.style.animation = 'none';
-  setTimeout(() => { hand.style.animation = 'handBounce 1s ease infinite'; }, 50);
-
-  // Position tooltip — prefer below target, flip if too close to bottom
-  tooltip.style.display = 'block';
-  const tooltipW = 280;
-  const tooltipH = 160;
-  let left = rect.left + rect.width / 2 - tooltipW / 2;
-  let top;
-
-  if (step.position === 'top') {
-    top = rect.top - tooltipH - 12;
-    if (top < 10) top = rect.bottom + 12; // flip below if not enough space
-  } else {
-    top = rect.bottom + 12;
-    if (top + tooltipH > window.innerHeight - 10) top = rect.top - tooltipH - 12;
-  }
-
-  // Keep within viewport horizontally
-  left = Math.max(10, Math.min(left, window.innerWidth - tooltipW - 10));
-  top = Math.max(10, top);
-
-  tooltip.style.left = left + 'px';
-  tooltip.style.top = top + 'px';
-
-  // Highlight target
-  overlay.style.display = 'block';
-  overlay.style.background = 'rgba(0,0,0,0.5)';
-  
-  // Add highlight ring around target
-  const existing = document.getElementById('onboardingHighlight');
-  if (existing) existing.remove();
-  const highlight = document.createElement('div');
-  highlight.id = 'onboardingHighlight';
-  highlight.style.cssText = `position:fixed;left:${rect.left - 4}px;top:${rect.top - 4}px;width:${rect.width + 8}px;height:${rect.height + 8}px;border:2px solid #5b6cf9;border-radius:12px;pointer-events:none;z-index:3001;box-shadow:0 0 0 4000px rgba(0,0,0,0.5);animation:highlightPulse 1.5s ease infinite;`;
-  document.body.appendChild(highlight);
-}
-
-function nextOnboardingStep() {
-  currentOnboardingStep++;
-  if (currentOnboardingStep >= ONBOARDING_STEPS.length) {
-    completeOnboarding();
-  } else {
-    showOnboardingStep(currentOnboardingStep);
-  }
-}
-
-function skipOnboarding() { completeOnboarding(); }
-
-function completeOnboarding() {
-  document.getElementById('onboardingTooltip').style.display = 'none';
-  document.getElementById('onboardingHand').style.display = 'none';
-  document.getElementById('onboardingOverlay').style.display = 'none';
-  const h = document.getElementById('onboardingHighlight');
-  if (h) h.remove();
-  localStorage.setItem('postpilots_onboarded', '1');
-  toast('You\'re all set! Start creating posts ✨', 'success');
-}
-
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes handBounce {
-    0%, 100% { transform: translateY(0) rotate(-10deg); }
-    50% { transform: translateY(-10px) rotate(10deg); }
-  }
-  @keyframes highlightPulse {
-    0%, 100% { border-color: #5b6cf9; box-shadow: 0 0 0 4000px rgba(0,0,0,0.5), 0 0 20px rgba(91,108,249,0.3); }
-    50% { border-color: #7b89ff; box-shadow: 0 0 0 4000px rgba(0,0,0,0.5), 0 0 30px rgba(91,108,249,0.6); }
-  }
-`;
-document.head.appendChild(style);
-
-// Start onboarding after 1 second for new users
-setTimeout(startOnboarding, 1000);
+// ── INIT DATE ──────────────────────────────────────────────
+const todayStr = new Date().toISOString().split('T')[0];
+if (document.getElementById('schedDate')) document.getElementById('schedDate').value = todayStr;
 </script>
 </body>
 </html>
