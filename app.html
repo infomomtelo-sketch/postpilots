@@ -556,8 +556,42 @@ main {
   transition: all 0.2s;
   margin-top: 12px;
 }
-
 .btn-restart:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+   
+/* ---- POST TO PLATFORM BUTTONS ---- */
+.post-buttons-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 20px 0 10px;
+}
+#post-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.btn-post {
+  flex: 1 1 calc(50% - 8px);
+  min-width: 120px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+  text-align: center;
+}
+.btn-post:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  transform: translateY(-1px);
+}
 
 </style>
 </head>
@@ -751,6 +785,8 @@ main {
         <button class="btn-copy" onclick="copyCaption()">Copy caption</button>
         <button class="btn-regen" onclick="regenerate()">Try again</button>
       </div>
+       <div class="post-buttons-label">Post to</div>
+      <div id="post-buttons"></div>
     </div>
 
     <button class="btn-restart" onclick="restart()">✦ Create another post</button>
@@ -938,12 +974,102 @@ async function fetchCaption() {
     document.getElementById('caption-output').classList.remove('loading');
     document.getElementById('caption-output').textContent = text;
     document.getElementById('result-actions').style.display = 'flex';
+     renderPostButtons();
   } catch (err) {
     document.getElementById('caption-output').classList.remove('loading');
     document.getElementById('caption-output').textContent = `Something went wrong: ${err.message}`;
   }
 }
 
+// ============================================
+// POST TO PLATFORM — share intents + copy fallback
+// ============================================
+
+// URL builders. Where a platform supports prefilled text, we use it.
+// Everywhere else, we copy the caption and open the platform so the
+// user can paste it themselves.
+const POST_TARGETS = {
+  'X / Twitter': {
+    label: 'X / Twitter',
+    icon: '🐦',
+    buildUrl: (caption) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}`,
+    prefilled: true
+  },
+  'LinkedIn': {
+    label: 'LinkedIn',
+    icon: '💼',
+    buildUrl: () => `https://www.linkedin.com/feed/`,
+    prefilled: false
+  },
+  'Facebook': {
+    label: 'Facebook',
+    icon: '👥',
+    buildUrl: () => `https://www.facebook.com/`,
+    prefilled: false
+  },
+  'Instagram': {
+    label: 'Instagram',
+    icon: '📸',
+    buildUrl: () => `https://www.instagram.com/`,
+    prefilled: false
+  },
+  'TikTok': {
+    label: 'TikTok',
+    icon: '🎵',
+    buildUrl: () => `https://www.tiktok.com/upload`,
+    prefilled: false
+  },
+  'Threads': {
+    label: 'Threads',
+    icon: '🧵',
+    buildUrl: () => `https://www.threads.net/`,
+    prefilled: false
+  },
+  'Reddit': {
+    label: 'Reddit',
+    icon: '👽',
+    buildUrl: (caption) => {
+      const title = caption.split('\n')[0].slice(0, 280);
+      return `https://www.reddit.com/submit?title=${encodeURIComponent(title)}`;
+    },
+    prefilled: true
+  }
+};
+
+function postToPlatform(targetKey) {
+  const target = POST_TARGETS[targetKey];
+  if (!target) return;
+
+  const caption = state.generatedCaption || '';
+
+  // Always copy the caption so it's ready to paste regardless of platform.
+  navigator.clipboard.writeText(caption).catch(() => {});
+
+  const url = target.buildUrl(caption);
+  window.open(url, '_blank');
+
+  // Brief inline feedback on the button that was clicked.
+  const btn = document.getElementById(`post-btn-${targetKey.replace(/[^a-zA-Z]/g, '')}`);
+  if (btn) {
+    const original = btn.innerHTML;
+    btn.innerHTML = target.prefilled
+      ? `✓ Opened`
+      : `✓ Copied — paste it there`;
+    setTimeout(() => { btn.innerHTML = original; }, 2200);
+  }
+}
+
+function renderPostButtons() {
+  const container = document.getElementById('post-buttons');
+  if (!container) return;
+
+  container.innerHTML = Object.keys(POST_TARGETS).map(key => {
+    const t = POST_TARGETS[key];
+    const safeId = `post-btn-${key.replace(/[^a-zA-Z]/g, '')}`;
+    return `<button class="btn-post" id="${safeId}" onclick="postToPlatform('${key}')">${t.icon} ${t.label}</button>`;
+  }).join('');
+}
+   
 
 function copyCaption() {
   navigator.clipboard.writeText(state.generatedCaption).then(() => {
