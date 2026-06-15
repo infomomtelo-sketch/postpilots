@@ -3,26 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PostPilots — AI Content Assistant</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>PostPilots — Write it once. Post it everywhere.</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ============================================
-   RUNP8 BASE CONFIG — swap these to rebrand
-   ============================================ */
 :root {
-  --brand-name: "PostPilots";
   --brand-primary: #6C63FF;
   --brand-secondary: #FF6584;
   --brand-accent: #43D9AD;
   --bg: #F7F8FC;
   --surface: #FFFFFF;
+  --ink: #0F0F1A;
+  --ink-soft: #16161F;
   --text-primary: #1A1A2E;
   --text-secondary: #6B7280;
   --text-muted: #9CA3AF;
+  --text-on-dark: #F4F4F8;
+  --text-on-dark-soft: #9C9CB8;
   --border: #E5E7EB;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 12px 40px rgba(108,99,255,0.15);
+  --border-dark: #2A2A3C;
   --radius: 16px;
   --radius-sm: 10px;
   --font-display: 'Sora', sans-serif;
@@ -31,1128 +29,857 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { scroll-behavior: smooth; }
+
 body {
   font-family: var(--font-body);
   background: var(--bg);
   color: var(--text-primary);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ---- HEADER ---- */
-header {
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+a { color: inherit; text-decoration: none; }
+
+img, svg { display: block; max-width: 100%; }
+
+/* ============================================
+   NAV
+   ============================================ */
+.nav {
   position: sticky;
   top: 0;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  background: rgba(247,248,252,0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
 }
 
-.logo {
+.nav-logo {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 20px;
-  color: var(--brand-primary);
   letter-spacing: -0.5px;
-}
-
-.logo span { color: var(--text-primary); }
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.btn-ghost {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  transition: background 0.15s;
-}
-.btn-ghost:hover { background: var(--bg); }
-
-/* ---- MAIN FLOW ---- */
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px 100px;
-}
-
-/* ---- PROGRESS ---- */
-.progress-bar {
-  width: 100%;
-  max-width: 480px;
-  margin-bottom: 40px;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.progress-step {
-  flex: 1;
-  height: 3px;
-  background: var(--border);
-  border-radius: 99px;
-  transition: background 0.4s ease;
+.nav-logo .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--brand-primary);
+  display: inline-block;
+  transform: rotate(45deg);
 }
 
-.progress-step.active { background: var(--brand-primary); }
-.progress-step.done { background: var(--brand-accent); }
-
-/* ---- SCREEN ---- */
-.screen {
-  width: 100%;
-  max-width: 480px;
-  display: none;
-  animation: fadeUp 0.35s ease both;
-}
-
-.screen.active { display: flex; flex-direction: column; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ---- QUESTION ---- */
-.question-label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--brand-primary);
-  margin-bottom: 12px;
-}
-
-.question-text {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
-.question-sub {
-  font-size: 15px;
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  line-height: 1.5;
-}
-
-/* ---- OPTION CARDS ---- */
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.option-card {
-  display: flex;
-  flex-direction: column;
-  padding: 18px 20px;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  width: 100%;
-  box-shadow: var(--shadow-sm);
-}
-
-.option-card-top {
+.nav-links {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 32px;
 }
 
-.option-card:hover {
-  border-color: var(--brand-primary);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color 0.15s;
 }
+.nav-links a:hover { color: var(--text-primary); }
 
-.option-card.selected {
-  border-color: var(--brand-primary);
-  background: linear-gradient(135deg, #F0EEFF 0%, #EEF9F5 100%);
-}
-
-.option-icon {
-  font-size: 28px;
-  width: 48px;
-  height: 48px;
-  display: flex;
+.nav-cta {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  border-radius: 12px;
-  flex-shrink: 0;
-}
-
-.option-text { flex: 1; }
-
-.option-title {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 2px;
-}
-
-.option-desc {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.option-arrow {
-  color: var(--text-muted);
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.option-examples {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-
-.example-chip {
-  font-size: 11px;
-  color: var(--text-secondary);
-  background: var(--bg);
-  border: 1px solid var(--border);
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--ink);
+  color: #fff;
   border-radius: 99px;
-  padding: 3px 10px;
-  white-space: nowrap;
-  font-style: italic;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.nav-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(15,15,26,0.25);
+}
+
+@media (max-width: 760px) {
+  .nav-links { display: none; }
+}
+
+/* ============================================
+   HERO — dark
+   ============================================ */
+.hero {
+  background: var(--ink);
+  color: var(--text-on-dark);
+  padding: 100px 32px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(108,99,255,0.35) 0%, transparent 70%);
   pointer-events: none;
 }
 
-/* ---- TWO-COL OPTIONS ---- */
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -260px;
+  left: -160px;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(255,101,132,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-accent);
+  border: 1px solid var(--border-dark);
+  border-radius: 99px;
+  padding: 6px 14px;
+  margin-bottom: 28px;
+}
+
+.hero-eyebrow .pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 0 rgba(67,217,173,0.6);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(67,217,173,0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(67,217,173,0); }
+  100% { box-shadow: 0 0 0 0 rgba(67,217,173,0); }
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6.4vw, 76px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  max-width: 820px;
   margin-bottom: 24px;
 }
 
-.option-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 20px 12px;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-  box-shadow: var(--shadow-sm);
-}
-
-.option-tile:hover {
-  border-color: var(--brand-primary);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-
-.option-tile.selected {
-  border-color: var(--brand-primary);
-  background: linear-gradient(135deg, #F0EEFF 0%, #EEF9F5 100%);
-}
-
-.tile-icon { font-size: 32px; }
-
-.tile-label {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-/* ---- BACK BUTTON ---- */
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px 0;
-  margin-bottom: 28px;
-  transition: color 0.15s;
-}
-.back-btn:hover { color: var(--brand-primary); }
-.back-btn svg { width: 16px; height: 16px; }
-
-/* ---- CONTINUE BTN ---- */
-.btn-primary {
-  width: 100%;
-  padding: 16px;
-  background: var(--brand-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 20px rgba(108,99,255,0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 28px rgba(108,99,255,0.4);
-}
-
-.btn-primary:disabled {
-  background: var(--border);
-  color: var(--text-muted);
-  box-shadow: none;
-  transform: none;
-  cursor: not-allowed;
-}
-
-/* ---- RESULT SCREEN ---- */
-.result-card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-
-.result-platform {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.platform-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 99px;
-  font-size: 12px;
-  font-weight: 600;
-  background: var(--bg);
-  color: var(--text-secondary);
-}
-
-.result-caption {
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--text-primary);
-  white-space: pre-wrap;
-}
-
-.result-caption.loading {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.result-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.btn-copy, .btn-regen {
-  flex: 1;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1.5px solid var(--border);
-}
-
-.btn-copy {
-  background: var(--brand-primary);
-  color: white;
-  border-color: var(--brand-primary);
-}
-
-.btn-regen {
-  background: var(--surface);
-  color: var(--text-secondary);
-}
-
-.btn-copy:hover { opacity: 0.9; }
-.btn-regen:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
-
-/* ---- TYPING DOTS ---- */
-.typing-dots {
-  display: flex;
-  gap: 5px;
-  padding: 8px 0;
-}
-
-.typing-dots span {
-  width: 8px;
-  height: 8px;
-  background: var(--brand-primary);
-  border-radius: 50%;
-  animation: bounce 1.2s infinite;
-  opacity: 0.6;
-}
-
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes bounce {
-  0%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-8px); }
-}
-
-/* ---- START SCREEN ---- */
-.start-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 20px 0 40px;
-}
-
-.start-hero-icon {
-  width: 80px;
-  height: 80px;
+.hero h1 em {
+  font-style: normal;
   background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  margin-bottom: 28px;
-  box-shadow: 0 8px 32px rgba(108,99,255,0.3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.start-title {
-  font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 12px;
-  line-height: 1.2;
-}
-
-.start-subtitle {
-  font-size: 16px;
-  color: var(--text-secondary);
+.hero p.lead {
+  font-size: 19px;
   line-height: 1.6;
-  max-width: 320px;
+  color: var(--text-on-dark-soft);
+  max-width: 540px;
   margin-bottom: 40px;
 }
 
-.start-btn {
-  width: 100%;
-  max-width: 320px;
-  padding: 18px;
-  background: var(--brand-primary);
-  color: white;
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 80px;
+  flex-wrap: wrap;
+}
+
+.btn-primary-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  background: linear-gradient(135deg, var(--brand-primary), #5A52E0);
+  color: #fff;
   border: none;
-  border-radius: var(--radius);
+  border-radius: 99px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 8px 28px rgba(108,99,255,0.35);
+}
+.btn-primary-lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(108,99,255,0.45);
+}
+
+.btn-secondary-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: transparent;
+  color: var(--text-on-dark);
+  border: 1px solid var(--border-dark);
+  border-radius: 99px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.btn-secondary-lg:hover {
+  border-color: var(--text-on-dark-soft);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ---- product shot: chat-to-post strip ---- */
+.demo-strip {
+  position: relative;
+  background: var(--ink-soft);
+  border: 1px solid var(--border-dark);
+  border-radius: 20px 20px 0 0;
+  padding: 28px 28px 0;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 0;
+  overflow: hidden;
+  box-shadow: 0 -20px 80px rgba(108,99,255,0.12);
+}
+
+.demo-col {
+  padding: 0 28px 28px;
+}
+
+.demo-col + .demo-col {
+  border-left: 1px solid var(--border-dark);
+}
+
+.demo-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-soft);
+  margin-bottom: 16px;
+}
+
+.demo-prompt {
   font-family: var(--font-display);
   font-size: 17px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 20px rgba(108,99,255,0.3);
+  line-height: 1.5;
+  color: var(--text-on-dark);
+  margin-bottom: 18px;
 }
 
-.start-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(108,99,255,0.4);
-}
-
-.start-features {
-  display: flex;
-  gap: 24px;
-  margin-top: 32px;
-}
-
-.start-feature {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.start-feature-icon { font-size: 20px; }
-
-/* ---- DONE SCREEN ---- */
-.done-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, var(--brand-accent), #2DD4BF);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  margin: 0 auto 20px;
-}
-
-.done-title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.done-sub {
-  font-size: 14px;
-  color: var(--text-secondary);
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.btn-restart {
-  width: 100%;
-  padding: 14px;
-  background: var(--bg);
-  color: var(--text-primary);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 12px;
-}
-
-.btn-restart:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
-
-/* ---- POST TO PLATFORM BUTTONS ---- */
-.post-buttons-label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin: 20px 0 10px;
-}
-#post-buttons {
+.demo-chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
-.btn-post {
-  flex: 1 1 calc(50% - 8px);
-  min-width: 120px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1.5px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  text-align: center;
+
+.demo-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border-dark);
+  color: var(--text-on-dark-soft);
 }
-.btn-post:hover {
+
+.demo-chip.active {
+  background: var(--brand-primary);
   border-color: var(--brand-primary);
+  color: #fff;
+}
+
+.demo-caption {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-on-dark-soft);
+  margin-bottom: 20px;
+}
+
+.demo-caption strong { color: var(--text-on-dark); font-weight: 600; }
+
+.demo-post-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.demo-post-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border-dark);
+  background: rgba(255,255,255,0.02);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-on-dark-soft);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.demo-post-btn .dot-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--border-dark);
+}
+
+.demo-post-btn.live {
+  border-color: var(--brand-accent);
+  color: var(--text-on-dark);
+  background: rgba(67,217,173,0.08);
+}
+.demo-post-btn.live .dot-icon { background: var(--brand-accent); }
+
+@media (max-width: 760px) {
+  .demo-strip { grid-template-columns: 1fr; }
+  .demo-col + .demo-col { border-left: none; border-top: 1px solid var(--border-dark); }
+  .demo-post-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ============================================
+   SOCIAL PROOF STRIP
+   ============================================ */
+.proof {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 32px;
+}
+
+.proof-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   HOW IT WORKS
+   ============================================ */
+.section {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 120px 32px;
+}
+
+.section-head {
+  max-width: 600px;
+  margin-bottom: 64px;
+}
+
+.section-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--brand-primary);
-  transform: translateY(-1px);
+  margin-bottom: 14px;
 }
 
-   function populateTopics(type) {
-  const container = document.getElementById('topic-options');
-  const topics = TOPIC_MAP[type] || TOPIC_MAP['small business owner'];
-  container.innerHTML = topics.map(t => `
-    <button class="option-card" onclick="selectTopic(this, '${t.value}')">
-      <div class="option-card-top">
-        <div class="option-icon">${t.icon}</div>
-        <div class="option-text">
-          <div class="option-title">${t.title}</div>
-          <div class="option-desc">${t.desc}</div>
-        </div>
-        <div class="option-arrow">›</div>
-      </div>
-      <div class="option-examples">
-        ${t.examples.map(e => `<span class="example-chip">${e}</span>`).join('')}
-      </div>
-    </button>
-  `).join('');
-
-  container.innerHTML += `
-    <div class="custom-topic-card" id="custom-topic-card" onclick="toggleCustomTopic()">
-      <div class="option-card-top">
-        <div class="option-icon">＋</div>
-        <div class="option-text">
-          <div class="option-title">Describe it yourself</div>
-          <div class="option-desc">Tell us exactly what you want to post about</div>
-        </div>
-        <div class="option-arrow">›</div>
-      </div>
-      <div class="custom-topic-input-row" onclick="event.stopPropagation()">
-        <textarea
-          class="custom-topic-input"
-          id="custom-topic-input"
-          placeholder="e.g. We just launched a Wyoming LLC service for affiliates on thejudgy.com"
-          oninput="onCustomTopicInput()"
-        ></textarea>
-        <button class="custom-topic-continue" id="custom-topic-continue" disabled onclick="submitCustomTopic()">Continue →</button>
-      </div>
-    </div>
-  `;
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
 }
 
-function toggleCustomTopic() {
-  const card = document.getElementById('custom-topic-card');
-  const alreadyExpanded = card.classList.contains('expanded');
-  if (!alreadyExpanded) {
-    card.classList.add('expanded');
-    document.getElementById('custom-topic-input').focus();
-  }
+.section-sub {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text-secondary);
 }
 
-function onCustomTopicInput() {
-  const input = document.getElementById('custom-topic-input');
-  const btn = document.getElementById('custom-topic-continue');
-  btn.disabled = input.value.trim().length === 0;
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
-function submitCustomTopic() {
-  const input = document.getElementById('custom-topic-input');
-  const value = input.value.trim();
-  if (!value) return;
-  state.topic = value;
-  goTo(3);
+.step {
+  background: var(--surface);
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
+.step-index {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.step-title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.step-desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 760px) {
+  .steps { grid-template-columns: 1fr; }
+}
+
+/* ============================================
+   PLATFORM GRID
+   ============================================ */
+.platforms-section {
+  background: var(--ink);
+  color: var(--text-on-dark);
+  padding: 110px 32px;
+}
+
+.platforms-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.platforms-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 56px;
+  flex-wrap: wrap;
+}
+
+.platforms-head .section-title { color: var(--text-on-dark); margin-bottom: 0; }
+.platforms-head p { color: var(--text-on-dark-soft); font-size: 15px; max-width: 380px; line-height: 1.6; }
+
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.platform-card {
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.platform-card:hover {
+  border-color: var(--brand-primary);
+  background: rgba(108,99,255,0.06);
+}
+
+.platform-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--ink-soft);
+  border: 1px solid var(--border-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.platform-mark svg { width: 18px; height: 18px; }
+
+.platform-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.platform-status {
+  font-size: 12px;
+  color: var(--text-on-dark-soft);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .platform-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ============================================
+   FEATURE ROWS
+   ============================================ */
+.feature-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.feature-row {
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  padding: 40px 36px;
+  align-items: center;
+}
+
+.feature-row-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.feature-row-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 760px) {
+  .feature-row { grid-template-columns: 1fr; gap: 16px; padding: 28px 24px; }
+}
+
+/* ============================================
+   CTA
+   ============================================ */
+.cta-section {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 32px 120px;
+}
+
+.cta-card {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, #5A52E0 60%, var(--brand-secondary) 130%);
+  border-radius: 24px;
+  padding: 72px 48px;
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.18), transparent 60%);
+}
+
+.cta-card-inner { position: relative; z-index: 1; }
+
+.cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4.5vw, 44px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+}
+
+.cta-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.85);
+  max-width: 440px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.btn-cta-light {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: #fff;
+  color: var(--brand-primary);
+  border: none;
+  border-radius: 99px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.btn-cta-light:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.2);
+}
+
+.cta-note {
+  margin-top: 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 32px;
+}
+
+.footer-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.footer-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero-eyebrow .pulse { animation: none; }
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">Post<span>Pilots</span></div>
-  <div class="header-right">
-    <button class="btn-ghost">Sign in</button>
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo"><span class="dot"></span> PostPilots</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#features">Features</a>
   </div>
-</header>
+  <a class="nav-cta" href="app.html">Try it free →</a>
+</nav>
 
-<main>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="pulse"></span> AI writer + one-click posting</div>
+    <h1>Write it once.<br>Post it <em>everywhere.</em></h1>
+    <p class="lead">PostPilots turns a three-question wizard into a ready-to-publish caption — tuned for the platform you're posting to, with one click to send it there.</p>
+    <div class="hero-actions">
+      <a class="btn-primary-lg" href="app.html">Create your first post →</a>
+      <a class="btn-secondary-lg" href="#how">See how it works</a>
+    </div>
 
-  <!-- PROGRESS BAR -->
-  <div class="progress-bar" id="progressBar" style="display:none">
-    <div class="progress-step" id="step1"></div>
-    <div class="progress-step" id="step2"></div>
-    <div class="progress-step" id="step3"></div>
-    <div class="progress-step" id="step4"></div>
-  </div>
-
-  <!-- ===== SCREEN 0: START ===== -->
-  <div class="screen active" id="screen-0">
-    <div class="start-screen">
-      <div class="start-hero-icon">✍️</div>
-      <h1 class="start-title">Your AI content<br>writer is ready.</h1>
-      <p class="start-subtitle">Answer 3 quick questions. Get a ready-to-post caption for any platform in seconds.</p>
-      <button class="start-btn" onclick="goTo(1)">Create a post →</button>
-      <div class="start-features">
-        <div class="start-feature">
-          <span class="start-feature-icon">⚡</span>
-          30 seconds
+    <!-- DEMO STRIP -->
+    <div class="demo-strip">
+      <div class="demo-col">
+        <div class="demo-label">Step 1 — Tell us the post</div>
+        <div class="demo-prompt">"Share a life lesson I learned" — Content creator, Instagram</div>
+        <div class="demo-chip-row">
+          <span class="demo-chip active">Instagram</span>
+          <span class="demo-chip">LinkedIn</span>
+          <span class="demo-chip">X / Twitter</span>
+          <span class="demo-chip">TikTok</span>
         </div>
-        <div class="start-feature">
-          <span class="start-feature-icon">🎯</span>
-          On-brand
-        </div>
-        <div class="start-feature">
-          <span class="start-feature-icon">📋</span>
-          Copy & post
+      </div>
+      <div class="demo-col">
+        <div class="demo-label">Step 2 — Get a caption, post it</div>
+        <div class="demo-caption"><strong>Nobody told me that saying no is actually a superpower.</strong><br>I used to take every collab, every favor — until I burned out completely. Your boundaries aren't walls. They're the foundation.</div>
+        <div class="demo-post-grid">
+          <div class="demo-post-btn live"><span class="dot-icon"></span> Instagram</div>
+          <div class="demo-post-btn"><span class="dot-icon"></span> LinkedIn</div>
+          <div class="demo-post-btn"><span class="dot-icon"></span> X / Twitter</div>
+          <div class="demo-post-btn"><span class="dot-icon"></span> Facebook</div>
         </div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- ===== SCREEN 1: WHAT TYPE OF CREATOR ===== -->
-  <div class="screen" id="screen-1">
-    <button class="back-btn" onclick="goTo(0)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
-    <div class="question-label">Step 1 of 3</div>
-    <h2 class="question-text">What best describes you?</h2>
-    <p class="question-sub">This helps personalize your content.</p>
-    <div class="options" id="creator-options">
-      <button class="option-card" onclick="selectCreator(this, 'small business owner')">
-        <div class="option-card-top">
-          <div class="option-icon">🏪</div>
-          <div class="option-text">
-            <div class="option-title">Small Business</div>
-            <div class="option-desc">Products, services, local brand</div>
-          </div>
-          <div class="option-arrow">›</div>
-        </div>
-        <div class="option-examples">
-          <span class="example-chip">"New menu item drop 🍕"</span>
-          <span class="example-chip">"5-star review spotlight"</span>
-          <span class="example-chip">"Flash sale this weekend"</span>
-        </div>
-      </button>
-      <button class="option-card" onclick="selectCreator(this, 'content creator or influencer')">
-        <div class="option-card-top">
-          <div class="option-icon">🎥</div>
-          <div class="option-text">
-            <div class="option-title">Creator / Influencer</div>
-            <div class="option-desc">Personal brand, lifestyle, entertainment</div>
-          </div>
-          <div class="option-arrow">›</div>
-        </div>
-        <div class="option-examples">
-          <span class="example-chip">"Unpopular opinion:..."</span>
-          <span class="example-chip">"This changed my life"</span>
-          <span class="example-chip">"Day in my life 🎬"</span>
-        </div>
-      </button>
-      <button class="option-card" onclick="selectCreator(this, 'professional or coach')">
-        <div class="option-card-top">
-          <div class="option-icon">💼</div>
-          <div class="option-text">
-            <div class="option-title">Professional / Coach</div>
-            <div class="option-desc">Expertise, thought leadership, services</div>
-          </div>
-          <div class="option-arrow">›</div>
-        </div>
-        <div class="option-examples">
-          <span class="example-chip">"3 mistakes I see daily"</span>
-          <span class="example-chip">"Client went from X to Y"</span>
-          <span class="example-chip">"Book a free call 📞"</span>
-        </div>
-      </button>
-      <button class="option-card" onclick="selectCreator(this, 'real estate agent or property manager')">
-        <div class="option-card-top">
-          <div class="option-icon">🏠</div>
-          <div class="option-text">
-            <div class="option-title">Real Estate</div>
-            <div class="option-desc">Listings, market tips, property</div>
-          </div>
-          <div class="option-arrow">›</div>
-        </div>
-        <div class="option-examples">
-          <span class="example-chip">"Just listed 🏡 Fresno"</span>
-          <span class="example-chip">"Market is shifting..."</span>
-          <span class="example-chip">"First-time buyer tip"</span>
-        </div>
-      </button>
+<!-- SOCIAL PROOF -->
+<div class="proof">
+  <div class="proof-inner">
+    <span>Small business</span>
+    <span>Creators</span>
+    <span>Coaches</span>
+    <span>Real estate</span>
+    <span>Solo founders</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="section-head">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-title">From blank page to posted, in three steps.</h2>
+    <p class="section-sub">No prompt engineering. No staring at a cursor. Answer three quick questions and PostPilots handles the writing, the formatting, and the posting.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-index">01 — TELL US</div>
+      <div class="step-title">Who you are & what you want to say</div>
+      <div class="step-desc">Pick your role — creator, business, coach, agent — and what the post is about. Takes about ten seconds.</div>
+    </div>
+    <div class="step">
+      <div class="step-index">02 — WE WRITE</div>
+      <div class="step-title">A caption tuned to your platform</div>
+      <div class="step-desc">Instagram gets hashtags and hooks. LinkedIn gets structure and a strong opener. Same idea, right format, every time.</div>
+    </div>
+    <div class="step">
+      <div class="step-index">03 — YOU POST</div>
+      <div class="step-title">One click sends it where it belongs</div>
+      <div class="step-desc">Your caption is copied and the platform opens, ready to paste and publish. No more switching tabs and losing your train of thought.</div>
     </div>
   </div>
+</section>
 
-  <!-- ===== SCREEN 2: WHAT TO POST ABOUT ===== -->
-  <div class="screen" id="screen-2">
-    <button class="back-btn" onclick="goTo(1)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
-    <div class="question-label">Step 2 of 3</div>
-    <h2 class="question-text">What do you want to post about?</h2>
-    <p class="question-sub">Pick a topic or let AI suggest one.</p>
-    <div class="options" id="topic-options">
-      <!-- Populated dynamically based on creator type -->
+<!-- PLATFORMS -->
+<section class="platforms-section" id="platforms">
+  <div class="platforms-inner">
+    <div class="platforms-head">
+      <h2 class="section-title">Post anywhere your audience is.</h2>
+      <p>One caption, matched to the tone and format each platform expects — then sent there directly.</p>
+    </div>
+    <div class="platform-grid">
+      <div class="platform-card">
+        <div class="platform-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#43D9AD" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#43D9AD"/></svg></div>
+        <div class="platform-name">Instagram</div>
+        <div class="platform-status">Caption + hashtags, copy & open</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#43D9AD" stroke-width="2"><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/><path d="M10 9v12M10 13a4 4 0 0 1 8 0v8"/></svg></div>
+        <div class="platform-name">LinkedIn</div>
+        <div class="platform-status">Professional tone, copy & open</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#43D9AD" stroke-width="2"><path d="M4 4l16 16M20 4L4 20"/></svg></div>
+        <div class="platform-name">X / Twitter</div>
+        <div class="platform-status">Pre-filled, opens compose directly</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#43D9AD" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div>
+        <div class="platform-name">Facebook</div>
+        <div class="platform-status">Friendly tone, copy & open</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#43D9AD" stroke-width="2"><path d="M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM21 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg></div>
+        <div class="platform-name">TikTok</div>
+        <div class="platform-status">Scannable caption, copy & open</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#43D9AD" stroke-width="2"><path d="M7 8a5 5 0 0 1 10 0M5 12h14M7 16a5 5 0 0 0 10 0"/></svg></div>
+        <div class="platform-name">Threads</div>
+        <div class="platform-status">Conversational tone, copy & open</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#43D9AD" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="13" r="1.5" fill="#43D9AD"/><circle cx="15.5" cy="13" r="1.5" fill="#43D9AD"/><path d="M8 17c1.2 1 2.6 1.5 4 1.5s2.8-.5 4-1.5"/></svg></div>
+        <div class="platform-name">Reddit</div>
+        <div class="platform-status">Title pre-filled, opens submit</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+        <div class="platform-name">More on the way</div>
+        <div class="platform-status">Direct auto-posting, rolling out per platform</div>
+      </div>
     </div>
   </div>
+</section>
 
-  <!-- ===== SCREEN 3: PLATFORM ===== -->
-  <div class="screen" id="screen-3">
-    <button class="back-btn" onclick="goTo(2)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
-    <div class="question-label">Step 3 of 3</div>
-    <h2 class="question-text">Which platform?</h2>
-    <p class="question-sub">Each platform has its own style. We'll match it.</p>
-    <div class="options-grid" id="platform-options">
-      <button class="option-tile" onclick="selectPlatform(this, 'Instagram')">
-        <div class="tile-icon">📸</div>
-        <div class="tile-label">Instagram</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'TikTok')">
-        <div class="tile-icon">🎵</div>
-        <div class="tile-label">TikTok</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'LinkedIn')">
-        <div class="tile-icon">💼</div>
-        <div class="tile-label">LinkedIn</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'X / Twitter')">
-        <div class="tile-icon">🐦</div>
-        <div class="tile-label">X / Twitter</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'Facebook')">
-        <div class="tile-icon">👥</div>
-        <div class="tile-label">Facebook</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'Threads')">
-        <div class="tile-icon">🧵</div>
-        <div class="tile-label">Threads</div>
-      </button>
-    </div>
-    <button class="btn-primary" id="generate-btn" disabled onclick="generateCaption()">Generate my caption →</button>
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-head">
+    <div class="section-eyebrow">Built for solo operators</div>
+    <h2 class="section-title">Less time writing. Same voice, every time.</h2>
+    <p class="section-sub">PostPilots isn't a generic AI writer — every detail is built around the part of content creation that actually eats your time.</p>
   </div>
-
-  <!-- ===== SCREEN 4: RESULT ===== -->
-  <div class="screen" id="screen-4">
-    <button class="back-btn" onclick="goTo(3)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </button>
-    <div class="question-label">Your Caption</div>
-    <h2 class="question-text" id="result-title">Ready to post 🎉</h2>
-    <p class="question-sub" id="result-sub"></p>
-
-    <div class="result-card">
-      <div class="result-platform">
-        <div class="platform-badge" id="platform-badge">📸 Instagram</div>
-      </div>
-      <div class="result-caption loading" id="caption-output">
-        <div class="typing-dots"><span></span><span></span><span></span></div>
-      </div>
-      <div class="result-actions" id="result-actions" style="display:none">
-        <button class="btn-copy" onclick="copyCaption()">Copy caption</button>
-        <button class="btn-regen" onclick="regenerate()">Try again</button>
-      </div>
-      <div class="post-buttons-label">Post to</div>
-      <div id="post-buttons"></div>
+  <div class="feature-rows">
+    <div class="feature-row">
+      <div class="feature-row-title">Platform-aware writing</div>
+      <div class="feature-row-desc">A caption for Instagram and a post for LinkedIn aren't the same thing — different length, tone, and structure. PostPilots writes to each platform's rules automatically, so you're not rewriting the same idea five times.</div>
     </div>
-
-    <button class="btn-restart" onclick="restart()">✦ Create another post</button>
+    <div class="feature-row">
+      <div class="feature-row-title">One click to post</div>
+      <div class="feature-row-desc">Every caption comes with a row of platform buttons. Click one, your caption is copied and the platform opens — for X and Reddit it's pre-filled and ready to publish.</div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-row-title">Built for momentum</div>
+      <div class="feature-row-desc">Three quick questions, one generated caption, done. No blank-page staring, no prompt engineering — just enough structure to keep you posting consistently.</div>
+    </div>
   </div>
+</section>
 
-</main>
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-card">
+    <div class="cta-card-inner">
+      <h2 class="cta-title">Your next post is three questions away.</h2>
+      <p class="cta-sub">No account required to try it. Answer a few questions, get a caption, and post it — see how it feels.</p>
+      <a class="btn-cta-light" href="app.html">Create your first post →</a>
+      <div class="cta-note">Free to use · No credit card</div>
+    </div>
+  </div>
+</section>
 
-<script>
-// ============================================
-// STATE
-// ============================================
-const state = {
-  creatorType: '',
-  topic: '',
-  platform: '',
-  generatedCaption: ''
-};
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">PostPilots</div>
+    <div class="footer-meta">© 2026 PostPilots. Part of the RunP8 product family.</div>
+  </div>
+</footer>
 
-const TOPIC_MAP = {
-  'small business owner': [
-    { icon: '🛍️', title: 'Promote a product or service', desc: 'Showcase what you offer', value: 'promote a product or service', examples: ['"Limited time offer 🔥"', '"Why customers love us"', '"Now available online"'] },
-    { icon: '⭐', title: 'Share a customer story', desc: 'Social proof and testimonials', value: 'share a positive customer story or testimonial', examples: ['"5 stars ⭐ thank you!"', '"Customer since day one"', '"This review made our day"'] },
-    { icon: '🎉', title: 'Announce something new', desc: 'Launch, event, or update', value: 'announce something new or exciting', examples: ['"Big news dropping soon"', '"We\'re expanding!"', '"New hours starting Monday"'] },
-    { icon: '💡', title: 'Helpful tip for customers', desc: 'Add value, build trust', value: 'share a helpful tip related to my business', examples: ['"Pro tip from our team"', '"You\'ve been doing it wrong"', '"Save time with this trick"'] },
-  ],
-  'content creator or influencer': [
-    { icon: '✨', title: 'Share my opinion', desc: 'Hot take or personal view', value: 'share a bold opinion or hot take', examples: ['"Unpopular opinion: ..."', '"Nobody talks about this"', '"I said what I said 💅"'] },
-    { icon: '📖', title: 'Tell a personal story', desc: 'Relatable, raw, real', value: 'tell an engaging personal story', examples: ['"Story time 🧵"', '"I was embarrassed but..."', '"This happened to me"'] },
-    { icon: '🎯', title: 'Share a life lesson', desc: 'Inspire your audience', value: 'share a life lesson I learned', examples: ['"Took me 10 years to learn"', '"Wish someone told me this"', '"Gentle reminder 💛"'] },
-    { icon: '🤩', title: 'Review or recommend', desc: 'Product, place, or experience', value: 'review or recommend something I love', examples: ['"Obsessed with this find"', '"Rating: 10/10 no notes"', '"You NEED to try this"'] },
-  ],
-  'professional or coach': [
-    { icon: '🧠', title: 'Share expertise', desc: 'Position yourself as an expert', value: 'share professional expertise or insight', examples: ['"Here\'s what most miss..."', '"The truth about X"', '"3 things I learned"'] },
-    { icon: '📈', title: 'Client win or result', desc: 'Show your impact', value: 'share a client success story or result', examples: ['"From $0 to $10k in 90 days"', '"She was stuck. Then..."', '"Results speak 📊"'] },
-    { icon: '❓', title: 'Common myth or mistake', desc: 'Educate and add value', value: 'bust a common myth or mistake in my field', examples: ['"Stop doing this immediately"', '"This advice is wrong"', '"Myth: X. Truth: Y"'] },
-    { icon: '🚀', title: 'Call to action', desc: 'Drive leads or bookings', value: 'post a strong call to action for my services', examples: ['"1 spot left this month"', '"DM me the word READY"', '"Free call — link in bio"'] },
-  ],
-  'real estate agent or property manager': [
-    { icon: '🏡', title: 'New listing spotlight', desc: 'Show off a property', value: 'spotlight a new property listing', examples: ['"Just listed 👀 Fresno"', '"3bd 2ba and it\'s gorgeous"', '"Open house this Sunday"'] },
-    { icon: '📊', title: 'Market update', desc: 'Local trends and tips', value: 'share a local real estate market update', examples: ['"Prices shifted this month"', '"Buyers: here\'s your window"', '"Fresno market update 📍"'] },
-    { icon: '💬', title: 'Buyer or renter tips', desc: 'Helpful advice', value: 'share helpful tips for buyers or renters', examples: ['"Before you sign a lease..."', '"Credit score tips 🏦"', '"First-time buyer checklist"'] },
-    { icon: '🤝', title: 'Client success story', desc: 'Closed deal or happy tenant', value: 'share a client success story', examples: ['"Keys in hand! 🗝️"', '"Found their forever home"', '"Closed in 3 weeks flat"'] },
-  ]
-};
-
-// ============================================
-// NAVIGATION
-// ============================================
-let currentScreen = 0;
-
-function goTo(n) {
-  document.getElementById(`screen-${currentScreen}`).classList.remove('active');
-  currentScreen = n;
-  document.getElementById(`screen-${n}`).classList.add('active');
-  updateProgress(n);
-
-  const pb = document.getElementById('progressBar');
-  pb.style.display = n === 0 ? 'none' : 'flex';
-  window.scrollTo(0, 0);
-}
-
-function updateProgress(n) {
-  for (let i = 1; i <= 4; i++) {
-    const el = document.getElementById(`step${i}`);
-    if (!el) continue;
-    el.classList.remove('active', 'done');
-    if (i < n) el.classList.add('done');
-    else if (i === n) el.classList.add('active');
-  }
-}
-
-// ============================================
-// STEP 1: CREATOR TYPE
-// ============================================
-function selectCreator(el, type) {
-  state.creatorType = type;
-  populateTopics(type);
-  goTo(2);
-}
-
-// ============================================
-// STEP 2: TOPIC
-// ============================================
-function populateTopics(type) {
-  const container = document.getElementById('topic-options');
-  const topics = TOPIC_MAP[type] || TOPIC_MAP['small business owner'];
-  container.innerHTML = topics.map(t => `
-    <button class="option-card" onclick="selectTopic(this, '${t.value}')">
-      <div class="option-card-top">
-        <div class="option-icon">${t.icon}</div>
-        <div class="option-text">
-          <div class="option-title">${t.title}</div>
-          <div class="option-desc">${t.desc}</div>
-        </div>
-        <div class="option-arrow">›</div>
-      </div>
-      <div class="option-examples">
-        ${t.examples.map(e => `<span class="example-chip">${e}</span>`).join('')}
-      </div>
-    </button>
-  `).join('');
-}
-
-function selectTopic(el, topic) {
-  state.topic = topic;
-  goTo(3);
-}
-
-// ============================================
-// STEP 3: PLATFORM
-// ============================================
-function selectPlatform(el, platform) {
-  document.querySelectorAll('.option-tile').forEach(t => t.classList.remove('selected'));
-  el.classList.add('selected');
-  state.platform = platform;
-  document.getElementById('generate-btn').disabled = false;
-}
-
-// ============================================
-// CONFIG — Worker endpoint
-// ============================================
-const WORKER_URL = 'https://autopost-api.infomomtelo.workers.dev';
-
-// Maps app.html platform labels -> Worker PLATFORM_GUIDE keys
-const PLATFORM_KEY_MAP = {
-  'Instagram': 'instagram',
-  'TikTok': 'instagram',      // Worker has no tiktok guide yet — fallback to instagram-style
-  'LinkedIn': 'linkedin',
-  'X / Twitter': 'twitter',
-  'Facebook': 'facebook',
-  'Threads': 'twitter'        // Worker has no threads guide yet — fallback to twitter-style
-};
-
-// ============================================
-// STEP 4: GENERATE
-// ============================================
-async function generateCaption() {
-  goTo(4);
-  const badge = document.getElementById('platform-badge');
-  const platformIcons = { Instagram:'📸', TikTok:'🎵', LinkedIn:'💼', 'X / Twitter':'🐦', Facebook:'👥', Threads:'🧵' };
-  badge.textContent = `${platformIcons[state.platform] || '📱'} ${state.platform}`;
-
-  document.getElementById('result-sub').textContent = `${state.creatorType} · ${state.topic}`;
-  document.getElementById('caption-output').innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-  document.getElementById('caption-output').classList.add('loading');
-  document.getElementById('result-actions').style.display = 'none';
-
-  await fetchCaption();
-}
-
-async function regenerate() {
-  document.getElementById('caption-output').innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-  document.getElementById('caption-output').classList.add('loading');
-  document.getElementById('result-actions').style.display = 'none';
-
-  await fetchCaption();
-}
-
-async function fetchCaption() {
-  const platformKey = PLATFORM_KEY_MAP[state.platform] || 'twitter';
-
-  // Build a richer "topic" string from the wizard answers, since the Worker
-  // takes a single topic + tone rather than a creator-type/topic combo.
-  const topic = `As a ${state.creatorType}, I want to ${state.topic}`;
-
-  try {
-    const res = await fetch(`${WORKER_URL}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        topic,
-        tone: 'authentic, engaging, not corporate',
-        platforms: [platformKey]
-      })
-    });
-
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || `Request failed (${res.status})`);
-    }
-
-    const data = await res.json();
-    const text = data.posts?.[platformKey] || 'Could not generate caption. Try again.';
-
-    state.generatedCaption = text;
-    document.getElementById('caption-output').classList.remove('loading');
-    document.getElementById('caption-output').textContent = text;
-    document.getElementById('result-actions').style.display = 'flex';
-    renderPostButtons();
-  } catch (err) {
-    document.getElementById('caption-output').classList.remove('loading');
-    document.getElementById('caption-output').textContent = `Something went wrong: ${err.message}`;
-  }
-}
-
-// ============================================
-// POST TO PLATFORM — share intents + copy fallback
-// ============================================
-
-// URL builders. Where a platform supports prefilled text, we use it.
-// Everywhere else, we copy the caption and open the platform so the
-// user can paste it themselves.
-const POST_TARGETS = {
-  'X / Twitter': {
-    label: 'X / Twitter',
-    icon: '🐦',
-    buildUrl: (caption) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}`,
-    prefilled: true
-  },
-  'LinkedIn': {
-    label: 'LinkedIn',
-    icon: '💼',
-    buildUrl: () => `https://www.linkedin.com/feed/`,
-    prefilled: false
-  },
-  'Facebook': {
-    label: 'Facebook',
-    icon: '👥',
-    buildUrl: () => `https://www.facebook.com/`,
-    prefilled: false
-  },
-  'Instagram': {
-    label: 'Instagram',
-    icon: '📸',
-    buildUrl: () => `https://www.instagram.com/`,
-    prefilled: false
-  },
-  'TikTok': {
-    label: 'TikTok',
-    icon: '🎵',
-    buildUrl: () => `https://www.tiktok.com/upload`,
-    prefilled: false
-  },
-  'Threads': {
-    label: 'Threads',
-    icon: '🧵',
-    buildUrl: () => `https://www.threads.net/`,
-    prefilled: false
-  },
-  'Reddit': {
-    label: 'Reddit',
-    icon: '👽',
-    buildUrl: (caption) => {
-      const title = caption.split('\n')[0].slice(0, 280);
-      return `https://www.reddit.com/submit?title=${encodeURIComponent(title)}`;
-    },
-    prefilled: true
-  }
-};
-
-function postToPlatform(targetKey) {
-  const target = POST_TARGETS[targetKey];
-  if (!target) return;
-
-  const caption = state.generatedCaption || '';
-
-  // Always copy the caption so it's ready to paste regardless of platform.
-  navigator.clipboard.writeText(caption).catch(() => {});
-
-  const url = target.buildUrl(caption);
-  window.open(url, '_blank');
-
-  // Brief inline feedback on the button that was clicked.
-  const btn = document.getElementById(`post-btn-${targetKey.replace(/[^a-zA-Z]/g, '')}`);
-  if (btn) {
-    const original = btn.innerHTML;
-    btn.innerHTML = target.prefilled
-      ? `✓ Opened`
-      : `✓ Copied — paste it there`;
-    setTimeout(() => { btn.innerHTML = original; }, 2200);
-  }
-}
-
-function renderPostButtons() {
-  const container = document.getElementById('post-buttons');
-  if (!container) return;
-
-  container.innerHTML = Object.keys(POST_TARGETS).map(key => {
-    const t = POST_TARGETS[key];
-    const safeId = `post-btn-${key.replace(/[^a-zA-Z]/g, '')}`;
-    return `<button class="btn-post" id="${safeId}" onclick="postToPlatform('${key}')">${t.icon} ${t.label}</button>`;
-  }).join('');
-}
-
-function copyCaption() {
-  navigator.clipboard.writeText(state.generatedCaption).then(() => {
-    const btn = document.querySelector('.btn-copy');
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = 'Copy caption', 2000);
-  });
-}
-
-function restart() {
-  state.creatorType = '';
-  state.topic = '';
-  state.platform = '';
-  state.generatedCaption = '';
-  document.querySelectorAll('.option-tile').forEach(t => t.classList.remove('selected'));
-  document.getElementById('generate-btn').disabled = true;
-  goTo(0);
-}
-</script>
 </body>
 </html>
