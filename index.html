@@ -867,13 +867,26 @@ function selectPlatform(el, platform) {
   state.platform = platform;
   document.getElementById('generate-btn').disabled = false;
 }
+// ============================================
+// CONFIG — Worker endpoint
+// ============================================
+const WORKER_URL = 'https://autopost-api.infomomtelo.workers.dev';
+
+// Maps app.html platform labels -> Worker PLATFORM_GUIDE keys
+const PLATFORM_KEY_MAP = {
+  'Instagram': 'instagram',
+  'TikTok': 'instagram',      // Worker has no tiktok guide yet — fallback to instagram-style
+  'LinkedIn': 'linkedin',
+  'X / Twitter': 'twitter',
+  'Facebook': 'facebook',
+  'Threads': 'twitter'        // Worker has no threads guide yet — fallback to twitter-style
+};
 
 // ============================================
 // STEP 4: GENERATE
 // ============================================
 async function generateCaption() {
   goTo(4);
-
   const badge = document.getElementById('platform-badge');
   const platformIcons = { Instagram:'📸', TikTok:'🎵', LinkedIn:'💼', 'X / Twitter':'🐦', Facebook:'👥', Threads:'🧵' };
   badge.textContent = `${platformIcons[state.platform] || '📱'} ${state.platform}`;
@@ -883,38 +896,7 @@ async function generateCaption() {
   document.getElementById('caption-output').classList.add('loading');
   document.getElementById('result-actions').style.display = 'none';
 
-  const prompt = `You are a social media expert. Write a single ready-to-post caption for ${state.platform} for a ${state.creatorType} who wants to ${state.topic}.
-
-Requirements:
-- Match the tone and style of ${state.platform} exactly
-- Include relevant emojis naturally
-- Include 3-5 hashtags at the end
-- Keep it authentic, not corporate
-- Make it engaging and scroll-stopping
-- Do NOT include any intro, explanation, or quotes around it — just the raw caption text ready to copy and paste`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await res.json();
-    const text = data.content?.map(b => b.text || '').join('') || 'Could not generate caption. Try again.';
-    state.generatedCaption = text;
-
-    document.getElementById('caption-output').classList.remove('loading');
-    document.getElementById('caption-output').textContent = text;
-    document.getElementById('result-actions').style.display = 'flex';
-  } catch (err) {
-    document.getElementById('caption-output').classList.remove('loading');
-    document.getElementById('caption-output').textContent = 'Something went wrong. Please try again.';
-  }
+  await fetchCaption();
 }
 
 async function regenerate() {
@@ -922,29 +904,42 @@ async function regenerate() {
   document.getElementById('caption-output').classList.add('loading');
   document.getElementById('result-actions').style.display = 'none';
 
-  const prompt = `You are a social media expert. Write a DIFFERENT single ready-to-post caption for ${state.platform} for a ${state.creatorType} who wants to ${state.topic}. Make it feel fresh and different from what you'd typically generate. Include emojis and 3-5 hashtags. Return ONLY the caption text, nothing else.`;
+  await fetchCaption();
+}
+
+async function fetchCaption() {
+  const platformKey = PLATFORM_KEY_MAP[state.platform] || 'twitter';
+
+  // Build a richer "topic" string from the wizard answers, since the Worker
+  // takes a single topic + tone rather than a creator-type/topic combo.
+  const topic = `As a ${state.creatorType}, I want to ${state.topic}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(`${WORKER_URL}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
+        topic,
+        tone: 'authentic, engaging, not corporate',
+        platforms: [platformKey]
       })
     });
 
-    const data = await res.json();
-    const text = data.content?.map(b => b.text || '').join('') || 'Try again.';
-    state.generatedCaption = text;
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || `Request failed (${res.status})`);
+    }
 
+    const data = await res.json();
+    const text = data.posts?.[platformKey] || 'Could not generate caption. Try again.';
+
+    state.generatedCaption = text;
     document.getElementById('caption-output').classList.remove('loading');
     document.getElementById('caption-output').textContent = text;
     document.getElementById('result-actions').style.display = 'flex';
   } catch (err) {
     document.getElementById('caption-output').classList.remove('loading');
-    document.getElementById('caption-output').textContent = 'Something went wrong. Please try again.';
+    document.getElementById('caption-output').textContent = `Something went wrong: ${err.message}`;
   }
 }
 
