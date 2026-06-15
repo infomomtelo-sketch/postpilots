@@ -6,18 +6,13 @@
 <title>PostPilots — AI Content Assistant</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* ============================================
-   RUNP8 BASE CONFIG — swap these to rebrand
-   ============================================ */
 :root {
-  --brand-name: "PostPilots"; 
   --brand-primary: #6C63FF;
   --brand-secondary: #FF6584;
   --brand-accent: #43D9AD;
   --bg: #F7F8FC;
   --surface: #FFFFFF;
   --text-primary: #1A1A2E;
-   
   --text-secondary: #6B7280;
   --text-muted: #9CA3AF;
   --border: #E5E7EB;
@@ -41,7 +36,6 @@ body {
   flex-direction: column;
 }
 
-/* ---- HEADER ---- */
 header {
   padding: 20px 24px;
   display: flex;
@@ -61,14 +55,9 @@ header {
   color: var(--brand-primary);
   letter-spacing: -0.5px;
 }
-
 .logo span { color: var(--text-primary); }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.header-right { display: flex; align-items: center; gap: 12px; }
 
 .btn-ghost {
   font-family: var(--font-body);
@@ -84,7 +73,6 @@ header {
 }
 .btn-ghost:hover { background: var(--bg); }
 
-/* ---- MAIN FLOW ---- */
 main {
   flex: 1;
   display: flex;
@@ -93,7 +81,6 @@ main {
   padding: 40px 20px 100px;
 }
 
-/* ---- PROGRESS ---- */
 .progress-bar {
   width: 100%;
   max-width: 480px;
@@ -110,18 +97,15 @@ main {
   border-radius: 99px;
   transition: background 0.4s ease;
 }
-
 .progress-step.active { background: var(--brand-primary); }
 .progress-step.done { background: var(--brand-accent); }
 
-/* ---- SCREEN ---- */
 .screen {
   width: 100%;
   max-width: 480px;
   display: none;
   animation: fadeUp 0.35s ease both;
 }
-
 .screen.active { display: flex; flex-direction: column; }
 
 @keyframes fadeUp {
@@ -129,7 +113,6 @@ main {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- QUESTION ---- */
 .question-label {
   font-size: 12px;
   font-weight: 600;
@@ -155,7 +138,6 @@ main {
   line-height: 1.5;
 }
 
-/* ---- OPTION CARDS ---- */
 .options {
   display: flex;
   flex-direction: column;
@@ -216,10 +198,7 @@ main {
   margin-bottom: 2px;
 }
 
-.option-desc {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
+.option-desc { font-size: 13px; color: var(--text-secondary); }
 
 .option-arrow {
   color: var(--text-muted);
@@ -248,7 +227,6 @@ main {
   pointer-events: none;
 }
 
-/* ---- TWO-COL OPTIONS ---- */
 .options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -292,7 +270,6 @@ main {
   color: var(--text-primary);
 }
 
-/* ---- BACK BUTTON ---- */
 .back-btn {
   display: flex;
   align-items: center;
@@ -310,7 +287,6 @@ main {
 .back-btn:hover { color: var(--brand-primary); }
 .back-btn svg { width: 16px; height: 16px; }
 
-/* ---- CONTINUE BTN ---- */
 .btn-primary {
   width: 100%;
   padding: 16px;
@@ -325,12 +301,7 @@ main {
   transition: all 0.2s ease;
   box-shadow: 0 4px 20px rgba(108,99,255,0.3);
 }
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 28px rgba(108,99,255,0.4);
-}
-
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(108,99,255,0.4); }
 .btn-primary:disabled {
   background: var(--border);
   color: var(--text-muted);
@@ -339,7 +310,6 @@ main {
   cursor: not-allowed;
 }
 
-/* ---- RESULT SCREEN ---- */
 .result-card {
   background: var(--surface);
   border-radius: var(--radius);
@@ -349,12 +319,7 @@ main {
   margin-bottom: 16px;
 }
 
-.result-platform {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
+.result-platform { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 
 .platform-badge {
   display: flex;
@@ -374,17 +339,9 @@ main {
   color: var(--text-primary);
   white-space: pre-wrap;
 }
+.result-caption.loading { color: var(--text-muted); font-style: italic; }
 
-.result-caption.loading {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.result-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-}
+.result-actions { display: flex; gap: 10px; margin-top: 16px; }
 
 .btn-copy, .btn-regen {
   flex: 1;
@@ -397,46 +354,26 @@ main {
   transition: all 0.2s;
   border: 1.5px solid var(--border);
 }
-
-.btn-copy {
-  background: var(--brand-primary);
-  color: white;
-  border-color: var(--brand-primary);
-}
-
-.btn-regen {
-  background: var(--surface);
-  color: var(--text-secondary);
-}
-
+.btn-copy { background: var(--brand-primary); color: white; border-color: var(--brand-primary); }
+.btn-regen { background: var(--surface); color: var(--text-secondary); }
 .btn-copy:hover { opacity: 0.9; }
 .btn-regen:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
 
-/* ---- TYPING DOTS ---- */
-.typing-dots {
-  display: flex;
-  gap: 5px;
-  padding: 8px 0;
-}
-
+.typing-dots { display: flex; gap: 5px; padding: 8px 0; }
 .typing-dots span {
-  width: 8px;
-  height: 8px;
+  width: 8px; height: 8px;
   background: var(--brand-primary);
   border-radius: 50%;
   animation: bounce 1.2s infinite;
   opacity: 0.6;
 }
-
 .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
 .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
 @keyframes bounce {
   0%, 80%, 100% { transform: translateY(0); }
   40% { transform: translateY(-8px); }
 }
 
-/* ---- START SCREEN ---- */
 .start-screen {
   display: flex;
   flex-direction: column;
@@ -446,8 +383,7 @@ main {
 }
 
 .start-hero-icon {
-  width: 80px;
-  height: 80px;
+  width: 80px; height: 80px;
   background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
   border-radius: 24px;
   display: flex;
@@ -490,18 +426,9 @@ main {
   transition: all 0.2s ease;
   box-shadow: 0 4px 20px rgba(108,99,255,0.3);
 }
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(108,99,255,0.4); }
 
-.start-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(108,99,255,0.4);
-}
-
-.start-features {
-  display: flex;
-  gap: 24px;
-  margin-top: 32px;
-}
-
+.start-features { display: flex; gap: 24px; margin-top: 32px; }
 .start-feature {
   display: flex;
   flex-direction: column;
@@ -511,36 +438,7 @@ main {
   color: var(--text-muted);
   font-weight: 500;
 }
-
 .start-feature-icon { font-size: 20px; }
-
-/* ---- DONE SCREEN ---- */
-.done-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, var(--brand-accent), #2DD4BF);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  margin: 0 auto 20px;
-}
-
-.done-title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-.done-sub {
-  font-size: 14px;
-  color: var(--text-secondary);
-  text-align: center;
-  margin-bottom: 32px;
-}
 
 .btn-restart {
   width: 100%;
@@ -557,8 +455,8 @@ main {
   margin-top: 12px;
 }
 .btn-restart:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
-   
-/* ---- POST TO PLATFORM BUTTONS ---- */
+
+/* ---- POST TO PLATFORM ---- */
 .post-buttons-label {
   font-size: 12px;
   font-weight: 600;
@@ -567,11 +465,7 @@ main {
   color: var(--text-secondary);
   margin: 20px 0 10px;
 }
-#post-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
+#post-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .btn-post {
   flex: 1 1 calc(50% - 8px);
   min-width: 120px;
@@ -593,21 +487,72 @@ main {
   transform: translateY(-1px);
 }
 
+/* ---- CUSTOM TOPIC ---- */
+.custom-topic-card {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+.custom-topic-card:hover { border-color: var(--brand-primary); border-style: solid; }
+.custom-topic-card.expanded { border-style: solid; border-color: var(--brand-primary); cursor: default; }
+
+.custom-topic-input-row {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.custom-topic-card.expanded .custom-topic-input-row { display: flex; }
+
+.custom-topic-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 64px;
+}
+.custom-topic-input:focus { outline: none; border-color: var(--brand-primary); }
+
+.custom-topic-continue {
+  align-self: flex-start;
+  padding: 10px 20px;
+  background: var(--brand-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.custom-topic-continue:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+.custom-topic-continue:not(:disabled):hover { opacity: 0.9; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo">Post<span>Pilots</span></div>
   <div class="header-right">
-    <button class="btn-ghost">Sign in</button>
+    <button class="btn-ghost" onclick="window.location.href='index.html'">← Back to home</button>
   </div>
 </header>
 
 <main>
-
-  <!-- PROGRESS BAR -->
   <div class="progress-bar" id="progressBar" style="display:none">
     <div class="progress-step" id="step1"></div>
     <div class="progress-step" id="step2"></div>
@@ -615,31 +560,22 @@ main {
     <div class="progress-step" id="step4"></div>
   </div>
 
-  <!-- ===== SCREEN 0: START ===== -->
+  <!-- SCREEN 0: START -->
   <div class="screen active" id="screen-0">
     <div class="start-screen">
-      <div class="start-hero-icon">✍️</div>
+      <div class="start-hero-icon">✦</div>
       <h1 class="start-title">Your AI content<br>writer is ready.</h1>
       <p class="start-subtitle">Answer 3 quick questions. Get a ready-to-post caption for any platform in seconds.</p>
       <button class="start-btn" onclick="goTo(1)">Create a post →</button>
       <div class="start-features">
-        <div class="start-feature">
-          <span class="start-feature-icon">⚡</span>
-          30 seconds
-        </div>
-        <div class="start-feature">
-          <span class="start-feature-icon">🎯</span>
-          On-brand
-        </div>
-        <div class="start-feature">
-          <span class="start-feature-icon">📋</span>
-          Copy & post
-        </div>
+        <div class="start-feature"><span class="start-feature-icon">⚡</span>30 seconds</div>
+        <div class="start-feature"><span class="start-feature-icon">🎯</span>On-brand</div>
+        <div class="start-feature"><span class="start-feature-icon">📋</span>Copy & post</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== SCREEN 1: WHAT TYPE OF CREATOR ===== -->
+  <!-- SCREEN 1: CREATOR TYPE -->
   <div class="screen" id="screen-1">
     <button class="back-btn" onclick="goTo(0)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -652,14 +588,11 @@ main {
       <button class="option-card" onclick="selectCreator(this, 'small business owner')">
         <div class="option-card-top">
           <div class="option-icon">🏪</div>
-          <div class="option-text">
-            <div class="option-title">Small Business</div>
-            <div class="option-desc">Products, services, local brand</div>
-          </div>
+          <div class="option-text"><div class="option-title">Small Business</div><div class="option-desc">Products, services, local brand</div></div>
           <div class="option-arrow">›</div>
         </div>
         <div class="option-examples">
-          <span class="example-chip">"New menu item drop 🍕"</span>
+          <span class="example-chip">"New menu item drop"</span>
           <span class="example-chip">"5-star review spotlight"</span>
           <span class="example-chip">"Flash sale this weekend"</span>
         </div>
@@ -667,44 +600,35 @@ main {
       <button class="option-card" onclick="selectCreator(this, 'content creator or influencer')">
         <div class="option-card-top">
           <div class="option-icon">🎥</div>
-          <div class="option-text">
-            <div class="option-title">Creator / Influencer</div>
-            <div class="option-desc">Personal brand, lifestyle, entertainment</div>
-          </div>
+          <div class="option-text"><div class="option-title">Creator / Influencer</div><div class="option-desc">Personal brand, lifestyle, entertainment</div></div>
           <div class="option-arrow">›</div>
         </div>
         <div class="option-examples">
-          <span class="example-chip">"Unpopular opinion:..."</span>
+          <span class="example-chip">"Unpopular opinion..."</span>
           <span class="example-chip">"This changed my life"</span>
-          <span class="example-chip">"Day in my life 🎬"</span>
+          <span class="example-chip">"Day in my life"</span>
         </div>
       </button>
       <button class="option-card" onclick="selectCreator(this, 'professional or coach')">
         <div class="option-card-top">
           <div class="option-icon">💼</div>
-          <div class="option-text">
-            <div class="option-title">Professional / Coach</div>
-            <div class="option-desc">Expertise, thought leadership, services</div>
-          </div>
+          <div class="option-text"><div class="option-title">Professional / Coach</div><div class="option-desc">Expertise, thought leadership, services</div></div>
           <div class="option-arrow">›</div>
         </div>
         <div class="option-examples">
           <span class="example-chip">"3 mistakes I see daily"</span>
           <span class="example-chip">"Client went from X to Y"</span>
-          <span class="example-chip">"Book a free call 📞"</span>
+          <span class="example-chip">"Book a free call"</span>
         </div>
       </button>
       <button class="option-card" onclick="selectCreator(this, 'real estate agent or property manager')">
         <div class="option-card-top">
           <div class="option-icon">🏠</div>
-          <div class="option-text">
-            <div class="option-title">Real Estate</div>
-            <div class="option-desc">Listings, market tips, property</div>
-          </div>
+          <div class="option-text"><div class="option-title">Real Estate</div><div class="option-desc">Listings, market tips, property</div></div>
           <div class="option-arrow">›</div>
         </div>
         <div class="option-examples">
-          <span class="example-chip">"Just listed 🏡 Fresno"</span>
+          <span class="example-chip">"Just listed in Fresno"</span>
           <span class="example-chip">"Market is shifting..."</span>
           <span class="example-chip">"First-time buyer tip"</span>
         </div>
@@ -712,7 +636,7 @@ main {
     </div>
   </div>
 
-  <!-- ===== SCREEN 2: WHAT TO POST ABOUT ===== -->
+  <!-- SCREEN 2: TOPIC -->
   <div class="screen" id="screen-2">
     <button class="back-btn" onclick="goTo(1)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -720,13 +644,11 @@ main {
     </button>
     <div class="question-label">Step 2 of 3</div>
     <h2 class="question-text">What do you want to post about?</h2>
-    <p class="question-sub">Pick a topic or let AI suggest one.</p>
-    <div class="options" id="topic-options">
-      <!-- Populated dynamically based on creator type -->
-    </div>
+    <p class="question-sub">Pick a topic or describe your own.</p>
+    <div class="options" id="topic-options"></div>
   </div>
 
-  <!-- ===== SCREEN 3: PLATFORM ===== -->
+  <!-- SCREEN 3: PLATFORM -->
   <div class="screen" id="screen-3">
     <button class="back-btn" onclick="goTo(2)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -735,48 +657,29 @@ main {
     <div class="question-label">Step 3 of 3</div>
     <h2 class="question-text">Which platform?</h2>
     <p class="question-sub">Each platform has its own style. We'll match it.</p>
-    <div class="options-grid" id="platform-options">
-      <button class="option-tile" onclick="selectPlatform(this, 'Instagram')">
-        <div class="tile-icon">📸</div>
-        <div class="tile-label">Instagram</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'TikTok')">
-        <div class="tile-icon">🎵</div>
-        <div class="tile-label">TikTok</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'LinkedIn')">
-        <div class="tile-icon">💼</div>
-        <div class="tile-label">LinkedIn</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'X / Twitter')">
-        <div class="tile-icon">🐦</div>
-        <div class="tile-label">X / Twitter</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'Facebook')">
-        <div class="tile-icon">👥</div>
-        <div class="tile-label">Facebook</div>
-      </button>
-      <button class="option-tile" onclick="selectPlatform(this, 'Threads')">
-        <div class="tile-icon">🧵</div>
-        <div class="tile-label">Threads</div>
-      </button>
+    <div class="options-grid">
+      <button class="option-tile" onclick="selectPlatform(this, 'Instagram')"><div class="tile-icon">📸</div><div class="tile-label">Instagram</div></button>
+      <button class="option-tile" onclick="selectPlatform(this, 'TikTok')"><div class="tile-icon">🎵</div><div class="tile-label">TikTok</div></button>
+      <button class="option-tile" onclick="selectPlatform(this, 'LinkedIn')"><div class="tile-icon">💼</div><div class="tile-label">LinkedIn</div></button>
+      <button class="option-tile" onclick="selectPlatform(this, 'X / Twitter')"><div class="tile-icon">🐦</div><div class="tile-label">X / Twitter</div></button>
+      <button class="option-tile" onclick="selectPlatform(this, 'Facebook')"><div class="tile-icon">👥</div><div class="tile-label">Facebook</div></button>
+      <button class="option-tile" onclick="selectPlatform(this, 'Threads')"><div class="tile-icon">🧵</div><div class="tile-label">Threads</div></button>
     </div>
     <button class="btn-primary" id="generate-btn" disabled onclick="generateCaption()">Generate my caption →</button>
   </div>
 
-  <!-- ===== SCREEN 4: RESULT ===== -->
+  <!-- SCREEN 4: RESULT -->
   <div class="screen" id="screen-4">
     <button class="back-btn" onclick="goTo(3)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       Back
     </button>
     <div class="question-label">Your Caption</div>
-    <h2 class="question-text" id="result-title">Ready to post 🎉</h2>
+    <h2 class="question-text" id="result-title">Ready to post</h2>
     <p class="question-sub" id="result-sub"></p>
-
     <div class="result-card">
       <div class="result-platform">
-        <div class="platform-badge" id="platform-badge">📸 Instagram</div>
+        <div class="platform-badge" id="platform-badge">Instagram</div>
       </div>
       <div class="result-caption loading" id="caption-output">
         <div class="typing-dots"><span></span><span></span><span></span></div>
@@ -785,13 +688,11 @@ main {
         <button class="btn-copy" onclick="copyCaption()">Copy caption</button>
         <button class="btn-regen" onclick="regenerate()">Try again</button>
       </div>
-       <div class="post-buttons-label">Post to</div>
+      <div class="post-buttons-label">Post to</div>
       <div id="post-buttons"></div>
     </div>
-
     <button class="btn-restart" onclick="restart()">✦ Create another post</button>
   </div>
-
 </main>
 
 <script>
@@ -807,28 +708,28 @@ const state = {
 
 const TOPIC_MAP = {
   'small business owner': [
-    { icon: '🛍️', title: 'Promote a product or service', desc: 'Showcase what you offer', value: 'promote a product or service', examples: ['"Limited time offer 🔥"', '"Why customers love us"', '"Now available online"'] },
-    { icon: '⭐', title: 'Share a customer story', desc: 'Social proof and testimonials', value: 'share a positive customer story or testimonial', examples: ['"5 stars ⭐ thank you!"', '"Customer since day one"', '"This review made our day"'] },
+    { icon: '🛍️', title: 'Promote a product or service', desc: 'Showcase what you offer', value: 'promote a product or service', examples: ['"Limited time offer"', '"Why customers love us"', '"Now available online"'] },
+    { icon: '⭐', title: 'Share a customer story', desc: 'Social proof and testimonials', value: 'share a positive customer story or testimonial', examples: ['"5 stars — thank you!"', '"Customer since day one"', '"This review made our day"'] },
     { icon: '🎉', title: 'Announce something new', desc: 'Launch, event, or update', value: 'announce something new or exciting', examples: ['"Big news dropping soon"', '"We\'re expanding!"', '"New hours starting Monday"'] },
     { icon: '💡', title: 'Helpful tip for customers', desc: 'Add value, build trust', value: 'share a helpful tip related to my business', examples: ['"Pro tip from our team"', '"You\'ve been doing it wrong"', '"Save time with this trick"'] },
   ],
   'content creator or influencer': [
-    { icon: '✨', title: 'Share my opinion', desc: 'Hot take or personal view', value: 'share a bold opinion or hot take', examples: ['"Unpopular opinion: ..."', '"Nobody talks about this"', '"I said what I said 💅"'] },
-    { icon: '📖', title: 'Tell a personal story', desc: 'Relatable, raw, real', value: 'tell an engaging personal story', examples: ['"Story time 🧵"', '"I was embarrassed but..."', '"This happened to me"'] },
-    { icon: '🎯', title: 'Share a life lesson', desc: 'Inspire your audience', value: 'share a life lesson I learned', examples: ['"Took me 10 years to learn"', '"Wish someone told me this"', '"Gentle reminder 💛"'] },
+    { icon: '✨', title: 'Share my opinion', desc: 'Hot take or personal view', value: 'share a bold opinion or hot take', examples: ['"Unpopular opinion: ..."', '"Nobody talks about this"', '"I said what I said"'] },
+    { icon: '📖', title: 'Tell a personal story', desc: 'Relatable, raw, real', value: 'tell an engaging personal story', examples: ['"Story time"', '"I was embarrassed but..."', '"This happened to me"'] },
+    { icon: '🎯', title: 'Share a life lesson', desc: 'Inspire your audience', value: 'share a life lesson I learned', examples: ['"Took me 10 years to learn"', '"Wish someone told me this"', '"Gentle reminder"'] },
     { icon: '🤩', title: 'Review or recommend', desc: 'Product, place, or experience', value: 'review or recommend something I love', examples: ['"Obsessed with this find"', '"Rating: 10/10 no notes"', '"You NEED to try this"'] },
   ],
   'professional or coach': [
     { icon: '🧠', title: 'Share expertise', desc: 'Position yourself as an expert', value: 'share professional expertise or insight', examples: ['"Here\'s what most miss..."', '"The truth about X"', '"3 things I learned"'] },
-    { icon: '📈', title: 'Client win or result', desc: 'Show your impact', value: 'share a client success story or result', examples: ['"From $0 to $10k in 90 days"', '"She was stuck. Then..."', '"Results speak 📊"'] },
+    { icon: '📈', title: 'Client win or result', desc: 'Show your impact', value: 'share a client success story or result', examples: ['"From $0 to $10k in 90 days"', '"She was stuck. Then..."', '"Results speak"'] },
     { icon: '❓', title: 'Common myth or mistake', desc: 'Educate and add value', value: 'bust a common myth or mistake in my field', examples: ['"Stop doing this immediately"', '"This advice is wrong"', '"Myth: X. Truth: Y"'] },
     { icon: '🚀', title: 'Call to action', desc: 'Drive leads or bookings', value: 'post a strong call to action for my services', examples: ['"1 spot left this month"', '"DM me the word READY"', '"Free call — link in bio"'] },
   ],
   'real estate agent or property manager': [
-    { icon: '🏡', title: 'New listing spotlight', desc: 'Show off a property', value: 'spotlight a new property listing', examples: ['"Just listed 👀 Fresno"', '"3bd 2ba and it\'s gorgeous"', '"Open house this Sunday"'] },
-    { icon: '📊', title: 'Market update', desc: 'Local trends and tips', value: 'share a local real estate market update', examples: ['"Prices shifted this month"', '"Buyers: here\'s your window"', '"Fresno market update 📍"'] },
-    { icon: '💬', title: 'Buyer or renter tips', desc: 'Helpful advice', value: 'share helpful tips for buyers or renters', examples: ['"Before you sign a lease..."', '"Credit score tips 🏦"', '"First-time buyer checklist"'] },
-    { icon: '🤝', title: 'Client success story', desc: 'Closed deal or happy tenant', value: 'share a client success story', examples: ['"Keys in hand! 🗝️"', '"Found their forever home"', '"Closed in 3 weeks flat"'] },
+    { icon: '🏡', title: 'New listing spotlight', desc: 'Show off a property', value: 'spotlight a new property listing', examples: ['"Just listed in Fresno"', '"3bd 2ba and gorgeous"', '"Open house this Sunday"'] },
+    { icon: '📊', title: 'Market update', desc: 'Local trends and tips', value: 'share a local real estate market update', examples: ['"Prices shifted this month"', '"Buyers: here\'s your window"', '"Fresno market update"'] },
+    { icon: '💬', title: 'Buyer or renter tips', desc: 'Helpful advice', value: 'share helpful tips for buyers or renters', examples: ['"Before you sign a lease..."', '"Credit score tips"', '"First-time buyer checklist"'] },
+    { icon: '🤝', title: 'Client success story', desc: 'Closed deal or happy tenant', value: 'share a client success story', examples: ['"Keys in hand!"', '"Found their forever home"', '"Closed in 3 weeks flat"'] },
   ]
 };
 
@@ -842,7 +743,6 @@ function goTo(n) {
   currentScreen = n;
   document.getElementById(`screen-${n}`).classList.add('active');
   updateProgress(n);
-
   const pb = document.getElementById('progressBar');
   pb.style.display = n === 0 ? 'none' : 'flex';
   window.scrollTo(0, 0);
@@ -888,10 +788,52 @@ function populateTopics(type) {
       </div>
     </button>
   `).join('');
+
+  container.innerHTML += `
+    <div class="custom-topic-card" id="custom-topic-card" onclick="toggleCustomTopic()">
+      <div class="option-card-top">
+        <div class="option-icon">＋</div>
+        <div class="option-text">
+          <div class="option-title">Describe it yourself</div>
+          <div class="option-desc">Tell us exactly what you want to post about</div>
+        </div>
+        <div class="option-arrow">›</div>
+      </div>
+      <div class="custom-topic-input-row" onclick="event.stopPropagation()">
+        <textarea
+          class="custom-topic-input"
+          id="custom-topic-input"
+          placeholder="e.g. We just launched a Wyoming LLC service for affiliates on thejudgy.com"
+          oninput="onCustomTopicInput()"
+        ></textarea>
+        <button class="custom-topic-continue" id="custom-topic-continue" disabled onclick="submitCustomTopic()">Continue →</button>
+      </div>
+    </div>
+  `;
 }
 
 function selectTopic(el, topic) {
   state.topic = topic;
+  goTo(3);
+}
+
+function toggleCustomTopic() {
+  const card = document.getElementById('custom-topic-card');
+  if (!card.classList.contains('expanded')) {
+    card.classList.add('expanded');
+    document.getElementById('custom-topic-input').focus();
+  }
+}
+
+function onCustomTopicInput() {
+  const input = document.getElementById('custom-topic-input');
+  document.getElementById('custom-topic-continue').disabled = input.value.trim().length === 0;
+}
+
+function submitCustomTopic() {
+  const value = document.getElementById('custom-topic-input').value.trim();
+  if (!value) return;
+  state.topic = value;
   goTo(3);
 }
 
@@ -903,20 +845,20 @@ function selectPlatform(el, platform) {
   el.classList.add('selected');
   state.platform = platform;
   document.getElementById('generate-btn').disabled = false;
+}
 
-   // ============================================
+// ============================================
 // CONFIG — Worker endpoint
 // ============================================
 const WORKER_URL = 'https://autopost-api.infomomtelo.workers.dev';
 
-// Maps app.html platform labels -> Worker PLATFORM_GUIDE keys
 const PLATFORM_KEY_MAP = {
   'Instagram': 'instagram',
-  'TikTok': 'instagram',      // Worker has no tiktok guide yet — fallback to instagram-style
+  'TikTok': 'instagram',
   'LinkedIn': 'linkedin',
   'X / Twitter': 'twitter',
   'Facebook': 'facebook',
-  'Threads': 'twitter'        // Worker has no threads guide yet — fallback to twitter-style
+  'Threads': 'twitter'
 };
 
 // ============================================
@@ -924,15 +866,12 @@ const PLATFORM_KEY_MAP = {
 // ============================================
 async function generateCaption() {
   goTo(4);
-  const badge = document.getElementById('platform-badge');
   const platformIcons = { Instagram:'📸', TikTok:'🎵', LinkedIn:'💼', 'X / Twitter':'🐦', Facebook:'👥', Threads:'🧵' };
-  badge.textContent = `${platformIcons[state.platform] || '📱'} ${state.platform}`;
-
+  document.getElementById('platform-badge').textContent = `${platformIcons[state.platform] || '📱'} ${state.platform}`;
   document.getElementById('result-sub').textContent = `${state.creatorType} · ${state.topic}`;
   document.getElementById('caption-output').innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
   document.getElementById('caption-output').classList.add('loading');
   document.getElementById('result-actions').style.display = 'none';
-
   await fetchCaption();
 }
 
@@ -940,16 +879,12 @@ async function regenerate() {
   document.getElementById('caption-output').innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
   document.getElementById('caption-output').classList.add('loading');
   document.getElementById('result-actions').style.display = 'none';
-
   await fetchCaption();
 }
 
 async function fetchCaption() {
   const platformKey = PLATFORM_KEY_MAP[state.platform] || 'twitter';
-
-  // Build a richer "topic" string from the wizard answers, since the Worker
-  // takes a single topic + tone rather than a creator-type/topic combo.
-  const topic = `As a ${state.creatorType}, I want to ${state.topic}`;
+  const topic = `As a ${state.creatorType}, here's what I want to post about: ${state.topic}`;
 
   try {
     const res = await fetch(`${WORKER_URL}/api/generate`, {
@@ -974,7 +909,7 @@ async function fetchCaption() {
     document.getElementById('caption-output').classList.remove('loading');
     document.getElementById('caption-output').textContent = text;
     document.getElementById('result-actions').style.display = 'flex';
-     renderPostButtons();
+    renderPostButtons();
   } catch (err) {
     document.getElementById('caption-output').classList.remove('loading');
     document.getElementById('caption-output').textContent = `Something went wrong: ${err.message}`;
@@ -982,56 +917,42 @@ async function fetchCaption() {
 }
 
 // ============================================
-// POST TO PLATFORM — share intents + copy fallback
+// POST TO PLATFORM
 // ============================================
-
-// URL builders. Where a platform supports prefilled text, we use it.
-// Everywhere else, we copy the caption and open the platform so the
-// user can paste it themselves.
 const POST_TARGETS = {
   'X / Twitter': {
-    label: 'X / Twitter',
-    icon: '🐦',
+    label: 'X / Twitter', icon: '🐦',
     buildUrl: (caption) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}`,
     prefilled: true
   },
   'LinkedIn': {
-    label: 'LinkedIn',
-    icon: '💼',
+    label: 'LinkedIn', icon: '💼',
     buildUrl: () => `https://www.linkedin.com/feed/`,
     prefilled: false
   },
   'Facebook': {
-    label: 'Facebook',
-    icon: '👥',
+    label: 'Facebook', icon: '👥',
     buildUrl: () => `https://www.facebook.com/`,
     prefilled: false
   },
   'Instagram': {
-    label: 'Instagram',
-    icon: '📸',
+    label: 'Instagram', icon: '📸',
     buildUrl: () => `https://www.instagram.com/`,
     prefilled: false
   },
   'TikTok': {
-    label: 'TikTok',
-    icon: '🎵',
+    label: 'TikTok', icon: '🎵',
     buildUrl: () => `https://www.tiktok.com/upload`,
     prefilled: false
   },
   'Threads': {
-    label: 'Threads',
-    icon: '🧵',
+    label: 'Threads', icon: '🧵',
     buildUrl: () => `https://www.threads.net/`,
     prefilled: false
   },
   'Reddit': {
-    label: 'Reddit',
-    icon: '👽',
-    buildUrl: (caption) => {
-      const title = caption.split('\n')[0].slice(0, 280);
-      return `https://www.reddit.com/submit?title=${encodeURIComponent(title)}`;
-    },
+    label: 'Reddit', icon: '👽',
+    buildUrl: (caption) => `https://www.reddit.com/submit?title=${encodeURIComponent(caption.split('\n')[0].slice(0, 280))}`,
     prefilled: true
   }
 };
@@ -1039,22 +960,13 @@ const POST_TARGETS = {
 function postToPlatform(targetKey) {
   const target = POST_TARGETS[targetKey];
   if (!target) return;
-
   const caption = state.generatedCaption || '';
-
-  // Always copy the caption so it's ready to paste regardless of platform.
   navigator.clipboard.writeText(caption).catch(() => {});
-
-  const url = target.buildUrl(caption);
-  window.open(url, '_blank');
-
-  // Brief inline feedback on the button that was clicked.
+  window.open(target.buildUrl(caption), '_blank');
   const btn = document.getElementById(`post-btn-${targetKey.replace(/[^a-zA-Z]/g, '')}`);
   if (btn) {
     const original = btn.innerHTML;
-    btn.innerHTML = target.prefilled
-      ? `✓ Opened`
-      : `✓ Copied — paste it there`;
+    btn.innerHTML = target.prefilled ? '✓ Opened' : '✓ Copied — paste it there';
     setTimeout(() => { btn.innerHTML = original; }, 2200);
   }
 }
@@ -1062,14 +974,12 @@ function postToPlatform(targetKey) {
 function renderPostButtons() {
   const container = document.getElementById('post-buttons');
   if (!container) return;
-
   container.innerHTML = Object.keys(POST_TARGETS).map(key => {
     const t = POST_TARGETS[key];
     const safeId = `post-btn-${key.replace(/[^a-zA-Z]/g, '')}`;
     return `<button class="btn-post" id="${safeId}" onclick="postToPlatform('${key}')">${t.icon} ${t.label}</button>`;
   }).join('');
 }
-   
 
 function copyCaption() {
   navigator.clipboard.writeText(state.generatedCaption).then(() => {
