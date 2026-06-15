@@ -592,6 +592,72 @@ main {
   color: var(--brand-primary);
   transform: translateY(-1px);
 }
+
+   function populateTopics(type) {
+  const container = document.getElementById('topic-options');
+  const topics = TOPIC_MAP[type] || TOPIC_MAP['small business owner'];
+  container.innerHTML = topics.map(t => `
+    <button class="option-card" onclick="selectTopic(this, '${t.value}')">
+      <div class="option-card-top">
+        <div class="option-icon">${t.icon}</div>
+        <div class="option-text">
+          <div class="option-title">${t.title}</div>
+          <div class="option-desc">${t.desc}</div>
+        </div>
+        <div class="option-arrow">›</div>
+      </div>
+      <div class="option-examples">
+        ${t.examples.map(e => `<span class="example-chip">${e}</span>`).join('')}
+      </div>
+    </button>
+  `).join('');
+
+  container.innerHTML += `
+    <div class="custom-topic-card" id="custom-topic-card" onclick="toggleCustomTopic()">
+      <div class="option-card-top">
+        <div class="option-icon">＋</div>
+        <div class="option-text">
+          <div class="option-title">Describe it yourself</div>
+          <div class="option-desc">Tell us exactly what you want to post about</div>
+        </div>
+        <div class="option-arrow">›</div>
+      </div>
+      <div class="custom-topic-input-row" onclick="event.stopPropagation()">
+        <textarea
+          class="custom-topic-input"
+          id="custom-topic-input"
+          placeholder="e.g. We just launched a Wyoming LLC service for affiliates on thejudgy.com"
+          oninput="onCustomTopicInput()"
+        ></textarea>
+        <button class="custom-topic-continue" id="custom-topic-continue" disabled onclick="submitCustomTopic()">Continue →</button>
+      </div>
+    </div>
+  `;
+}
+
+function toggleCustomTopic() {
+  const card = document.getElementById('custom-topic-card');
+  const alreadyExpanded = card.classList.contains('expanded');
+  if (!alreadyExpanded) {
+    card.classList.add('expanded');
+    document.getElementById('custom-topic-input').focus();
+  }
+}
+
+function onCustomTopicInput() {
+  const input = document.getElementById('custom-topic-input');
+  const btn = document.getElementById('custom-topic-continue');
+  btn.disabled = input.value.trim().length === 0;
+}
+
+function submitCustomTopic() {
+  const input = document.getElementById('custom-topic-input');
+  const value = input.value.trim();
+  if (!value) return;
+  state.topic = value;
+  goTo(3);
+}
+
 </style>
 </head>
 <body>
