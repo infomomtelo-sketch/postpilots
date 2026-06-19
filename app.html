@@ -341,6 +341,29 @@ main {
 }
 .result-caption.loading { color: var(--text-muted); font-style: italic; }
 
+/* ---- HOOK REASON CARD ---- */
+.hook-reason-card {
+  display: none;
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #F0EEFF 0%, #EEF9F5 100%);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--brand-primary);
+}
+.hook-reason-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  margin-bottom: 6px;
+}
+.hook-reason-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
 .result-actions { display: flex; gap: 10px; margin-top: 16px; }
 
 .btn-copy, .btn-regen {
@@ -684,6 +707,11 @@ main {
       <div class="result-caption loading" id="caption-output">
         <div class="typing-dots"><span></span><span></span><span></span></div>
       </div>
+      <!-- HOOK REASON CARD -->
+      <div class="hook-reason-card" id="hook-reason-card">
+        <div class="hook-reason-label">💡 Why this hook works</div>
+        <div class="hook-reason-text" id="hook-reason-text"></div>
+      </div>
       <div class="result-actions" id="result-actions" style="display:none">
         <button class="btn-copy" onclick="copyCaption()">Copy caption</button>
         <button class="btn-regen" onclick="regenerate()">Try again</button>
@@ -872,6 +900,7 @@ async function generateCaption() {
   document.getElementById('caption-output').innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
   document.getElementById('caption-output').classList.add('loading');
   document.getElementById('result-actions').style.display = 'none';
+  document.getElementById('hook-reason-card').style.display = 'none';
   await fetchCaption();
 }
 
@@ -879,6 +908,7 @@ async function regenerate() {
   document.getElementById('caption-output').innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
   document.getElementById('caption-output').classList.add('loading');
   document.getElementById('result-actions').style.display = 'none';
+  document.getElementById('hook-reason-card').style.display = 'none';
   await fetchCaption();
 }
 
@@ -903,12 +933,32 @@ async function fetchCaption() {
     }
 
     const data = await res.json();
-    const text = data.posts?.[platformKey] || 'Could not generate caption. Try again.';
+    const raw = data.posts?.[platformKey] || 'Could not generate caption. Try again.';
 
-    state.generatedCaption = text;
+    // Split out HOOK_REASON if present
+    let caption = raw;
+    let hookReason = '';
+    const hookMatch = raw.match(/HOOK_REASON:\s*(.+)/s);
+    if (hookMatch) {
+      hookReason = hookMatch[1].trim();
+      caption = raw.replace(/\n*HOOK_REASON:[\s\S]+/, '').trim();
+    }
+
+    state.generatedCaption = caption;
     document.getElementById('caption-output').classList.remove('loading');
-    document.getElementById('caption-output').textContent = text;
+    document.getElementById('caption-output').textContent = caption;
     document.getElementById('result-actions').style.display = 'flex';
+
+    // Show hook reason card if returned
+    const hookCard = document.getElementById('hook-reason-card');
+    const hookText = document.getElementById('hook-reason-text');
+    if (hookReason) {
+      hookText.textContent = hookReason;
+      hookCard.style.display = 'block';
+    } else {
+      hookCard.style.display = 'none';
+    }
+
     renderPostButtons();
   } catch (err) {
     document.getElementById('caption-output').classList.remove('loading');
