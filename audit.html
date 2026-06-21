@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site Audit — PostPilots</title>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #16161a;
+      --surface2: #1e1e24;
+      --border: #2a2a33;
+      --accent: #6c63ff;
+      --accent-soft: rgba(108,99,255,0.12);
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --text: #f0f0f5;
+      --muted: #8888a0;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1rem; text-decoration: none; color: var(--text); }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; }
+    .nav-links a:hover { color: var(--text); }
+    .btn-outline {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 56px 24px 40px;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    /* USAGE COUNTER */
+    .usage-bar-wrap {
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+    .usage-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .usage-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .usage-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    /* INPUT CARD */
+    .input-card {
+      max-width: 600px;
+      margin: 0 auto 48px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+    .url-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .url-input::placeholder { color: var(--muted); }
+    .url-input:focus { border-color: var(--accent); }
+    .btn-audit {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .btn-audit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* LOADING */
+    #loading {
+      display: none;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { color: var(--muted); font-size: 0.875rem; }
+
+    /* RESULTS */
+    #results { display: none; max-width: 760px; margin: 0 auto 60px; padding: 0 16px; }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .score-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+    .score-num {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .score-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .good { color: var(--green); }
+    .warn { color: var(--yellow); }
+    .bad  { color: var(--red); }
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 32px 0 12px;
+    }
+
+    .audit-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .audit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .audit-item:last-child { border-bottom: none; }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .dot-good { background: var(--green); }
+    .dot-warn { background: var(--yellow); }
+    .dot-bad  { background: var(--red); }
+    .audit-text { flex: 1; }
+    .audit-label { font-size: 0.875rem; font-weight: 600; margin-bottom: 3px; }
+    .audit-detail { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    .rec-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .rec-priority {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .pri-high { color: var(--red); }
+    .pri-med  { color: var(--yellow); }
+    .pri-low  { color: var(--green); }
+    .rec-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+    .rec-body  { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* CTA BAR */
+    .cta-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      margin-top: 28px;
+    }
+    .cta-bar h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .cta-bar p { color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; }
+    .btn-primary {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      padding: 11px 24px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    /* PAYWALL MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 28px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .modal-icon { font-size: 2.5rem; margin-bottom: 16px; }
+    .modal h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; }
+    .modal p { color: var(--muted); font-size: 0.875rem; line-height: 1.6; margin-bottom: 24px; }
+    .modal-countdown { font-size: 0.8rem; color: var(--muted); margin-top: 16px; }
+    .modal-countdown span { color: var(--accent); }
+
+    @media (max-width: 480px) {
+      .input-row { flex-direction: column; }
+      .btn-audit { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="nav-logo">Post<span>Pilots</span></a>
+  <div class="nav-links">
+    <a href="/app.html">Caption Generator</a>
+    <a href="/seo.html">SEO Generator</a>
+    <a href="/app.html" class="btn-outline">Try free →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <span class="hero-eyebrow">Site Audit</span>
+  <h1>Know exactly what's holding<br>your site back</h1>
+  <p>Enter any URL. Get a full SEO, performance, and content audit with prioritized fixes — in seconds.</p>
+
+  <div class="usage-bar-wrap">
+    <div class="usage-label">
+      <span>Free audits used</span>
+      <span id="usageText">0 / 5</span>
+    </div>
+    <div class="usage-track">
+      <div class="usage-fill" id="usageFill" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="input-card">
+  <div class="input-row">
+    <input
+      id="urlInput"
+      class="url-input"
+      type="url"
+      placeholder="https://yoursite.com"
+      autocomplete="off"
+      autocapitalize="none"
+    />
+    <button class="btn-audit" id="auditBtn" onclick="runAudit()">Run Audit</button>
+  </div>
+</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p id="loadingMsg">Analyzing your site…</p>
+</div>
+
+<div id="results"></div>
+
+<!-- Paywall Modal -->
+<div class="modal-overlay" id="paywallModal">
+  <div class="modal">
+    <div class="modal-icon">🔒</div>
+    <h2>You've used your 5 free audits</h2>
+    <p>Unlock unlimited site audits, SEO reports, and full content analysis — included in your OwnSite subscription.</p>
+    <a href="https://ownsite.app" class="btn-primary" style="display:block; margin-bottom:10px;">Upgrade on OwnSite →</a>
+    <div class="modal-countdown">Redirecting in <span id="countdown">5</span> seconds…</div>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────────────────────────
+  const WORKER_URL = 'https://autopost-api.infomomtelo.workers.dev';
+  const FREE_LIMIT = 5;
+  const OWNSITE_URL = 'https://ownsite.app';
+  const STORAGE_KEY = 'pp_audit_uses';
+
+  // ── SUPABASE (optional — for logged-in tracking) ─────────────────────────
+  const SUPABASE_URL = 'https://dmemzljerldzeiwqfxzp.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtZW16bGplcmxkemVpd3FmeHpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTYzMTU2MDAsImV4cCI6MjAzMTg5MTYwMH0.placeholder';
+
+  // ── USAGE TRACKING ───────────────────────────────────────────────────────
+  function getUses() {
+    return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+  }
+  function incrementUses() {
+    const n = getUses() + 1;
+    localStorage.setItem(STORAGE_KEY, n);
+    return n;
+  }
+  function updateUsageBar() {
+    const used = getUses();
+    document.getElementById('usageText').textContent = `${used} / ${FREE_LIMIT}`;
+    document.getElementById('usageFill').style.width = `${Math.min(used / FREE_LIMIT * 100, 100)}%`;
+  }
+
+  function showPaywall() {
+    const modal = document.getElementById('paywallModal');
+    modal.classList.add('open');
+    let count = 5;
+    const tick = setInterval(() => {
+      count--;
+      document.getElementById('countdown').textContent = count;
+      if (count <= 0) {
+        clearInterval(tick);
+        window.location.href = OWNSITE_URL;
+      }
+    }, 1000);
+  }
+
+  updateUsageBar();
+
+  // ── LOADING MESSAGES ─────────────────────────────────────────────────────
+  const loadingMessages = [
+    'Checking meta tags…',
+    'Scanning headings and content…',
+    'Evaluating mobile readiness…',
+    'Reviewing social sharing setup…',
+    'Scoring SEO signals…',
+    'Building your full report…'
+  ];
+  let msgInterval;
+  function startLoadingCycle() {
+    let i = 0;
+    document.getElementById('loadingMsg').textContent = loadingMessages[0];
+    msgInterval = setInterval(() => {
+      i = (i + 1) % loadingMessages.length;
+      document.getElementById('loadingMsg').textContent = loadingMessages[i];
+    }, 2000);
+  }
+  function stopLoadingCycle() { clearInterval(msgInterval); }
+
+  // ── RENDER HELPERS ───────────────────────────────────────────────────────
+  function scoreClass(n) {
+    if (n >= 75) return 'good';
+    if (n >= 45) return 'warn';
+    return 'bad';
+  }
+  function dotClass(status) {
+    if (status === 'good') return 'dot-good';
+    if (status === 'warn') return 'dot-warn';
+    return 'dot-bad';
+  }
+  function priClass(p) {
+    if (p === 'High') return 'pri-high';
+    if (p === 'Medium') return 'pri-med';
+    return 'pri-low';
+  }
+
+  function renderResults(data, url) {
+    const el = document.getElementById('results');
+    el.style.display = 'block';
+
+    const scores = data.scores || {};
+    const checks = data.checks || [];
+    const recommendations = data.recommendations || [];
+    const summary = data.summary || '';
+
+    // Score cards
+    const scoreHTML = `
+      <div class="score-row">
+        ${Object.entries(scores).map(([label, val]) => `
+          <div class="score-card">
+            <div class="score-num ${scoreClass(val)}">${val}</div>
+            <div class="score-label">${label}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Checks by category
+    const categories = [...new Set(checks.map(c => c.category))];
+    const checksHTML = categories.map(cat => `
+      <div class="section-title">${cat}</div>
+      <div class="audit-block">
+        ${checks.filter(c => c.category === cat).map(c => `
+          <div class="audit-item">
+            <div class="status-dot ${dotClass(c.status)}"></div>
+            <div class="audit-text">
+              <div class="audit-label">${c.label}</div>
+              <div class="audit-detail">${c.detail}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+
+    // Recommendations
+    const recsHTML = recommendations.length ? `
+      <div class="section-title">Priority Fixes</div>
+      ${recommendations.map(r => `
+        <div class="rec-card">
+          <div class="rec-priority ${priClass(r.priority)}">${r.priority} priority</div>
+          <div class="rec-title">${r.title}</div>
+          <div class="rec-body">${r.body}</div>
+        </div>
+      `).join('')}
+    ` : '';
+
+    // CTA
+    const ctaHTML = `
+      <div class="cta-bar">
+        <h3>Ready to fix these issues?</h3>
+        <p>OwnSite helps you implement every recommendation — no dev needed.</p>
+        <a href="${OWNSITE_URL}" class="btn-primary">Fix my site on OwnSite →</a>
+      </div>
+    `;
+
+    el.innerHTML = `
+      ${summary ? `<p style="color:var(--muted);font-size:0.9rem;max-width:700px;margin:0 auto 24px;line-height:1.6;">${summary}</p>` : ''}
+      ${scoreHTML}
+      ${checksHTML}
+      ${recsHTML}
+      ${ctaHTML}
+    `;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── MAIN AUDIT ───────────────────────────────────────────────────────────
+  async function runAudit() {
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) return;
+
+    // Check limit BEFORE running
+    if (getUses() >= FREE_LIMIT) {
+      showPaywall();
+      return;
+    }
+
+    const btn = document.getElementById('auditBtn');
+    btn.disabled = true;
+    btn.textContent = 'Auditing…';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    startLoadingCycle();
+
+    const prompt = `You are a professional SEO and website auditor. Perform a comprehensive site audit for: ${url}
+
+Return ONLY a valid JSON object with this exact structure (no markdown, no explanation outside the JSON):
+
+{
+  "summary": "2-3 sentence overall assessment of this site's SEO and performance health",
+  "scores": {
+    "SEO": <integer 0-100>,
+    "Content": <integer 0-100>,
+    "Technical": <integer 0-100>,
+    "Mobile": <integer 0-100>,
+    "Social": <integer 0-100>
+  },
+  "checks": [
+    {
+      "category": "SEO Basics",
+      "label": "Title Tag",
+      "status": "good|warn|bad",
+      "detail": "Specific finding about this site's title tag"
+    },
+    {
+      "category": "SEO Basics",
+      "label": "Meta Description",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "SEO Basics",
+      "label": "H1 Heading",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "SEO Basics",
+      "label": "Keyword Usage",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "Technical",
+      "label": "HTTPS / SSL",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "Technical",
+      "label": "URL Structure",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "Technical",
+      "label": "Page Speed (estimated)",
+      "status": "good|warn|bad",
+      "detail": "Specific finding based on what you know about this domain"
+    },
+    {
+      "category": "Technical",
+      "label": "Sitemap / Robots.txt",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "Content",
+      "label": "Content Quality",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "Content",
+      "label": "Content Depth",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "Content",
+      "label": "Internal Linking",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "Mobile & Social",
+      "label": "Mobile Responsiveness",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    },
+    {
+      "category": "Mobile & Social",
+      "label": "Open Graph Tags",
+      "status": "good|warn|bad",
+      "detail": "Specific finding about social sharing preview setup"
+    },
+    {
+      "category": "Mobile & Social",
+      "label": "Twitter Card",
+      "status": "good|warn|bad",
+      "detail": "Specific finding"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "High",
+      "title": "Specific actionable fix title",
+      "body": "2-3 sentence explanation of what to fix and why it matters for this specific site"
+    },
+    {
+      "priority": "High",
+      "title": "Second high priority fix",
+      "body": "2-3 sentence explanation"
+    },
+    {
+      "priority": "Medium",
+      "title": "Medium priority fix",
+      "body": "2-3 sentence explanation"
+    },
+    {
+      "priority": "Low",
+      "title": "Low priority improvement",
+      "body": "2-3 sentence explanation"
+    }
+  ]
+}
+
+Base your audit on your knowledge of this specific URL/domain. Be specific and helpful, not generic. If you recognize the site, use what you know. Score honestly.`;
+
+    try {
+      const response = await fetch(`${WORKER_URL}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: `SITE AUDIT REQUEST for ${url}`,
+          tone: 'professional',
+          platforms: ['audit'],
+          _mode: 'audit',
+          _prompt: prompt
+        })
+      });
+
+      // If worker doesn't support audit mode, call Anthropic directly via a different approach
+      let auditData;
+      if (response.ok) {
+        const raw = await response.json();
+        // Try to find JSON in the response
+        const text = raw.posts?.audit || raw.text || raw.content || JSON.stringify(raw);
+        auditData = extractJSON(text);
+      }
+
+      if (!auditData) {
+        // Fallback: call Anthropic API directly
+        const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-calls': 'true'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 2000,
+            messages: [{ role: 'user', content: prompt }]
+          })
+        });
+        const aData = await anthropicRes.json();
+        const text = aData.content?.[0]?.text || '';
+        auditData = extractJSON(text);
+      }
+
+      stopLoadingCycle();
+      document.getElementById('loading').style.display = 'none';
+
+      if (auditData) {
+        const uses = incrementUses();
+        updateUsageBar();
+        renderResults(auditData, url);
+
+        // Show paywall after this result if limit hit
+        if (uses >= FREE_LIMIT) {
+          setTimeout(showPaywall, 3000);
+        }
+      } else {
+        showError('Could not parse audit results. Please try again.');
+      }
+
+    } catch (err) {
+      stopLoadingCycle();
+      document.getElementById('loading').style.display = 'none';
+      showError('Audit failed. Check your connection and try again.');
+      console.error(err);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Run Audit';
+  }
+
+  function extractJSON(text) {
+    try {
+      // Strip markdown fences
+      const clean = text.replace(/```json|```/g, '').trim();
+      // Find JSON object
+      const start = clean.indexOf('{');
+      const end = clean.lastIndexOf('}');
+      if (start === -1 || end === -1) return null;
+      return JSON.parse(clean.slice(start, end + 1));
+    } catch { return null; }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('results');
+    el.style.display = 'block';
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);">${msg}</div>`;
+  }
+
+  // Allow Enter key
+  document.getElementById('urlInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') runAudit();
+  });
+</script>
+</body>
+</html>
