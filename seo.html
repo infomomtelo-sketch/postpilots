@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO Generator — PostPilots</title>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #16161a;
+      --surface2: #1e1e24;
+      --border: #2a2a33;
+      --accent: #6c63ff;
+      --accent-soft: rgba(108,99,255,0.12);
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --text: #f0f0f5;
+      --muted: #8888a0;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-weight: 700; font-size: 1rem; text-decoration: none; color: var(--text); }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; }
+    .nav-links a:hover { color: var(--text); }
+    .btn-outline {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 56px 24px 40px;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    .usage-bar-wrap {
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+    .usage-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .usage-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .usage-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    /* FORM */
+    .form-card {
+      max-width: 600px;
+      margin: 0 auto 48px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .mode-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .mode-tab {
+      flex: 1;
+      padding: 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .mode-tab.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 0.875rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
+    .field select { appearance: none; cursor: pointer; }
+    .field select option { background: var(--surface2); }
+
+    .btn-generate {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* LOADING */
+    #loading {
+      display: none;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { color: var(--muted); font-size: 0.875rem; }
+
+    /* RESULTS */
+    #results { display: none; max-width: 700px; margin: 0 auto 60px; padding: 0 16px; }
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 28px 0 10px;
+    }
+
+    .seo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .seo-item {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .seo-item:last-child { border-bottom: none; }
+    .seo-item-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .seo-item-value {
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .seo-item-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+    .keyword-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 16px 18px;
+    }
+    .keyword-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .keyword-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .kw-vol { font-size: 0.7rem; color: var(--muted); }
+
+    .schema-block {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 0.78rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #a9b1d6;
+      overflow-x: auto;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .cta-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      margin-top: 28px;
+    }
+    .cta-bar h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .cta-bar p { color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; }
+    .btn-primary {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      padding: 11px 24px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    /* PAYWALL MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 28px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .modal-icon { font-size: 2.5rem; margin-bottom: 16px; }
+    .modal h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; }
+    .modal p { color: var(--muted); font-size: 0.875rem; line-height: 1.6; margin-bottom: 24px; }
+    .modal-countdown { font-size: 0.8rem; color: var(--muted); margin-top: 16px; }
+    .modal-countdown span { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="nav-logo">Post<span>Pilots</span></a>
+  <div class="nav-links">
+    <a href="/app.html">Caption Generator</a>
+    <a href="/audit.html">Site Audit</a>
+    <a href="/app.html" class="btn-outline">Try free →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <span class="hero-eyebrow">SEO Generator</span>
+  <h1>SEO copy that actually<br>ranks — generated instantly</h1>
+  <p>Title tags, meta descriptions, keywords, schema markup, and social previews. All from a URL or topic.</p>
+
+  <div class="usage-bar-wrap">
+    <div class="usage-label">
+      <span>Free generations used</span>
+      <span id="usageText">0 / 5</span>
+    </div>
+    <div class="usage-track">
+      <div class="usage-fill" id="usageFill" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="form-card">
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('url', this)">From URL</button>
+    <button class="mode-tab" onclick="setMode('topic', this)">From Topic</button>
+  </div>
+
+  <div id="urlMode">
+    <div class="field">
+      <label>Website URL</label>
+      <input id="urlInput" type="url" placeholder="https://yoursite.com" autocomplete="off" autocapitalize="none" />
+    </div>
+  </div>
+
+  <div id="topicMode" style="display:none">
+    <div class="field">
+      <label>Page Topic / Business Description</label>
+      <textarea id="topicInput" placeholder="e.g. I run a residential care facility in Fresno CA helping seniors with daily living activities"></textarea>
+    </div>
+    <div class="field">
+      <label>Page Type</label>
+      <select id="pageType">
+        <option value="homepage">Homepage</option>
+        <option value="service">Service Page</option>
+        <option value="blog">Blog Post</option>
+        <option value="product">Product Page</option>
+        <option value="about">About Page</option>
+        <option value="landing">Landing Page</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Target Location (optional)</label>
+    <input id="locationInput" type="text" placeholder="e.g. Fresno, CA" />
+  </div>
+
+  <button class="btn-generate" id="genBtn" onclick="runSEO()">Generate SEO Package</button>
+</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p id="loadingMsg">Generating your SEO package…</p>
+</div>
+
+<div id="results"></div>
+
+<!-- Paywall Modal -->
+<div class="modal-overlay" id="paywallModal">
+  <div class="modal">
+    <div class="modal-icon">🔒</div>
+    <h2>You've used your 5 free generations</h2>
+    <p>Unlock unlimited SEO generation, site audits, and content tools — included in your OwnSite subscription.</p>
+    <a href="https://ownsite.app" class="btn-primary" style="display:block; margin-bottom:10px;">Upgrade on OwnSite →</a>
+    <div class="modal-countdown">Redirecting in <span id="countdown">5</span> seconds…</div>
+  </div>
+</div>
+
+<script>
+  const OWNSITE_URL = 'https://ownsite.app';
+  const FREE_LIMIT = 5;
+  // Separate key from audit so each tool gets 5 free uses
+  const STORAGE_KEY = 'pp_seo_uses';
+  let currentMode = 'url';
+
+  function setMode(mode, el) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('urlMode').style.display = mode === 'url' ? 'block' : 'none';
+    document.getElementById('topicMode').style.display = mode === 'topic' ? 'block' : 'none';
+  }
+
+  function getUses() { return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10); }
+  function incrementUses() {
+    const n = getUses() + 1;
+    localStorage.setItem(STORAGE_KEY, n);
+    return n;
+  }
+  function updateUsageBar() {
+    const used = getUses();
+    document.getElementById('usageText').textContent = `${used} / ${FREE_LIMIT}`;
+    document.getElementById('usageFill').style.width = `${Math.min(used / FREE_LIMIT * 100, 100)}%`;
+  }
+
+  function showPaywall() {
+    const modal = document.getElementById('paywallModal');
+    modal.classList.add('open');
+    let count = 5;
+    const tick = setInterval(() => {
+      count--;
+      document.getElementById('countdown').textContent = count;
+      if (count <= 0) {
+        clearInterval(tick);
+        window.location.href = OWNSITE_URL;
+      }
+    }, 1000);
+  }
+
+  updateUsageBar();
+
+  async function runSEO() {
+    if (getUses() >= FREE_LIMIT) { showPaywall(); return; }
+
+    const location = document.getElementById('locationInput').value.trim();
+    let subject = '';
+
+    if (currentMode === 'url') {
+      subject = document.getElementById('urlInput').value.trim();
+      if (!subject) return;
+      subject = `URL: ${subject}`;
+    } else {
+      const topic = document.getElementById('topicInput').value.trim();
+      const pageType = document.getElementById('pageType').value;
+      if (!topic) return;
+      subject = `Topic: ${topic}\nPage type: ${pageType}`;
+    }
+
+    if (location) subject += `\nTarget location: ${location}`;
+
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true;
+    btn.textContent = 'Generating…';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+
+    const prompt = `You are an expert SEO copywriter. Generate a complete SEO package for:
+
+${subject}
+
+Return ONLY a valid JSON object (no markdown, no explanation):
+
+{
+  "title_tags": [
+    {"text": "Primary title tag (50-60 chars)", "chars": 55, "note": "Why this works"},
+    {"text": "Alternative title tag (50-60 chars)", "chars": 52, "note": "Different angle"},
+    {"text": "Third variation", "chars": 58, "note": "Keyword-first version"}
+  ],
+  "meta_descriptions": [
+    {"text": "Primary meta description (145-160 chars with a clear CTA)", "chars": 155, "note": "Why this converts"},
+    {"text": "Alternative meta description", "chars": 150, "note": "Emotional angle"}
+  ],
+  "h1_suggestions": [
+    "Primary H1 option",
+    "H1 with location/specificity",
+    "Question-based H1"
+  ],
+  "keywords": [
+    {"term": "primary keyword phrase", "intent": "commercial", "difficulty": "medium"},
+    {"term": "long-tail keyword", "intent": "informational", "difficulty": "low"},
+    {"term": "local keyword", "intent": "navigational", "difficulty": "low"},
+    {"term": "comparison keyword", "intent": "commercial", "difficulty": "high"},
+    {"term": "problem keyword", "intent": "informational", "difficulty": "low"},
+    {"term": "branded keyword", "intent": "navigational", "difficulty": "low"},
+    {"term": "question keyword", "intent": "informational", "difficulty": "low"},
+    {"term": "action keyword", "intent": "transactional", "difficulty": "medium"}
+  ],
+  "og_tags": {
+    "og:title": "Social share title (can be more conversational)",
+    "og:description": "Social share description (1-2 compelling sentences)",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:title": "Twitter-optimized title",
+    "twitter:description": "Twitter description under 200 chars"
+  },
+  "schema_type": "LocalBusiness",
+  "schema_json": "{\"@context\": \"https://schema.org\", \"@type\": \"LocalBusiness\", \"name\": \"Business Name\", \"description\": \"Description\"}",
+  "content_tips": [
+    "Specific content improvement tip 1",
+    "Specific content improvement tip 2",
+    "Specific content improvement tip 3"
+  ]
+}
+
+Be specific to the actual subject. Use real keyword phrases people would search. Include location if provided.`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-calls': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 2000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await res.json();
+      const text = data.content?.[0]?.text || '';
+      const seoData = extractJSON(text);
+
+      document.getElementById('loading').style.display = 'none';
+
+      if (seoData) {
+        const uses = incrementUses();
+        updateUsageBar();
+        renderResults(seoData);
+        if (uses >= FREE_LIMIT) setTimeout(showPaywall, 3000);
+      } else {
+        showError('Could not parse SEO results. Please try again.');
+      }
+    } catch (err) {
+      document.getElementById('loading').style.display = 'none';
+      showError('Generation failed. Please try again.');
+      console.error(err);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Generate SEO Package';
+  }
+
+  function extractJSON(text) {
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      const start = clean.indexOf('{');
+      const end = clean.lastIndexOf('}');
+      if (start === -1 || end === -1) return null;
+      return JSON.parse(clean.slice(start, end + 1));
+    } catch { return null; }
+  }
+
+  function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function difficultyColor(d) {
+    if (d === 'low') return 'var(--green)';
+    if (d === 'medium') return 'var(--yellow)';
+    return 'var(--red)';
+  }
+
+  function renderResults(data) {
+    const el = document.getElementById('results');
+    el.style.display = 'block';
+
+    const titleHTML = `
+      <div class="section-title">Title Tags</div>
+      <div class="seo-card">
+        ${(data.title_tags || []).map((t, i) => `
+          <div class="seo-item">
+            <div class="seo-item-label">Option ${i + 1}</div>
+            <div class="seo-item-value">${escapeHTML(t.text)}</div>
+            <div class="seo-item-meta">${t.chars} chars · ${t.note}</div>
+            <button class="copy-btn" onclick="copyText(${JSON.stringify(t.text)}, this)">Copy</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    const metaHTML = `
+      <div class="section-title">Meta Descriptions</div>
+      <div class="seo-card">
+        ${(data.meta_descriptions || []).map((m, i) => `
+          <div class="seo-item">
+            <div class="seo-item-label">Option ${i + 1}</div>
+            <div class="seo-item-value">${escapeHTML(m.text)}</div>
+            <div class="seo-item-meta">${m.chars} chars · ${m.note}</div>
+            <button class="copy-btn" onclick="copyText(${JSON.stringify(m.text)}, this)">Copy</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    const h1HTML = `
+      <div class="section-title">H1 Suggestions</div>
+      <div class="seo-card">
+        ${(data.h1_suggestions || []).map((h, i) => `
+          <div class="seo-item">
+            <div class="seo-item-label">Option ${i + 1}</div>
+            <div class="seo-item-value">${escapeHTML(h)}</div>
+            <button class="copy-btn" onclick="copyText(${JSON.stringify(h)}, this)">Copy</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    const kwHTML = `
+      <div class="section-title">Target Keywords</div>
+      <div class="seo-card">
+        <div class="keyword-grid">
+          ${(data.keywords || []).map(k => `
+            <div class="keyword-chip" onclick="copyText(${JSON.stringify(k.term)}, this)" title="${k.intent} intent">
+              ${escapeHTML(k.term)}
+              <span class="kw-vol" style="color:${difficultyColor(k.difficulty)}">${k.difficulty}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    const og = data.og_tags || {};
+    const ogHTML = `
+      <div class="section-title">Social / Open Graph Tags</div>
+      <div class="seo-card">
+        ${Object.entries(og).map(([k, v]) => `
+          <div class="seo-item">
+            <div class="seo-item-label">${escapeHTML(k)}</div>
+            <div class="seo-item-value">${escapeHTML(v)}</div>
+            <button class="copy-btn" onclick="copyText(${JSON.stringify(v)}, this)">Copy</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    const schemaFormatted = (() => {
+      try { return JSON.stringify(JSON.parse(data.schema_json), null, 2); }
+      catch { return data.schema_json || ''; }
+    })();
+    const schemaHTML = schemaFormatted ? `
+      <div class="section-title">Schema Markup (${data.schema_type || 'JSON-LD'})</div>
+      <div class="seo-card">
+        <div class="seo-item" style="padding-bottom:10px">
+          <div class="schema-block">${escapeHTML(schemaFormatted)}</div>
+          <button class="copy-btn" style="position:static;margin-top:10px" onclick="copyText(${JSON.stringify(schemaFormatted)}, this)">Copy Schema</button>
+        </div>
+      </div>
+    ` : '';
+
+    const tipsHTML = data.content_tips?.length ? `
+      <div class="section-title">Content Tips</div>
+      <div class="seo-card">
+        ${data.content_tips.map(t => `
+          <div class="seo-item">
+            <div class="seo-item-value" style="color:var(--muted)">💡 ${escapeHTML(t)}</div>
+          </div>
+        `).join('')}
+      </div>
+    ` : '';
+
+    const ctaHTML = `
+      <div class="cta-bar">
+        <h3>Ready to implement this on your site?</h3>
+        <p>OwnSite helps you apply these SEO changes without touching code.</p>
+        <a href="https://ownsite.app" class="btn-primary">Fix my site on OwnSite →</a>
+      </div>
+    `;
+
+    el.innerHTML = titleHTML + metaHTML + h1HTML + kwHTML + ogHTML + schemaHTML + tipsHTML + ctaHTML;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function escapeHTML(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('results');
+    el.style.display = 'block';
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);">${msg}</div>`;
+  }
+</script>
+</body>
+</html>
