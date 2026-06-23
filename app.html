@@ -73,6 +73,57 @@ header {
 }
 .btn-ghost:hover { background: var(--bg); }
 
+/* ============================================
+   TAB NAV
+============================================ */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky;
+  top: 65px;
+  z-index: 99;
+}
+
+.tab-btn {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.tab-btn:hover { color: var(--brand-primary); }
+.tab-btn.active {
+  color: var(--brand-primary);
+  border-bottom-color: var(--brand-primary);
+}
+.tab-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--brand-accent);
+  color: #fff;
+  border-radius: 99px;
+  padding: 2px 7px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   VIEWS
+============================================ */
+.view { display: none; }
+.view.active { display: block; }
+
 main {
   flex: 1;
   display: flex;
@@ -81,6 +132,9 @@ main {
   padding: 40px 20px 100px;
 }
 
+/* ============================================
+   CAPTION GENERATOR (original)
+============================================ */
 .progress-bar {
   width: 100%;
   max-width: 480px;
@@ -341,7 +395,6 @@ main {
 }
 .result-caption.loading { color: var(--text-muted); font-style: italic; }
 
-/* ---- HOOK REASON CARD ---- */
 .hook-reason-card {
   display: none;
   margin-top: 16px;
@@ -479,7 +532,6 @@ main {
 }
 .btn-restart:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
 
-/* ---- POST TO PLATFORM ---- */
 .post-buttons-label {
   font-size: 12px;
   font-weight: 600;
@@ -510,7 +562,6 @@ main {
   transform: translateY(-1px);
 }
 
-/* ---- CUSTOM TOPIC ---- */
 .custom-topic-card {
   display: flex;
   flex-direction: column;
@@ -564,6 +615,287 @@ main {
 }
 .custom-topic-continue:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
 .custom-topic-continue:not(:disabled):hover { opacity: 0.9; }
+
+/* ============================================
+   STORYBOARD TAB
+============================================ */
+.sb-wrap {
+  width: 100%;
+  max-width: 520px;
+}
+
+.sb-hero {
+  text-align: center;
+  padding: 32px 0 28px;
+}
+.sb-hero-icon {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, #1A1A2E 0%, #6C63FF 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 20px;
+  box-shadow: 0 8px 28px rgba(108,99,255,0.25);
+}
+.sb-hero h2 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.sb-hero p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.sb-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.sb-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.sb-field textarea,
+.sb-field select {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--surface);
+  transition: border-color 0.2s;
+  appearance: none;
+}
+.sb-field textarea { resize: vertical; min-height: 72px; }
+.sb-field textarea:focus,
+.sb-field select:focus { outline: none; border-color: var(--brand-primary); }
+
+.sb-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sb-tile {
+  padding: 14px 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.sb-tile .sb-tile-icon { font-size: 22px; }
+.sb-tile:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+.sb-tile.selected {
+  border-color: var(--brand-primary);
+  background: linear-gradient(135deg, #F0EEFF 0%, #EEF9F5 100%);
+  color: var(--brand-primary);
+}
+
+.btn-sb-generate {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #1A1A2E 0%, #6C63FF 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(108,99,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-sb-generate:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(108,99,255,0.4); }
+.btn-sb-generate:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* Storyboard result */
+.sb-result { display: none; }
+.sb-result.visible { display: block; }
+
+.sb-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  margin-top: 28px;
+}
+.sb-result-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.btn-sb-reset {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-body);
+}
+.btn-sb-reset:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+
+.sb-scenes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sb-scene-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  animation: fadeUp 0.35s ease both;
+}
+
+.sb-scene-num {
+  width: 32px;
+  height: 32px;
+  background: var(--brand-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sb-scene-body { flex: 1; }
+
+.sb-scene-timing {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-accent);
+  margin-bottom: 4px;
+}
+
+.sb-scene-action {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.sb-scene-overlay {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg);
+  border-left: 3px solid var(--brand-primary);
+  padding: 8px 12px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  line-height: 1.4;
+}
+
+.sb-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sb-extra-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sb-extra-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  margin-bottom: 6px;
+}
+
+.sb-extra-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.sb-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 0;
+}
+.sb-loading-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.btn-sb-copy-all {
+  width: 100%;
+  padding: 14px;
+  background: var(--bg);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-sb-copy-all:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
 </style>
 </head>
 <body>
@@ -575,6 +907,16 @@ main {
   </div>
 </header>
 
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab-btn active" id="tab-caption" onclick="switchTab('caption')">✦ Caption</button>
+  <button class="tab-btn" id="tab-storyboard" onclick="switchTab('storyboard')">🎬 Storyboard <span class="tab-badge">New</span></button>
+</div>
+
+<!-- ============================================
+     VIEW: CAPTION GENERATOR
+============================================ -->
+<div class="view active" id="view-caption">
 <main>
   <div class="progress-bar" id="progressBar" style="display:none">
     <div class="progress-step" id="step1"></div>
@@ -707,7 +1049,6 @@ main {
       <div class="result-caption loading" id="caption-output">
         <div class="typing-dots"><span></span><span></span><span></span></div>
       </div>
-      <!-- HOOK REASON CARD -->
       <div class="hook-reason-card" id="hook-reason-card">
         <div class="hook-reason-label">💡 Why this hook works</div>
         <div class="hook-reason-text" id="hook-reason-text"></div>
@@ -722,10 +1063,109 @@ main {
     <button class="btn-restart" onclick="restart()">✦ Create another post</button>
   </div>
 </main>
+</div>
+
+<!-- ============================================
+     VIEW: STORYBOARD
+============================================ -->
+<div class="view" id="view-storyboard">
+<main>
+  <div class="sb-wrap">
+
+    <!-- HERO -->
+    <div class="sb-hero">
+      <div class="sb-hero-icon">🎬</div>
+      <h2>TikTok Storyboard</h2>
+      <p>Describe your screen recording. Get a complete shot-by-shot text overlay plan — ready to drop into CapCut.</p>
+    </div>
+
+    <!-- FORM -->
+    <div class="sb-form" id="sb-form">
+
+      <div class="sb-field">
+        <label>What's your video about?</label>
+        <textarea id="sb-topic" placeholder="e.g. Showing off the Spin the Judgy slot machine feature on thejudgy.com — solo run, landing on a roast result" oninput="sbCheckReady()"></textarea>
+      </div>
+
+      <div class="sb-field">
+        <label>Video type</label>
+        <div class="sb-tiles" id="sb-type-tiles">
+          <button class="sb-tile" onclick="sbSelectTile('type', 'Solo demo', this)">
+            <span class="sb-tile-icon">📱</span>Solo Demo
+          </button>
+          <button class="sb-tile" onclick="sbSelectTile('type', '1v1 Challenge', this)">
+            <span class="sb-tile-icon">⚔️</span>1v1 Challenge
+          </button>
+          <button class="sb-tile" onclick="sbSelectTile('type', 'Walkthrough', this)">
+            <span class="sb-tile-icon">🗺️</span>Walkthrough
+          </button>
+          <button class="sb-tile" onclick="sbSelectTile('type', 'Reaction', this)">
+            <span class="sb-tile-icon">😱</span>Reaction
+          </button>
+        </div>
+      </div>
+
+      <div class="sb-field">
+        <label>Tone</label>
+        <div class="sb-tiles" id="sb-tone-tiles">
+          <button class="sb-tile" onclick="sbSelectTile('tone', 'Funny', this)">
+            <span class="sb-tile-icon">😂</span>Funny
+          </button>
+          <button class="sb-tile" onclick="sbSelectTile('tone', 'Hype', this)">
+            <span class="sb-tile-icon">🔥</span>Hype
+          </button>
+          <button class="sb-tile" onclick="sbSelectTile('tone', 'Chill', this)">
+            <span class="sb-tile-icon">😎</span>Chill
+          </button>
+          <button class="sb-tile" onclick="sbSelectTile('tone', 'Dramatic', this)">
+            <span class="sb-tile-icon">🎭</span>Dramatic
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-sb-generate" id="sb-generate-btn" disabled onclick="generateStoryboard()">
+        <span>🎬</span> Build my storyboard
+      </button>
+    </div>
+
+    <!-- LOADING -->
+    <div class="sb-loading" id="sb-loading" style="display:none">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+      <div class="sb-loading-text">Writing your shot list…</div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="sb-result" id="sb-result">
+      <div class="sb-result-header">
+        <div class="sb-result-title">🎬 Your Storyboard</div>
+        <button class="btn-sb-reset" onclick="sbReset()">Start over</button>
+      </div>
+
+      <div class="sb-scenes" id="sb-scenes"></div>
+
+      <div class="sb-extras" id="sb-extras"></div>
+
+      <button class="btn-sb-copy-all" onclick="sbCopyAll()">📋 Copy full storyboard</button>
+    </div>
+
+  </div>
+</main>
+</div>
 
 <script>
 // ============================================
-// STATE
+// TAB SWITCHING
+// ============================================
+function switchTab(tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`view-${tab}`).classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ============================================
+// CAPTION GENERATOR STATE
 // ============================================
 const state = {
   creatorType: '',
@@ -876,7 +1316,7 @@ function selectPlatform(el, platform) {
 }
 
 // ============================================
-// CONFIG — Worker endpoint
+// CONFIG
 // ============================================
 const WORKER_URL = 'https://autopost-api.infomomtelo.workers.dev';
 
@@ -890,7 +1330,7 @@ const PLATFORM_KEY_MAP = {
 };
 
 // ============================================
-// STEP 4: GENERATE
+// STEP 4: GENERATE CAPTION
 // ============================================
 async function generateCaption() {
   goTo(4);
@@ -935,7 +1375,6 @@ async function fetchCaption() {
     const data = await res.json();
     const raw = data.posts?.[platformKey] || 'Could not generate caption. Try again.';
 
-    // Split out HOOK_REASON if present
     let caption = raw;
     let hookReason = '';
     const hookMatch = raw.match(/HOOK_REASON:\s*(.+)/s);
@@ -949,7 +1388,6 @@ async function fetchCaption() {
     document.getElementById('caption-output').textContent = caption;
     document.getElementById('result-actions').style.display = 'flex';
 
-    // Show hook reason card if returned
     const hookCard = document.getElementById('hook-reason-card');
     const hookText = document.getElementById('hook-reason-text');
     if (hookReason) {
@@ -1047,6 +1485,157 @@ function restart() {
   document.querySelectorAll('.option-tile').forEach(t => t.classList.remove('selected'));
   document.getElementById('generate-btn').disabled = true;
   goTo(0);
+}
+
+// ============================================
+// STORYBOARD STATE
+// ============================================
+const sbState = {
+  type: '',
+  tone: '',
+  result: null
+};
+
+function sbSelectTile(field, value, el) {
+  const group = el.closest('.sb-tiles');
+  group.querySelectorAll('.sb-tile').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+  sbState[field] = value;
+  sbCheckReady();
+}
+
+function sbCheckReady() {
+  const topic = document.getElementById('sb-topic').value.trim();
+  const ready = topic.length > 0 && sbState.type && sbState.tone;
+  document.getElementById('sb-generate-btn').disabled = !ready;
+}
+
+// ============================================
+// STORYBOARD GENERATE
+// ============================================
+async function generateStoryboard() {
+  const topic = document.getElementById('sb-topic').value.trim();
+
+  document.getElementById('sb-form').style.display = 'none';
+  document.getElementById('sb-loading').style.display = 'flex';
+  document.getElementById('sb-result').classList.remove('visible');
+
+  const prompt = `You are a TikTok video director. Create a shot-by-shot storyboard for a screen recording TikTok.
+
+Video details:
+- Topic: ${topic}
+- Type: ${sbState.type}
+- Tone: ${sbState.tone}
+
+Return ONLY valid JSON, no markdown, no explanation. Use this exact structure:
+{
+  "scenes": [
+    {
+      "num": 1,
+      "timing": ":00–:03",
+      "action": "what is happening on screen",
+      "overlay": "exact text shown on screen"
+    }
+  ],
+  "music": "music mood suggestion (2 sentences max)",
+  "caption": "ready-to-post TikTok caption with hashtags",
+  "capcut_tip": "one-sentence CapCut editing tip"
+}
+
+Rules:
+- 5 to 8 scenes
+- Keep overlays punchy, max 8 words each
+- Tone must match: ${sbState.tone}
+- Total video should be 15–30 seconds
+- Make overlays feel native to TikTok, not corporate`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.content?.map(c => c.text || '').join('') || '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    sbState.result = parsed;
+    renderStoryboard(parsed);
+  } catch (err) {
+    document.getElementById('sb-loading').style.display = 'none';
+    document.getElementById('sb-form').style.display = 'flex';
+    alert('Something went wrong generating the storyboard. Try again.');
+  }
+}
+
+function renderStoryboard(data) {
+  document.getElementById('sb-loading').style.display = 'none';
+  document.getElementById('sb-result').classList.add('visible');
+
+  const scenesEl = document.getElementById('sb-scenes');
+  scenesEl.innerHTML = (data.scenes || []).map(s => `
+    <div class="sb-scene-card">
+      <div class="sb-scene-num">${s.num}</div>
+      <div class="sb-scene-body">
+        <div class="sb-scene-timing">${s.timing}</div>
+        <div class="sb-scene-action">${s.action}</div>
+        <div class="sb-scene-overlay">"${s.overlay}"</div>
+      </div>
+    </div>
+  `).join('');
+
+  const extrasEl = document.getElementById('sb-extras');
+  extrasEl.innerHTML = `
+    <div class="sb-extra-card">
+      <div class="sb-extra-label">🎵 Music mood</div>
+      <div class="sb-extra-text">${data.music || ''}</div>
+    </div>
+    <div class="sb-extra-card">
+      <div class="sb-extra-label">📝 Caption + Hashtags</div>
+      <div class="sb-extra-text">${data.caption || ''}</div>
+    </div>
+    <div class="sb-extra-card">
+      <div class="sb-extra-label">✂️ CapCut tip</div>
+      <div class="sb-extra-text">${data.capcut_tip || ''}</div>
+    </div>
+  `;
+
+  window.scrollTo(0, 0);
+}
+
+function sbReset() {
+  sbState.type = '';
+  sbState.tone = '';
+  sbState.result = null;
+  document.getElementById('sb-topic').value = '';
+  document.querySelectorAll('.sb-tile').forEach(t => t.classList.remove('selected'));
+  document.getElementById('sb-generate-btn').disabled = true;
+  document.getElementById('sb-result').classList.remove('visible');
+  document.getElementById('sb-form').style.display = 'flex';
+  window.scrollTo(0, 0);
+}
+
+function sbCopyAll() {
+  if (!sbState.result) return;
+  const d = sbState.result;
+  const lines = ['🎬 TIKTOK STORYBOARD\n'];
+  (d.scenes || []).forEach(s => {
+    lines.push(`[${s.timing}] ${s.action}`);
+    lines.push(`OVERLAY: "${s.overlay}"\n`);
+  });
+  lines.push(`🎵 Music: ${d.music}`);
+  lines.push(`\n📝 Caption:\n${d.caption}`);
+  lines.push(`\n✂️ CapCut tip: ${d.capcut_tip}`);
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    const btn = document.querySelector('.btn-sb-copy-all');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy full storyboard', 2000);
+  });
 }
 </script>
 </body>
